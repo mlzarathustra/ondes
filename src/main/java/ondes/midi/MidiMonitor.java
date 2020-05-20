@@ -14,12 +14,17 @@ public class MidiMonitor {
         String device = "";
         if (args.length>0) device = args[0];
 
-        new MidiMonitor(device).monitor();
+        new MidiMonitor(device).monitor(new Receiver() {
+            public void close() {};
+            public void send(MidiMessage msg, long ts) {
+                out.println(ts+" : "+ MlzMidi.toString(msg));
+            }
+        });
     }
 
     MidiMonitor(String id) { devId = id; }
 
-    void monitor() {
+    void monitor(Receiver recv) {
         //String devId="828";
 
         MidiDevice.Info info = getTransmitter(devId);
@@ -37,14 +42,9 @@ public class MidiMonitor {
             trans = dev.getTransmitter();
 
             out.println("Opened device: "+trans);
-            out.println("Play some notes and they should display below.");
+            out.println("Listening for MIDI messages.");
 
-            trans.setReceiver(new Receiver() {
-                public void close() {};
-                public void send(MidiMessage msg, long ts) {
-                    out.println(ts+" : "+ MlzMidi.toString(msg));
-                }
-            });
+            trans.setReceiver(recv);
             dev.open();
 
             BufferedReader in=new BufferedReader(
