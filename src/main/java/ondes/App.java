@@ -3,13 +3,18 @@
  */
 package ondes;
 
+import ondes.midi.MIDIInfo;
+
+import javax.sound.midi.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
 import static ondes.midi.MlzMidi.*;
+import static ondes.midi.MIDIInfo.*;
 
 import static java.util.stream.Collectors.*;
 import static java.lang.System.out;
@@ -26,14 +31,12 @@ public class App {
         out.println(midiNumListToStr((List<Integer>)Arrays.asList(49,51,52)));
     }
 
-
-
-    public static void main(String[] args) {
-
+    //  TODO - make this a test assertion
+    static void t2() {
         List<Integer> notes =
             IntStream.range(0,128)
-            .boxed()
-            .collect(toList());
+                .boxed()
+                .collect(toList());
 
         out.println(midiNumListToStr(notes));
 
@@ -53,9 +56,56 @@ public class App {
             }
         }
         if (!clash) { out.println("Convert to str and back: all notes match."); }
+    }
+
+    static void t4() {
+        MIDIInfo.main(new String[]{});
+    }
+
+    static void t5() {
+        String devId="828";
+
+        MidiDevice.Info info = getTransmitter(devId);
+        if (info == null) {
+            out.println("could not find midi device to match "+devId);
+            System.exit(-1);
+        }
+
+        MidiDevice dev = null;
+        Transmitter trans = null;
+        try {
+            dev = MidiSystem.getMidiDevice(info);
+            trans = dev.getTransmitter();
+
+            out.println(trans);
+
+            trans.setReceiver(new Receiver() {
+                public void close() {};
+                public void send(MidiMessage msg, long ts) {
+                    out.println(ts+" : "+msg);
+                }
+            });
+            dev.open();
+
+            BufferedReader in=new BufferedReader(
+                new InputStreamReader(System.in));
+
+            in.readLine();
+            dev.close();
+            System.exit(0);
+        }
+        catch (Exception ex) {
+            out.println("attempting to open midi device "+devId);
+            out.println(ex);
+            System.exit(-1);
+        }
+    }
 
 
+    public static void main(String[] args) {
 
+
+        t5();
 
     }
 }

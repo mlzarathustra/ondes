@@ -13,7 +13,7 @@ import static java.util.stream.Collectors.*;
 public class MlzMidi {
 
     // looks for the first midi device with name containing id
-    // that has a receiver 
+    // that has a receiver. The receiver is for playback
     public static MidiDevice.Info getReceiver(String id) {
         //println 'getReceiver'
         MidiDevice.Info[] infoList=MidiSystem.getMidiDeviceInfo();
@@ -29,6 +29,34 @@ public class MlzMidi {
                         midiDev = MidiSystem.getMidiDevice(it);
                         midiDev.open();
                         Receiver recv = midiDev.getReceiver();
+                    } catch (Exception ex) {
+                        midiDev.close();
+                        //println 'no receiver'
+                        return false;
+                    }
+                    midiDev.close();
+                    return true;
+                })
+            .findFirst().orElse(null);
+    }
+
+    //  The transmitter is for recording.
+    public static MidiDevice.Info getTransmitter(String id) {
+        //println 'getReceiver'
+        MidiDevice.Info[] infoList=MidiSystem.getMidiDeviceInfo();
+
+        return Arrays.stream(infoList)
+            .filter (
+                (MidiDevice.Info it)-> {
+                    if (!it.getName().toLowerCase().contains(id.toLowerCase())) return false;
+                    //println "$it.name  - $id"
+
+                    MidiDevice midiDev=null;
+                    try {
+                        midiDev = MidiSystem.getMidiDevice(it);
+                        midiDev.open();
+                        Transmitter trans = midiDev.getTransmitter();
+                        //Receiver recv = midiDev.getReceiver();
                     } catch (Exception ex) {
                         midiDev.close();
                         //println 'no receiver'
