@@ -1,4 +1,4 @@
-package sketch;
+package ondes.synth;
 
 import java.util.ArrayList;
 

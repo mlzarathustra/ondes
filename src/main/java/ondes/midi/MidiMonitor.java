@@ -1,6 +1,4 @@
-package ondes;
-
-import ondes.midi.MlzMidi;
+package ondes.midi;
 
 import javax.sound.midi.*;
 import java.io.BufferedReader;
@@ -9,22 +7,26 @@ import java.io.InputStreamReader;
 import static java.lang.System.out;
 import static ondes.midi.MlzMidi.getTransmitter;
 
-public class Monitor {
+public class MidiMonitor {
     String devId;
 
     public static void main(String[] args) {
-        out.println("Press [Enter] to quit.");
-        new Monitor("828").monitor();
+        String device = "";
+        if (args.length>0) device = args[0];
+
+        new MidiMonitor(device).monitor();
     }
 
-    Monitor(String id) { devId = id; }
+    MidiMonitor(String id) { devId = id; }
 
     void monitor() {
-        String devId="828";
+        //String devId="828";
 
         MidiDevice.Info info = getTransmitter(devId);
         if (info == null) {
-            out.println("could not find midi device to match "+devId);
+            out.println(
+                "could not find midi transmitting device to match "
+                    +devId);
             System.exit(-1);
         }
 
@@ -34,7 +36,8 @@ public class Monitor {
             dev = MidiSystem.getMidiDevice(info);
             trans = dev.getTransmitter();
 
-            out.println(trans);
+            out.println("Opened device: "+trans);
+            out.println("Play some notes and they should display below.");
 
             trans.setReceiver(new Receiver() {
                 public void close() {};
@@ -47,6 +50,7 @@ public class Monitor {
             BufferedReader in=new BufferedReader(
                 new InputStreamReader(System.in));
 
+            out.println("Press [Enter] to quit.");
             in.readLine();
             dev.close();
             System.exit(0);
