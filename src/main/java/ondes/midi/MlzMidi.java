@@ -131,8 +131,8 @@ public class MlzMidi {
         String status="unknown";
         int s=msg.getStatus()>>4;
         switch (s) {
-            case 0x8: status = "Note ON"; break;
-            case 0x9: status = "Note OFF"; break;
+            case 0x8: status = "Note OFF"; break;
+            case 0x9: status = "Note ON"; break;
             case 0xa: status = "Aftertouch"; break;
             case 0xb: status = "Controller"; break;
             case 0xc: status = "Program Change"; break;
