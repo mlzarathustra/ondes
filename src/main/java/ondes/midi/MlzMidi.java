@@ -124,6 +124,36 @@ public class MlzMidi {
         return n.stream().map( it -> midiNumToStr(it,isFlat))
             .collect(joining(" "));
     }
+
+    // TODO - could be a lot more thorough!
+    //
+    public static String toString(MidiMessage msg) {
+        String status="unknown";
+        int s=msg.getStatus()>>4;
+        switch (s) {
+            case 0x8: status = "Note ON"; break;
+            case 0x9: status = "Note OFF"; break;
+            case 0xa: status = "Aftertouch"; break;
+            case 0xb: status = "Controller"; break;
+            case 0xc: status = "Program Change"; break;
+            case 0xd: status = "Channel Pressure"; break;
+            case 0xe: status = "Pitch Bend"; break;
+            case 0xf: status = "System"; break;
+        }
+        StringBuilder sb=new StringBuilder(status);
+        sb.append(" - ");
+        if (s<0xa) {
+            sb.append(midiNumToStr(msg.getMessage()[1]));
+            sb.append(" vel="+msg.getMessage()[2]);
+        }
+        else {
+            for (int i = 1; i < msg.getLength(); ++i) {
+                sb.append(msg.getMessage()[i]);
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
     
 
 

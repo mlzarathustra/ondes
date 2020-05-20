@@ -4,6 +4,7 @@
 package ondes;
 
 import ondes.midi.MIDIInfo;
+import ondes.midi.MlzMidi;
 
 import javax.sound.midi.*;
 import java.io.BufferedReader;
@@ -82,7 +83,7 @@ public class App {
             trans.setReceiver(new Receiver() {
                 public void close() {};
                 public void send(MidiMessage msg, long ts) {
-                    out.println(ts+" : "+msg);
+                    out.println(ts+" : "+ MlzMidi.toString(msg));
                 }
             });
             dev.open();
