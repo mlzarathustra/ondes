@@ -12,6 +12,8 @@ public class Mixer extends Component {
     ArrayList<IntSupplier> inputs;
     ArrayList<IntConsumer> outputs;
 
+    //  TODO - this won't quite work maybe?
+    //
     public void update() {
         int level = inputs.stream()
             .mapToInt(IntSupplier::getAsInt)

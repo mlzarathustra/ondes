@@ -27,6 +27,12 @@ public class Snake {
     void update() {
         Wire w=head;
         while (w != null) {
+            w.setVisited(false);
+            w=w.next;
+        }
+
+        w = head;
+        while (w != null) {
             w.update();
             w=w.next;
         }

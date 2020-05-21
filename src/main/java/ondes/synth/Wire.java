@@ -1,10 +1,9 @@
 package ondes.synth;
 
 import java.util.function.IntConsumer;
-import java.util.function.IntSupplier;
 
 public class Wire {
-    private IntSupplier in;
+    private WiredIntSupplier in;
     private IntConsumer out;
     private double scale = 1;
 
@@ -15,4 +14,13 @@ public class Wire {
     }
 
     Wire prev, next;
+
+    public boolean isVisited() {
+        return in.isVisited();
+    }
+
+    public void setVisited(boolean visited) {
+        in.setVisited(visited);
+    }
+
 }
