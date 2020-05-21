@@ -1,0 +1,4 @@
+#!/bin/bash
+
+java -cp build/libs/ondes-all.jar ondes.midi.MIDIInfo $*
+

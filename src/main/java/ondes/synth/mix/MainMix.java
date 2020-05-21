@@ -23,6 +23,5 @@ public class MainMix extends Component {
     public void update() {
 
 
-
     }
 }

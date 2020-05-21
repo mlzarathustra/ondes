@@ -21,7 +21,8 @@ public class MlzMidi {
         return Arrays.stream(infoList)
             .filter (
                 (MidiDevice.Info it)-> {
-                    if (!it.getName().toLowerCase().contains(id.toLowerCase())) return false;
+                    if (!it.getName().toLowerCase()
+                        .contains(id.toLowerCase())) return false;
                     //println "$it.name  - $id"
 
                     MidiDevice midiDev=null;

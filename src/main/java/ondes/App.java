@@ -3,74 +3,116 @@
  */
 package ondes;
 
-import ondes.midi.MIDIInfo;
 import ondes.midi.MlzMidi;
-import ondes.synth.program.Program;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Transmitter;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
-
-import static ondes.midi.MlzMidi.*;
-import static ondes.midi.MIDIInfo.*;
-
-import static java.util.stream.Collectors.*;
 import static java.lang.System.out;
 
+import static java.util.stream.Collectors.toList;
+import static ondes.mlz.Util.getResourceAsString;
 
 public class App {
 
-    static void t0() {
-        out.println(getReceiver("828"));
+    static Mixer getMixer(String outDevStr) {
+        Mixer.Info[] info= AudioSystem.getMixerInfo();
+        List<Mixer.Info> list = Arrays.stream(info)
+            .filter(i -> {
+                String id=i.toString().toLowerCase();
+                if (!id.contains(outDevStr))
+                    return false;
+                Mixer mixer=AudioSystem.getMixer(i);
+                return mixer.getSourceLineInfo().length > 0;
+            })
+            .collect(toList());
 
+        //out.println(list);
+        if (list.isEmpty()) return null;
+
+        return AudioSystem.getMixer(list.get(0));
     }
-    static void t1() {
-        out.println(toMidiNumList("c#2 d#2 e2"));
-        out.println(midiNumListToStr((List<Integer>)Arrays.asList(49,51,52)));
-    }
 
-    //  TODO - make this a test assertion
-    static void t2() {
-        List<Integer> notes =
-            IntStream.range(0,128)
-                .boxed()
-                .collect(toList());
-
-        out.println(midiNumListToStr(notes));
-
-        out.println(midiNumListToStr(notes, true));
-
-        String noteStr = midiNumListToStr(notes);
-        List<Integer> notesBack = toMidiNumList(noteStr);
-        if (notes.size() != notesBack.size())
-            out.println("lists are of different size.");
-
-        boolean clash=false;
-        for (int i=0; i<notes.size(); ++i) {
-            if (notes.get(i) != notesBack.get(i)) {
-                out.println("Element " + i + " doesn't match: "+
-                    "orig="+notes.get(i)+"; returned="+notesBack.get(i));
-                clash = true;
-            }
+    static MidiDevice getMidiDev(String inDevStr) {
+        MidiDevice.Info info = MlzMidi.getTransmitter(inDevStr);
+        if (info == null) {
+            out.println(
+                "could not find midi transmitting device to match "
+                    +inDevStr);
+            System.exit(-1);
         }
-        if (!clash) { out.println("Convert to str and back: all notes match."); }
+        try {
+            return MidiSystem.getMidiDevice(info);
+        }
+        catch (Exception ex) {
+            out.println("attempting to open midi device "+inDevStr);
+            out.println(ex);
+            return null;
+        }
     }
 
-    static void t4() {
-        MIDIInfo.main(new String[]{});
+
+
+    static void usage() {
+        out.println(getResourceAsString("usage.txt"));
+        System.exit(0);
     }
-    static void t5() {
-        Program.main(new String[]{});
-    }
-
-
-
 
     public static void main(String[] args) {
-        t5();
+        // contains("") will match any
+        String inDevStr = "", outDevStr = "";
+
+        // one for each channel
+        String[] progNames = new String[16];
+        for (int i=0; i<16; ++i) progNames[i]="";
+
+        if (args.length % 2 == 1) usage();
+
+        for (int i=0; i<args.length; ++i) {
+            switch(args[i]) {
+                case "-in": inDevStr = args[++i]; continue;
+                case "-out": outDevStr = args[++i]; continue;
+                case "-all":
+                    ++i;
+                    for (int ch=0; ch<16; ch++) progNames[ch] = args[i];
+                    continue;
+            }
+            if (args[i].startsWith("-ch")) {
+                try {
+                    progNames[ Integer.parseInt(args[i].substring(3)) - 1 ]
+                        = args[++i];
+                }
+                catch (Exception ex) {
+                    usage();
+                }
+            }
+            else usage();
+        }
+
+        out.println("Input device : "+inDevStr);
+        out.println("Output device: "+outDevStr);
+        out.println("Program Names: "+Arrays.toString(progNames));
+
+        MidiDevice midiDev = getMidiDev(inDevStr);
+        if (midiDev == null) {
+            out.println("Could not open MIDI input device "+inDevStr);
+            out.println("say java -cp ondes-all.jar ondes.midi.MIDIInfo " +
+                "to see a list of devices.");
+            System.exit(-1);
+        }
+        out.println("Midi Input device   : "+midiDev.getDeviceInfo());
+        Mixer mixer = getMixer(outDevStr);
+        out.println("Mixer (audio output): "+mixer.getMixerInfo());
+
+        //  run -in 828 -out main
+
+
     }
 }

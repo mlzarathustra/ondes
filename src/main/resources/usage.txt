@@ -1,0 +1,17 @@
+
+    Ondes Synthesizer
+    ---------------------------
+    Arguments are in pairs:
+
+      -in <input MIDI device>
+      -out <output Audio device>
+      -all | -patch <patch file for all channels>
+      -ch1 <patch file for channel 1>
+      -ch2 < "     "    "    "     2>
+       ...
+
+    The 'device label' is used to search for a device with
+    the necessary capabilities whose label contains that string.
+
+    patch files are in yaml, yet to be undocumented.
+

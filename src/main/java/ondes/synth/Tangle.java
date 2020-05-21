@@ -1,6 +1,12 @@
 package ondes.synth;
 
-public class Snake {
+/**
+ * A collection of Wires,
+ * doing what they always do!
+ *
+ * @see ondes.synth.Wire
+ */
+public class Tangle {
 
     Wire head, tail;
 
