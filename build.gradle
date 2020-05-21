@@ -20,6 +20,10 @@ repositories {
     jcenter()
 }
 
+configurations {
+    extraLibs
+}
+
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     implementation 'com.google.guava:guava:27.0.1-jre'
@@ -27,6 +31,8 @@ dependencies {
 
     // Use TestNG framework, also requires calling test.useTestNG() below
     testImplementation 'org.testng:testng:6.14.3'
+
+    extraLibs 'org.yaml:snakeyaml:1.26'
 }
 
 // Define the main class for the application
@@ -35,4 +41,18 @@ mainClassName = 'ondes.App'
 test {
     // Use TestNG for unit tests
     useTestNG()
+}
+
+
+task uberJar(type: Jar) {
+    manifest {
+        attributes(
+            'Implementation-Title': 'software synthesizer',
+            'Main-class': mainClassName
+        )
+    }
+    archiveBaseName = project.name + '-all'
+    from { configurations.extraLibs.collect {
+        it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }

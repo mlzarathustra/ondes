@@ -1,5 +1,7 @@
 package ondes.synth.wave;
 
+import ondes.synth.Component;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +14,7 @@ import static ondes.mlz.Util.keyStrip;
  *
  *
  */
-public abstract class WaveGen {
+public abstract class WaveGen extends Component {
     static int DEFAULT_SAMPLE_RATE=44100; // per second
     static double DEFAULT_FREQ=440;       // hz
 
@@ -61,7 +63,7 @@ public abstract class WaveGen {
      * @param key - text mnemonic for wave form
      * @return a wave generator as named by key
      */
-    static WaveGen getWaveGen(String key) {
+    public static WaveGen getWaveGen(String key) {
         Class wgClass = concreteClasses.get(keyStrip(key));
         try {
             WaveGen wg = (WaveGen) wgClass.newInstance();
@@ -86,7 +88,5 @@ public abstract class WaveGen {
         WaveGen.register("organ", CompositeWaveGen.class);
         WaveGen.register("sample", SampleWaveGen.class);
     }
-
-
 
 }

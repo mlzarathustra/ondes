@@ -6,7 +6,7 @@ osc1:
   in:
     - midi
     - lfo1, 0.1
-  wave: saw
+  shape: saw
   out: env1
 
 env1:
@@ -28,7 +28,7 @@ voiceMix:
 lfo1:
   type: wave
   freq: 1.7
-  wave: saw
+  shape: saw
 
 
 

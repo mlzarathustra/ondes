@@ -5,6 +5,7 @@ package ondes;
 
 import ondes.midi.MIDIInfo;
 import ondes.midi.MlzMidi;
+import ondes.synth.program.Program;
 
 import javax.sound.midi.*;
 import java.io.BufferedReader;
@@ -62,6 +63,9 @@ public class App {
     static void t4() {
         MIDIInfo.main(new String[]{});
     }
+    static void t5() {
+        Program.main(new String[]{});
+    }
 
 
 
@@ -69,7 +73,7 @@ public class App {
     public static void main(String[] args) {
 
 
-        t4();
+        t5();
 
     }
 }

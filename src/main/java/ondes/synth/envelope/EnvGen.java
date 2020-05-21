@@ -1,5 +1,7 @@
 package ondes.synth.envelope;
 
+import ondes.synth.Component;
+
 import java.util.HashMap;
 import static ondes.mlz.Util.*;
 
@@ -15,7 +17,7 @@ import static ondes.mlz.Util.*;
  * @see Env
  * </p>
  */
-public class EnvGen {
+public class EnvGen extends Component {
 
     private static HashMap<String, Env>envs = new HashMap<>();
 
@@ -58,5 +60,10 @@ public class EnvGen {
     boolean isComplete() { return env.isComplete(); }
 
 
+    public void update() {
+
+        // TODO - implement
+
+    }
 
 }
