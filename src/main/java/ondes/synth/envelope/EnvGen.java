@@ -3,6 +3,8 @@ package ondes.synth.envelope;
 import ondes.synth.Component;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import static ondes.mlz.Util.*;
 
 /**
@@ -65,5 +67,13 @@ public class EnvGen extends Component {
         // TODO - implement
 
     }
+
+    public void configure(Map config, Map components) {
+
+        // TODO - implement
+
+
+    }
+
 
 }

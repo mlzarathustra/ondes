@@ -5,6 +5,7 @@ import ondes.synth.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static ondes.mlz.Util.keyStrip;
 
@@ -88,5 +89,20 @@ public abstract class WaveGen extends Component {
         WaveGen.register("organ", CompositeWaveGen.class);
         WaveGen.register("sample", SampleWaveGen.class);
     }
+
+    public void configure(Map config, Map components) {
+
+        //  TODO -  each individual class will probably need its own one of these.
+        //     this parent class should probably have IntConsumer and IntSupplier lists.
+
+    }
+
+    public void update() {
+        //  TODO -  each individual class will probably need its own one of these.
+
+    }
+
+
+
 
 }

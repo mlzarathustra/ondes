@@ -23,7 +23,7 @@ env1:
 voiceMix:
   type: mix
   out: mainMix
-  level: 1
+  scale: 1
 
 lfo1:
   type: wave

@@ -76,6 +76,4 @@ class CompositeWaveGen extends WaveGen {
         return samples;
     }
 
-
-
 }
