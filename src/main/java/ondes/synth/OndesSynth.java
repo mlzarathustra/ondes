@@ -7,7 +7,7 @@ import ondes.synth.mix.MainMix;
 
 import static java.lang.System.out;
 
-public class Synthesizer extends Thread {
+public class OndesSynth extends Thread {
     Tangle tangle = new Tangle();
     Instant instant;
     MainMix mainMix=new MainMix();
@@ -30,17 +30,18 @@ public class Synthesizer extends Thread {
      *            These may be file names or resource names (?)
      *                 TODO - clarify
      */
-    Synthesizer(
+    public OndesSynth(
         int sampleRate,
         MidiDevice in,
         Mixer out,
         String[] pn
     ) {
-        instant = new Instant(sampleRate);
-
         inDev = in;
         outDev = out;
         progNames = pn;
+
+        //  TODO - where should this come from?
+        instant = new Instant(sampleRate);
 
     }
 

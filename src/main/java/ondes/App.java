@@ -4,10 +4,10 @@
 package ondes;
 
 import ondes.midi.MlzMidi;
+import ondes.synth.OndesSynth;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Transmitter;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 import java.io.BufferedReader;
@@ -57,8 +57,6 @@ public class App {
             return null;
         }
     }
-
-
 
     static void usage() {
         out.println(getResourceAsString("usage.txt"));
@@ -122,6 +120,27 @@ public class App {
 
         //  run -in 828 -out main
 
+
+        //          START UP SYNTH
+        //
+        OndesSynth synth = new OndesSynth(
+            44100, midiDev, mixer, progNames);
+
+        synth.start();
+        //
+        //
+
+        BufferedReader in=new BufferedReader(
+            new InputStreamReader(System.in));
+        out.println("Press [Enter] to stop.");
+
+        try { in.readLine(); }
+        catch (Exception ignore) { }
+
+        midiDev.close();
+        mixer.close();
+        
+        System.exit(0);
 
     }
 }
