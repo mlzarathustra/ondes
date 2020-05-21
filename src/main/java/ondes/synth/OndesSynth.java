@@ -16,7 +16,7 @@ public class OndesSynth extends Thread {
     Mixer outDev;
     String[] progNames;
 
-    boolean stop;  // TODO - listen for [Enter]
+    boolean stop;
 
     /**
      * The constructor only sets
@@ -40,7 +40,7 @@ public class OndesSynth extends Thread {
         outDev = out;
         progNames = pn;
 
-        //  TODO - where should this come from?
+        //  TODO - where should the sample rate come from?
         instant = new Instant(sampleRate);
 
     }

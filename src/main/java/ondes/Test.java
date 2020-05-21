@@ -1,6 +1,6 @@
 package ondes;
 
-import ondes.midi.MIDIInfo;
+import ondes.midi.MidiInfo;
 import ondes.synth.program.Program;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class Test {
     }
 
     static void t4() {
-        MIDIInfo.main(new String[]{});
+        MidiInfo.main(new String[]{});
     }
     static void t5() {
         Program.main(new String[]{});

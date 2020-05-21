@@ -1,0 +1,12 @@
+
+Use a distinct substring of the LABEL field to identify a device.
+
+'Target' lines generate input for the application.
+say 'in' on the command line to show only those.
+
+'Source' lines receive output from the application.
+say 'out' on the command line to show only those.
+
+Yes, it's confusing. The JavaSound convention is to express
+"input" and "output" from the perspective of the mixer,
+rather than of the application.

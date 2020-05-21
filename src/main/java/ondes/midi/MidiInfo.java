@@ -2,9 +2,11 @@ package ondes.midi;
 
 import javax.sound.midi.*;
 import static java.lang.System.out;
+import static ondes.mlz.Util.getResourceAsString;
+
 import java.util.*;
 
-public class MIDIInfo {
+public class MidiInfo {
     static boolean CONDENSED=true;
 
     static String hintOnMinusOne(int n) {
@@ -33,8 +35,8 @@ public class MIDIInfo {
 
             if (CONDENSED) {
                 out.println(
+                    "LABEL: \""+info.getName() + "\"; " +
                     info.getDescription() + "; " +
-                    info.getName() + "; " +
                     info.getVendor() + "; " +
                     info.getVersion() + "\n" +
                     //"isOpen(): " + midiDev.isOpen() + "\n" +
@@ -87,6 +89,10 @@ public class MIDIInfo {
         }
     }
 
+    static void usage() {
+        out.println(getResourceAsString("usage/MidiInfo.txt"));
+        System.exit(0);
+    }
 
     public static void main(String[] args) {
         MidiDevice.Info[] infoList = MidiSystem.getMidiDeviceInfo();
@@ -96,5 +102,6 @@ public class MIDIInfo {
                 showInfo(info);
             }
         }
+        usage();
     }
 }

@@ -1,0 +1,8 @@
+
+    Be sure to select the correct device on the command line.
+    (e.g. a sequencer may not be generating notes when you
+    press keys on the keyboard)
+
+    Run the midiInfo script to display possibilities.
+    A distinct substring of the LABEL field will work on the
+    command line, here and for the synth.

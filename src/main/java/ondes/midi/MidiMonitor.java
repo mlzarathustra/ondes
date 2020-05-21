@@ -6,12 +6,19 @@ import java.io.InputStreamReader;
 
 import static java.lang.System.out;
 import static ondes.midi.MlzMidi.getTransmitter;
+import static ondes.mlz.Util.getResourceAsString;
 
 public class MidiMonitor {
+    
+    static void usage() {
+        out.println(getResourceAsString("usage/MidiMonitor.txt"));
+    }
 
     public static void main(String[] args) {
         String device = "";
         if (args.length>0) device = args[0];
+
+        usage();
 
         monitor(device, new Receiver() {
             public void close() {};
@@ -33,8 +40,8 @@ public class MidiMonitor {
             System.exit(-1);
         }
 
-        MidiDevice dev = null;
-        Transmitter trans = null;
+        MidiDevice dev;
+        Transmitter trans;
         try {
             dev = MidiSystem.getMidiDevice(info);
             trans = dev.getTransmitter();

@@ -59,13 +59,18 @@ public class App {
     }
 
     static void usage() {
-        out.println(getResourceAsString("usage.txt"));
+        out.println(getResourceAsString("usage/App.txt"));
         System.exit(0);
+        //  e.g.  run -in 828 -out main
     }
 
     public static void main(String[] args) {
+
         // contains("") will match any
         String inDevStr = "", outDevStr = "";
+
+        //  Parse command line args
+        //
 
         // one for each channel
         String[] progNames = new String[16];
@@ -94,6 +99,8 @@ public class App {
             else usage();
         }
 
+        //  Connect MIDI input and Audio output
+        //
         out.println("Input device : "+inDevStr);
         out.println("Output device: "+outDevStr);
         out.println("Program Names: "+Arrays.toString(progNames));
@@ -118,18 +125,15 @@ public class App {
 
         out.println("Mixer (audio output): "+mixer.getMixerInfo());
 
-        //  run -in 828 -out main
-
-
-        //          START UP SYNTH
+        //  START UP SYNTH
         //
         OndesSynth synth = new OndesSynth(
             44100, midiDev, mixer, progNames);
 
         synth.start();
-        //
-        //
 
+        //  Quit when user hits Enter
+        //
         BufferedReader in=new BufferedReader(
             new InputStreamReader(System.in));
         out.println("Press [Enter] to stop.");
@@ -139,7 +143,7 @@ public class App {
 
         midiDev.close();
         mixer.close();
-        
+
         System.exit(0);
 
     }

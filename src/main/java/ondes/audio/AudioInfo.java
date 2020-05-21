@@ -11,6 +11,7 @@ import javax.sound.sampled.Mixer;
 import java.util.*;
 
 import static java.lang.System.out;
+import static ondes.mlz.Util.getResourceAsString;
 
 public class AudioInfo {
 
@@ -19,7 +20,8 @@ public class AudioInfo {
         Arrays.stream(info)
             .sorted(Comparator.comparing(Object::toString))
             .forEach( mi -> {
-                out.println(mi);
+                out.println("LABEL: "+mi); // the first line is the label
+
                 Mixer m = AudioSystem.getMixer(mi);
 
                 out.print("Source lines:");
@@ -53,7 +55,8 @@ public class AudioInfo {
                 Line.Info[] trgLineInfo = m.getTargetLineInfo();
                 if (trgLineInfo.length == 0) return;
 
-                out.println(mi);
+                out.println("LABEL: "+mi); // the first line is the label
+
                 out.println("Source lines:");
                 Arrays.stream(srcLineInfo).forEach(s -> out.println("  " + s));
                 out.println("Target lines:");
@@ -79,7 +82,8 @@ public class AudioInfo {
                 Line.Info[] trgLineInfo = m.getTargetLineInfo();
                 if (srcLineInfo.length == 0) return;
 
-                out.println(mi);
+                out.println("LABEL: "+mi); // the first line is the label
+
                 out.println("Source lines:");
                 Arrays.stream(srcLineInfo).forEach(s -> out.println("  " + s));
                 out.println("Target lines:");
@@ -89,15 +93,22 @@ public class AudioInfo {
             });
     }
 
+    static void usage() {
+        out.println(getResourceAsString("usage/AudioInfo.txt"));
+        System.exit(0);
+    }
+
     public static void main(String[] args) {
         if (args.length == 0) {
             all();
         }
         else {
-            if (args[0].equals("out")) in();
-            else if (args[0].equals("in")) out();
+            if (args[0].equals("in")) in();
+            else if (args[0].equals("out")) out();
             else all();
         }
+        usage(); // at the bottom so it doesn't scroll off
+
     }
 
 }
