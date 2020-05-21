@@ -109,6 +109,15 @@ public class App {
         }
         out.println("Midi Input device   : "+midiDev.getDeviceInfo());
         Mixer mixer = getMixer(outDevStr);
+        if (mixer == null) {
+            out.println("Could not open audio mixer device for output: "+inDevStr);
+            out.println("say java -cp ondes-all.jar ondes.midi.MIDIInfo " +
+                "to see a list of devices.");
+            out.println("For audio output, you need one with a SOURCE line, " +
+                "illogical as that seems.");
+            System.exit(-1);
+        }
+
         out.println("Mixer (audio output): "+mixer.getMixerInfo());
 
         //  run -in 828 -out main

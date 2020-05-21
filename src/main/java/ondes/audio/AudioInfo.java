@@ -11,7 +11,6 @@ import javax.sound.sampled.Mixer;
 import java.util.*;
 
 import static java.lang.System.out;
-import static java.util.stream.Collectors.*;
 
 public class AudioInfo {
 
@@ -23,7 +22,7 @@ public class AudioInfo {
                 out.println(mi);
                 Mixer m = AudioSystem.getMixer(mi);
 
-                out.println("Source lines:");
+                out.print("Source lines:");
                 Line.Info[] srcLineInfo = m.getSourceLineInfo();
                 Arrays.stream(srcLineInfo).forEach(s -> out.println("  "+s));
                 out.println("Target lines:");
@@ -38,7 +37,13 @@ public class AudioInfo {
 
     }
 
-    static void out() {
+    /**
+     * A "Target Line" is for input.
+     *
+     * To the mixer, this is a line it transmits to, hence "target."
+     * To the app, this is a source of input.
+     */
+    static void in() {
         Mixer.Info[] info = AudioSystem.getMixerInfo();
         Arrays.stream(info)
             .sorted(Comparator.comparing(Object::toString))
@@ -58,7 +63,13 @@ public class AudioInfo {
             });
     }
 
-    static void in() {
+    /**
+     * It's the "Source Line" that's for outputting to.
+     *
+     * According to the Javadoc: "It acts as a source to the mixer."
+     * In any event it's confusing.
+     */
+    public static void out() {
         Mixer.Info[] info = AudioSystem.getMixerInfo();
         Arrays.stream(info)
             .sorted(Comparator.comparing(Object::toString))
@@ -78,16 +89,13 @@ public class AudioInfo {
             });
     }
 
-
     public static void main(String[] args) {
-
         if (args.length == 0) {
             all();
-
         }
         else {
-            if (args[0].equals("out")) out();
-            else if (args[0].equals("in")) in();
+            if (args[0].equals("out")) in();
+            else if (args[0].equals("in")) out();
             else all();
         }
     }

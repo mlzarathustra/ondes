@@ -7,6 +7,11 @@ import java.util.*;
 public class MIDIInfo {
     static boolean CONDENSED=true;
 
+    static String hintOnMinusOne(int n) {
+        if (n<0) return n + " (infinite) ";
+        return ""+n;
+    }
+
     static void showInfo(MidiDevice.Info info) {
         try {
             MidiDevice midiDev = MidiSystem.getMidiDevice(info);
@@ -19,8 +24,9 @@ public class MIDIInfo {
             try {
                 rcvr = midiDev.getReceiver();
             }
-            catch (Exception ex) {
-                out.println("error getting rcvr");
+            catch (Exception ignore) {
+                // it's confusing to give a message here.
+                //out.println("error getting rcvr");
             }
 
             List<Receiver> recvList=midiDev.getReceivers();
@@ -33,10 +39,12 @@ public class MIDIInfo {
                     info.getVersion() + "\n" +
                     //"isOpen(): " + midiDev.isOpen() + "\n" +
 
-                    "Maximum # of Transmitters: " + midiDev.getMaxTransmitters() + "; " +
+                    "Maximum # of Transmitters: " +
+                        hintOnMinusOne(midiDev.getMaxTransmitters()) + "; " +
                     "Open Transmitters: " + transList.size() + "\n" +
 
-                    "Maximum # of Receivers: " + midiDev.getMaxReceivers() + "; " +
+                    "Maximum # of Receivers: " +
+                        hintOnMinusOne(midiDev.getMaxReceivers()) + "; " +
                     "Open Receivers: " + recvList.size() + "; " +
                         ((midiDev instanceof Synthesizer)?"Synthesizer; ":"") +
                         ((midiDev instanceof Sequencer)?"Sequencer; ":"") +
