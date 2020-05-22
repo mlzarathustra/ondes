@@ -1,12 +1,13 @@
 package ondes.mlz;
 
-import ondes.synth.voice.Program;
+import ondes.synth.voice.VoiceMaker;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -50,12 +51,13 @@ public class Util {
     }
 
     // list the resource files in a resource subdirectory
-    // n.b. "." does not work. From the jar file it's very messy.
+    // n.b. "." does not work. From a jar file it's very messy.
+    // I have not tried it from tomcat or spring.
     public static List<String> listResourceFiles(String path) {
         List<String> fileNames = new ArrayList<>();
 
         try {
-            URL url=Program.class.getClassLoader().getResource(path);
+            URL url= VoiceMaker.class.getClassLoader().getResource(path);
             //out.println("url is "+url);
             if (url == null) return fileNames;
 
@@ -83,8 +85,10 @@ public class Util {
                 //  file:/F:/.../ondes/build/libs/ondes-all.jar!/program
 
                 //out.println("URL path: "+url.getPath());
-                String jarPath = url.getPath().substring(5, url.getPath().indexOf("!"));
-                JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+                String urlPath = url.getPath(); // should start with "file:"
+                                                // hence the "5" on the next line.
+                String jarPath = urlPath.substring(5, urlPath.indexOf("!"));
+                JarFile jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
                 //out.println(jar);
 
                 Enumeration<JarEntry> jarEntries = jar.entries();

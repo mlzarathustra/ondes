@@ -1,7 +1,7 @@
 package ondes;
 
 import ondes.midi.MidiInfo;
-import ondes.synth.voice.Program;
+import ondes.synth.voice.VoiceMaker;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +53,7 @@ public class Test {
         MidiInfo.main(new String[]{});
     }
     static void t5() {
-        Program.main(new String[]{});
+        VoiceMaker.main(new String[]{});
     }
 
 
