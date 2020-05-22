@@ -1,4 +1,4 @@
 #!/bin/bash
 
-java -cp build/libs/ondes-all.jar ondes.synth.program.Program
+java -cp build/libs/ondes-all.jar ondes.synth.voice.Program
 

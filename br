@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# make and run
+
+gradle uberJar
+run $* 
+

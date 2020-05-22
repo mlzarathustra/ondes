@@ -1,7 +1,7 @@
 package ondes;
 
 import ondes.midi.MidiInfo;
-import ondes.synth.program.Program;
+import ondes.synth.voice.Program;
 
 import java.util.Arrays;
 import java.util.List;

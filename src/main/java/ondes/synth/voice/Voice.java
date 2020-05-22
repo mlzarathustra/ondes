@@ -1,23 +1,17 @@
-package ondes.synth.program;
-
-import java.util.*;
+package ondes.synth.voice;
 
 import ondes.synth.Component;
-import org.yaml.snakeyaml.*;
 
-import static java.lang.System.out;
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.lang.System.err;
 
-import static ondes.mlz.Util.getResourceAsString;
-
-public class Program {
-
+public class Voice {
     HashMap<String,Component> components=new HashMap<>();
 
-
-
     @SuppressWarnings("unchecked,rawtypes")
-    public Program(Map info) {
+    public Voice(Map info) {
         // step 1 : construct
         info.keySet().forEach(
             key -> {
@@ -41,17 +35,9 @@ public class Program {
         );
     }
 
-    @SuppressWarnings("rawtypes")
-    static Program load(String fileName) {
-        String basicText = getResourceAsString(fileName);
-        Yaml yaml=new Yaml();
-        Map basicMap=yaml.load(basicText);
-        // out.println(basicMap.keySet());
-        return new Program(basicMap);
+    public String toString() {
+        return "Voice { components: "+
+            String.join(", ", components.keySet())+" }";
     }
 
-
-    public static void main(String[] args) {
-        Program p = load("program/basic.yaml");
-    }
 }

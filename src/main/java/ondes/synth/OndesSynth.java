@@ -14,7 +14,7 @@ import static java.lang.System.out;
 public class OndesSynth extends Thread {
     Tangle tangle = new Tangle();
     Instant instant;
-    MainMix mainMix=new MainMix();
+    MainMix mainMix = new MainMix();
 
     MidiDevice midiInDev;
     Mixer outDev;
@@ -26,13 +26,13 @@ public class OndesSynth extends Thread {
      * The constructor only sets
      *
      * @param sampleRate - cycles per second
-     * @param in - transmits MIDI messages that the synth responds to
-     *           e.g. note-ON, pitch bend, and so on.
-     * @param out - note that "source" is from the perspective of the
-     *            mixer. From our perspective, it is a target.
-     * @param pn - a list of strings identifying the programs
-     *            These may be file names or resource names (?)
-     *                 TODO - clarify
+     * @param in         - transmits MIDI messages that the synth responds to
+     *                   e.g. note-ON, pitch bend, and so on.
+     * @param out        - note that "source" is from the perspective of the
+     *                   mixer. From our perspective, it is a target.
+     * @param pn         - a list of strings identifying the programs
+     *                   These may be file names or resource names (?)
+     *                   TODO - clarify
      */
     public OndesSynth(
         int sampleRate,
@@ -49,11 +49,15 @@ public class OndesSynth extends Thread {
 
     }
 
+    void routeMidiMessage(MidiMessage msg, long ts) {
+        out.println(ts+" : "+MlzMidi.toString(msg));
+    }
+
     void listen() {
         Receiver recv = new Receiver() {
             public void close() {};
             public void send(MidiMessage msg, long ts) {
-                out.println(ts+" : "+ MlzMidi.toString(msg));
+                routeMidiMessage(msg,ts);
             }
         };
 

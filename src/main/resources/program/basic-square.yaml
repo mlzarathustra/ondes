@@ -1,0 +1,37 @@
+
+name: basic square wave
+
+osc1:
+  type: wave
+  in:
+    - midi
+    - lfo1, 0.1
+  shape: square
+  out: env1
+
+env1:
+  type: env
+  shape: clavier
+  out: voiceMix
+  points:
+    - 0,100
+    - 2,75
+    - 25,50
+    - 50,0
+    - 10,0
+
+voiceMix:
+  type: mix
+  out: mainMix
+  scale: 1
+
+lfo1:
+  type: wave
+  freq: 1.7
+  shape: saw
+
+
+
+
+
+
