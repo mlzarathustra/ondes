@@ -9,7 +9,7 @@ import static ondes.midi.MlzMidi.getTransmitter;
 import static ondes.mlz.Util.getResourceAsString;
 
 public class MidiMonitor {
-    
+
     static void usage() {
         out.println(getResourceAsString("usage/MidiMonitor.txt"));
     }

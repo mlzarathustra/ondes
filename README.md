@@ -13,7 +13,9 @@ Here you'll find some tools to show you what JavaSound thinks your system looks 
 
 If you do a `gradle build` and you're running cygwin, you can use the below commands to run the tools. If not, you can look at those files to figure out how to run the java class. 
 
-`midiInfo` - shows MIDI devices and their transmitters and receivers. 
+`midiInfo` - shows MIDI devices and their transmitters and receivers.
+
+`midiMon` - monitors MIDI messages on a given device, or the default device if none is specified. Use the LABEL field from midiInfo to specify a device.  
 
 `audioInfo` - shows Audio devices and their "source" and "target" lines.
 

@@ -1,9 +1,13 @@
 package ondes.synth;
 
-import javax.sound.midi.MidiDevice;
+import javax.sound.midi.*;
 import javax.sound.sampled.Mixer;
 
+import ondes.midi.MlzMidi;
 import ondes.synth.mix.MainMix;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import static java.lang.System.out;
 
@@ -12,7 +16,7 @@ public class OndesSynth extends Thread {
     Instant instant;
     MainMix mainMix=new MainMix();
 
-    MidiDevice inDev;
+    MidiDevice midiInDev;
     Mixer outDev;
     String[] progNames;
 
@@ -36,7 +40,7 @@ public class OndesSynth extends Thread {
         Mixer out,
         String[] pn
     ) {
-        inDev = in;
+        midiInDev = in;
         outDev = out;
         progNames = pn;
 
@@ -45,7 +49,35 @@ public class OndesSynth extends Thread {
 
     }
 
+    void listen() {
+        Receiver recv = new Receiver() {
+            public void close() {};
+            public void send(MidiMessage msg, long ts) {
+                out.println(ts+" : "+ MlzMidi.toString(msg));
+            }
+        };
+
+        Transmitter trans;
+        try {
+            trans = midiInDev.getTransmitter();
+
+            out.println("Opened device: " + trans);
+            out.println("Listening for MIDI messages.");
+
+            trans.setReceiver(recv);
+            midiInDev.open();
+
+        }
+        catch (Exception ex) {
+            out.println("attempting to open midi device "+midiInDev);
+            out.println(ex);
+            System.exit(-1);
+        }
+    }
+
     public void run() {
+        listen();
+
         for (;;) {
             instant.next();
             tangle.update();

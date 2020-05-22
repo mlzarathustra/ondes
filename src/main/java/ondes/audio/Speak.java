@@ -9,6 +9,8 @@ import java.util.*;
 import static java.lang.System.out;
 import static java.util.stream.Collectors.*;
 
+//  TODO - can we refactor this to work with the new synth?
+
 public class Speak {
 /*
     static void slide(ToneGen gen) throws Exception {
