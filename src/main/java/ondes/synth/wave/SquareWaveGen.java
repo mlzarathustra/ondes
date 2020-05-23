@@ -1,5 +1,6 @@
 package ondes.synth.wave;
 
+import ondes.synth.Instant;
 import ondes.synth.WiredIntSupplier;
 
 import java.util.function.IntConsumer;
@@ -10,6 +11,8 @@ import java.util.function.IntConsumer;
 class SquareWaveGen extends WaveGen {
 
     private double phase = 0; // range: 0-1
+
+    
     private double dutyCycle = 0.5;
 
     int currentValue() {
@@ -21,6 +24,11 @@ class SquareWaveGen extends WaveGen {
     @Override
     void reset() {
         phase = 0;
+    }
+
+    @Override
+    public void update(Instant now) {
+
     }
 
     @Override

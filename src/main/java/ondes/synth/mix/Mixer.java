@@ -1,6 +1,7 @@
 package ondes.synth.mix;
 
 import ondes.synth.Component;
+import ondes.synth.WiredIntSupplier;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,6 +23,16 @@ public class Mixer extends Component {
         for (IntConsumer out : outputs) {
             out.accept(level);
         }
+    }
+
+    @Override
+    public WiredIntSupplier getOutput() {
+        return null;
+    }
+
+    @Override
+    public IntConsumer getInput() {
+        return null;
     }
 
     public void configure(Map config, Map components) {

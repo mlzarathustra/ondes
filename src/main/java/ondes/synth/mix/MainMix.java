@@ -4,6 +4,7 @@ import ondes.synth.Component;
 import ondes.synth.WiredIntSupplier;
 
 import java.util.Map;
+import java.util.function.IntConsumer;
 
 /**
  * The inputs to this class will direct output
@@ -23,5 +24,15 @@ public class MainMix extends Component {
     public void update() {
 
 
+    }
+
+    @Override
+    public WiredIntSupplier getOutput() {
+        return null;
+    }
+
+    @Override
+    public IntConsumer getInput() {
+        return null;
     }
 }

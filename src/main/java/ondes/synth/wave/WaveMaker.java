@@ -49,19 +49,19 @@ public class WaveMaker {
             return wgClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception ex) {
-            return new SineWaveGen();
+            return new SquareWaveGen();
         }
     }
 
     static {        //
-        register("sine", SineWaveGen.class);
         register("square", SquareWaveGen.class);
-        register("saw", SawWaveGen.class);
-        register("pwm", PWMWaveGen.class);
-        register("mellow", CompositeWaveGen.class);
-        register("bell", CompositeWaveGen.class);
-        register("organ", CompositeWaveGen.class);
-        register("sample", SampleWaveGen.class);
+//        register("sine", SineWaveGen.class);
+//        register("saw", SawWaveGen.class);
+//        register("pwm", PWMWaveGen.class);
+//        register("mellow", CompositeWaveGen.class);
+//        register("bell", CompositeWaveGen.class);
+//        register("organ", CompositeWaveGen.class);
+//        register("sample", SampleWaveGen.class);
     }
 
 }
