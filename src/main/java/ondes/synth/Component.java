@@ -1,12 +1,11 @@
 package ondes.synth;
 
-import ondes.synth.envelope.EnvGen;
+import ondes.synth.envelope.EnvMaker;
 import ondes.synth.mix.Mixer;
-import ondes.synth.wave.WaveGen;
+import ondes.synth.wave.WaveMaker;
 
 import java.util.Map;
-
-import static java.lang.System.out;
+import java.util.function.IntConsumer;
 
 @SuppressWarnings("rawtypes")
 public abstract class Component {
@@ -15,10 +14,10 @@ public abstract class Component {
         switch (specs.get("type").toString()) {
 
             case "wave":
-                return WaveGen.getWaveGen((String)specs.get("shape"));
+                return WaveMaker.getWaveGen((String)specs.get("shape"));
 
             case "env":
-                return new EnvGen((String)specs.get("shape"));
+                return EnvMaker.getEnv((String)specs.get("shape"));
 
             case "mix":
                 return new Mixer();
@@ -30,5 +29,12 @@ public abstract class Component {
 
     public abstract void configure(Map config, Map components);
     public abstract void update();
+
+
+    //  Naming is from the perspective of this component
+    //
+    public abstract WiredIntSupplier getOutput();
+    public abstract IntConsumer getInput();
+
 
 }

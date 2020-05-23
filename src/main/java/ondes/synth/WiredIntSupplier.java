@@ -2,7 +2,7 @@ package ondes.synth;
 
 import java.util.function.IntSupplier;
 
-public class WiredIntSupplier implements IntSupplier {
+public abstract class WiredIntSupplier implements IntSupplier {
     private boolean visited;
     private int curOut;
 
@@ -13,8 +13,11 @@ public class WiredIntSupplier implements IntSupplier {
         return curOut;
     }
 
-    // override to update all inputs and return current value
-    int updateInputs() { return 0; }
+    /**
+     * Override to update all inputs to the Component
+     * if there are any, and return the current value
+     */
+    abstract public int updateInputs();
 
     public boolean isVisited() {
         return visited;
@@ -23,4 +26,5 @@ public class WiredIntSupplier implements IntSupplier {
     public void setVisited(boolean visited) {
         this.visited = visited;
     }
+
 }

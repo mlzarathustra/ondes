@@ -3,8 +3,8 @@ package ondes.synth;
 import java.util.function.IntConsumer;
 
 /**
- * The nomenclature may be confusing because
- * it's from the perspective of the wire:
+ * The class names are from the perspective of the Component
+ * (hence the component's "supplier" is "in" for for the Wire)
  * <br/><br/>
  *
  * IN - is the data coming in to the wire from the

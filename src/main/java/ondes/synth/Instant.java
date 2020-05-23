@@ -2,18 +2,14 @@ package ondes.synth;
 
 import java.util.ArrayList;
 
-interface DeltaListener {
-    void update(Instant now);
-}
-
 public class Instant  {
     class PhaseClock {
-        private double frequency;
+        private float frequency;
         private double delta;
         private double phase;
         long lastUpdate;
 
-        PhaseClock(double f) {
+        PhaseClock(float f) {
             frequency=f;
             setDelta();
         }
@@ -42,7 +38,10 @@ public class Instant  {
 
             // // // // //
 
-    public PhaseClock addPhaseClock(double f) {
+    public PhaseClock addPhaseClock(int f) {
+        return addPhaseClock(((float) f)/1_000_000);
+    }
+    public PhaseClock addPhaseClock(float f) {
         PhaseClock pc=new PhaseClock(f);
         clocks.add(pc);
         return pc;
