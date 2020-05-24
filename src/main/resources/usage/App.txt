@@ -4,14 +4,17 @@
     Arguments are mostly in pairs:
 
     System settings:
+        Select input and output devices:
+          -in <input MIDI device>
+          -out <output Audio device>
 
-      -in <input MIDI device>
-      -out <output Audio device>
+      The 'device' label is used to search for a device with
+      the necessary capabilities whose label contains that string.
 
-    See READ.md for help finding devices in your system.
+      See READ.md for help finding devices in your system.
 
     Program settings:
-        Display then Exit
+        Display then Exit:
             -show-patches
                  Lists the patch names available, and their indexes
                  A patch is identified by either its name or the
@@ -19,19 +22,14 @@
 
             -show-patch <patch name | index>
 
-        Select
+        Select:
             -all | -patch <(patch name | index) for all channels>
             -ch1 <patch for channel 1>
             -ch2 < "     "    "     2>
             ...
 
        Patches can be supplied as YAML files in the directory
-            ./program
+       ./program; a number are supplied internally as resources.
 
-       A number are supplied internally as resources.
-
-    The 'device label' is used to search for a device with
-    the necessary capabilities whose label contains that string.
-
-    patch files are in yaml, yet to be undocumented.
+       -help or -h gives this help message
 

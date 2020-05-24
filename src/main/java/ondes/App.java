@@ -125,6 +125,9 @@ public class App {
                 case "-show-patches":
                 case "-show-programs":
                     showPrograms(); // exits
+
+                case "-help": case "-h": case "?": case "-?":
+                    usage(); //exits
             }
 
             // options with following args - if we get here
