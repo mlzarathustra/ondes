@@ -5,6 +5,7 @@ package ondes;
 
 import ondes.midi.MlzMidi;
 import ondes.synth.OndesSynth;
+import ondes.synth.voice.VoiceMaker;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
@@ -15,11 +16,41 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
 
 import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.getResourceAsString;
 
+/**
+ *  This "main" class is responsible for the following:
+ *
+ * <ol>
+ *     <li>
+ *         Parsing command line arguments and
+ *         giving usage information
+ *     </li>
+ *     <li>
+ *         Getting the Audio connection for output,
+ *         given a string to match its label
+ *     </li>
+ *     <li>
+ *         Getting the MIDI connection for input,
+ *         given a string to match its label
+ *     </li>
+ *     <li>
+ *         Gathering patch names from the command line
+ *         for sixteen channels
+ *         (i.e. a single MIDI input stream)
+ *     </li>
+ *     <li>
+ *         Starting up the Synth and waiting for
+ *         [Enter] in the computer keyboard,
+ *         at which point it shuts down.
+ *     </li>
+ * </ol>
+ *
+ */
 public class App {
 
     static Mixer getMixer(String outDevStr) {
@@ -58,6 +89,17 @@ public class App {
         }
     }
 
+    static void showPrograms() {
+        VoiceMaker.showPrograms();
+        System.exit(0);
+    }
+
+    static void showProgram(String progName) {
+        VoiceMaker.showProgram(progName);
+        System.exit(0);
+    }
+
+
     static void usage() {
         out.println(getResourceAsString("usage/App.txt"));
         System.exit(0);
@@ -76,9 +118,23 @@ public class App {
         String[] progNames = new String[16];
         for (int i=0; i<16; ++i) progNames[i]="";
 
-        if (args.length % 2 == 1) usage();
-
         for (int i=0; i<args.length; ++i) {
+
+            //  options with no following args
+            switch(args[i]) {
+                case "-show-patches":
+                case "-show-programs":
+                    showPrograms(); // exits
+            }
+
+            // options with following args - if we get here
+            // and there are no args following, it's an error.
+
+            if (i+1 > args.length-1) {
+                err.println("Expected argument following "+args[i]);
+                usage();
+            }
+
             switch(args[i]) {
                 case "-in": inDevStr = args[++i]; continue;
                 case "-out": outDevStr = args[++i]; continue;
@@ -86,6 +142,10 @@ public class App {
                     ++i;
                     for (int ch=0; ch<16; ch++) progNames[ch] = args[i];
                     continue;
+
+                case "-show-patch":
+                case "-show-program":
+                    showProgram(args[++i]);
             }
             if (args[i].startsWith("-ch")) {
                 try {
@@ -108,16 +168,14 @@ public class App {
         MidiDevice midiDev = getMidiDev(inDevStr);
         if (midiDev == null) {
             out.println("Could not open MIDI input device "+inDevStr);
-            out.println("say java -cp ondes-all.jar ondes.midi.MIDIInfo " +
-                "to see a list of devices.");
+            out.println("See READ.md for more information.");
             System.exit(-1);
         }
         out.println("Midi Input device   : "+midiDev.getDeviceInfo());
         Mixer mixer = getMixer(outDevStr);
         if (mixer == null) {
             out.println("Could not open audio mixer device for output: "+inDevStr);
-            out.println("say java -cp ondes-all.jar ondes.midi.MIDIInfo " +
-                "to see a list of devices.");
+            out.println("See READ.md for more information.");
             out.println("For audio output, you need one with a SOURCE line, " +
                 "illogical as that seems.");
             System.exit(-1);

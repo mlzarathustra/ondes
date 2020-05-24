@@ -155,16 +155,65 @@ public class VoiceMaker {
             .collect(toList());
     }
 
+    /**
+     * @param i - the index of the voice to load, origin 1
+     *          (as displayed by showVoices())
+     * @return - the Map of voice specifications
+     */
+    public static Map getVoiceMap(int i) {
+        if (i < 1 || i > programs.size()) {
+            err.println("Warning: cannot load voice #"+i+
+                "; use -show-voices to display the list.");
+        }
+        return programs.get(i-1);
+    }
 
-    public static Voice getVoice(String progName, OndesSynth synth) {
+    public static Map getVoiceMap(String progName) {
+        //  see if it's a plain index number first.
+        try {
+            int i = Integer.parseInt(progName);
+            return getVoiceMap(i);
+        }
+        catch (NumberFormatException ignore) { }
+
+        // if not, then load by name.
         Map m = findProg(progName);
         if (m == null) {
             err.println("Warning: Could not find program matching '"+
                 progName+"'");
             System.exit(-1);  // load default program instead?
         }
+        return m;
+    }
 
+    /**
+     * @param progName - either a substring of the name or the index
+     *       (origin 1) into the progNames list, as shown by showVoices()
+     *
+     * @param synth - the OndesSynth this voice will be associated with
+     * @return - a new voice constructed from the specifications given
+     */
+    public static Voice getVoice(String progName, OndesSynth synth) {
+        Map m = getVoiceMap(progName);
+        if (m == null) return null; // getVoiceMap will show an error
         return new Voice(m, synth);
+    }
+
+    public static void showPrograms() {
+        out.println("Program names:");
+        int i=1;
+        for (Map p : programs) {
+            out.println("  " + i++ + ": " + p.get("name"));
+        }
+    }
+
+    public static void showProgram(String progName) {
+        Map m = getVoiceMap(progName);
+        m.keySet().forEach( k-> {
+            Object v = m.get(k);
+            //out.println("  "+k+": "+v.getClass());
+            out.println("  "+k+": "+v);
+        });
     }
 
 
