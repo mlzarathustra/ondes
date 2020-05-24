@@ -5,20 +5,27 @@ import javax.sound.sampled.Mixer;
 
 import ondes.midi.MlzMidi;
 import ondes.synth.mix.MainMix;
+import ondes.synth.voice.Voice;
+import ondes.synth.voice.VoiceMaker;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.lang.System.out;
 
-public class OndesSynth extends Thread {
-    Tangle tangle = new Tangle();
-    Instant instant;
-    MainMix mainMix = new MainMix();
+public class OndesSynth extends Thread implements EndListener {
 
-    MidiDevice midiInDev;
-    Mixer outDev;
-    String[] progNames;
+    //  16 MIDI channels x 128 Notes
+    private Voice [][]voices = new Voice[16][128];
+
+    private Tangle tangle = new Tangle();
+    private MainMix mainMix = new MainMix();
+
+    private Instant instant;
+
+    private MidiDevice midiInDev;
+    private Mixer outDev;
+    private String[] progNames;
 
     boolean stop;
 
@@ -46,11 +53,52 @@ public class OndesSynth extends Thread {
 
         //  TODO - where should the sample rate come from?
         instant = new Instant(sampleRate);
+    }
+
+    void noteON(MidiMessage msg) {
+        int chan = msg.getStatus() & 0xf;
+        int note = msg.getMessage()[1];
+
+        Voice v = VoiceMaker.getVoice(progNames[chan], this);
+        if (v == null) return;
+
+        voices[chan][note]=v;
+        v.setEndListener(this);
+    }
+
+    void noteOFF(MidiMessage msg) {
+        int chan = msg.getStatus() & 0xf;
+        int note = msg.getMessage()[1];
+
+        if (voices[chan][note] == null) return;
+        voices[chan][note].noteOFF(msg);
 
     }
 
+
     void routeMidiMessage(MidiMessage msg, long ts) {
         out.println(ts+" : "+MlzMidi.toString(msg));
+
+        String status="unknown";
+        int s=msg.getStatus()>>4;
+        switch (s) {
+            case 0x8: status = "Note OFF";
+                noteON(msg);
+                break;
+            case 0x9: status = "Note ON";
+                noteOFF(msg);
+                break;
+
+            //  TODO - implement at least some of these
+            //   (e.g. pitch bend + vol, mod, and sustain controllers)
+            //
+            case 0xa: status = "Aftertouch"; break;
+            case 0xb: status = "Controller"; break;
+            case 0xc: status = "Program Change"; break;
+            case 0xd: status = "Channel Pressure"; break;
+            case 0xe: status = "Pitch Bend"; break;
+            case 0xf: status = "System"; break;
+        }
     }
 
     void listen() {
@@ -101,6 +149,12 @@ public class OndesSynth extends Thread {
     }
 
 
+    @Override
+    public void noteEnded(int chan, int note) {
+        //  Assume that the voice has released all of its components
+        voices[chan][note] = null;
+    }
 
-
+    public Tangle getTangle() { return tangle; }
+    public MainMix getMainMix() { return mainMix; }
 }

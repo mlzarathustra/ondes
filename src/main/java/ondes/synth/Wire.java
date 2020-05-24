@@ -20,8 +20,8 @@ import java.util.function.IntConsumer;
  *
  */
 public class Wire {
-    private WiredIntSupplier in;
-    private IntConsumer out;
+    WiredIntSupplier in;
+    IntConsumer out;
     private double scale = 1;
 
     void setScale(double v) { scale = v; }

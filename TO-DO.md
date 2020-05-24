@@ -13,4 +13,11 @@
         }
     ```     
 
+- Add a hierarchy of name spaces so we can components at different levels 
+    - global
+    - channel 
+    
+Currently, only the main mix is global, and there is no facility for channel-level components (e.g. LFO, reverb and other effects, ???)
 
+
+ 

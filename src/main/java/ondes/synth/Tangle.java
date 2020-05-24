@@ -1,8 +1,13 @@
 package ondes.synth;
 
+import java.util.function.IntSupplier;
+
 /**
- * A collection of Wires,
+ * A linked list of Wires,
  * doing what they always do!
+ * <br/><br/>
+ *
+ *
  *
  * @see ondes.synth.Wire
  */
@@ -13,6 +18,7 @@ public class Tangle {
     void add(Wire w) {
         if (head == null) {
             head = tail = w;
+            w.prev = w.next = null;
         }
         else {
             tail.next = w;
@@ -22,11 +28,29 @@ public class Tangle {
     }
 
     void remove(Wire w) {
-        if (w == head) head = tail = null;
+        if (w == null) return;
+        if (w == head) {
+            head = w.next;
+            head.prev = null;
+        }
         else {
+            // w.prev != null because it's not the head
             w.prev.next = w.next;
-            w.next.prev = w.prev;
-            w.prev = w.next = null;
+            if (w.next != null) w.next.prev = w.prev;
+        }
+        w.prev = w.next = null;
+    }
+
+    //  remove all with this supplier
+    //
+    void remove(IntSupplier in) {
+        Wire w=head;
+        while (w != null) {
+            Wire next = w.next;
+            if (w.in == in) {
+                remove(w);
+            }
+            w = next;
         }
     }
 

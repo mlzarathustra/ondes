@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import ondes.synth.OndesSynth;
 import org.yaml.snakeyaml.*;
 
 import static java.lang.System.out;
@@ -120,13 +121,19 @@ public class VoiceMaker {
         return null;
     }
 
-    public static Voice getVoice(String progName) {
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+
+    public static Voice getVoice(String progName, OndesSynth synth) {
         Map m = findProg(progName);
         if (m == null) {
             err.println("Warning: Could not find program matching '"+
                 progName+"'");
             System.exit(-1);  // load default program instead?
         }
+
+
 
 
             // TODO - implement

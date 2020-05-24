@@ -12,7 +12,7 @@ class SquareWaveGen extends WaveGen {
 
     private double phase = 0; // range: 0-1
 
-    
+
     private double dutyCycle = 0.5;
 
     int currentValue() {
@@ -33,9 +33,11 @@ class SquareWaveGen extends WaveGen {
 
     @Override
     public WiredIntSupplier getOutput() {
-        return new WiredIntSupplier() {
+        WiredIntSupplier wireOut =  new WiredIntSupplier() {
             public int updateInputs() { return currentValue(); }
         };
+        outputs.add(wireOut);
+        return wireOut;
     }
 
     @Override
