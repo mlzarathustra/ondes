@@ -1,7 +1,7 @@
 package ondes.synth;
 
 import ondes.synth.envelope.EnvMaker;
-import ondes.synth.mix.Mixer;
+import ondes.synth.mix.Junction;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.WiredIntSupplier;
 
@@ -36,7 +36,8 @@ public abstract class Component {
      *      But handing it to the component constructors is awkward
      *      because WaveMaker is using a reflected constructor.
      *      <br/><br/>
-     * @return
+     *
+     * @return - a new Component as specified
      */
     public static Component getComponent(Map specs, OndesSynth synth) {
         Component rs;
@@ -51,7 +52,7 @@ public abstract class Component {
                 break;
 
             case "mix":
-                rs = new Mixer();
+                rs = new Junction();
                 break;
 
             default:
@@ -62,7 +63,7 @@ public abstract class Component {
     }
 
     public abstract void configure(Map config, Map components);
-    public abstract void update();
+    //public abstract void update();
 
     void setSynth(OndesSynth s) { synth = s; }
 

@@ -1,6 +1,9 @@
 # Ondes synth - to do
 
-- Program name matching.... the use of 'contains' is problematic when one voice name contains another one... there may be no way to select the  voice with the shorter name.
+ - Do we need *both* suppliers and consumers, or is it enough just to provide the suppliers? 
+ 
+ 
+
 
 
  - Multi-channel (e.g. Stereo) components

@@ -14,14 +14,14 @@ import static java.lang.System.out;
 public class OndesSynth extends Thread implements EndListener {
 
     //  16 MIDI channels x 128 Notes
-    private Voice [][]voices = new Voice[16][128];
+    private final Voice [][]voices = new Voice[16][128];
 
-    private Tangle tangle = new Tangle();
-    private MainMix mainMix = new MainMix();
+    private final Tangle tangle = new Tangle();
+    private MainMix mainMix;
 
-    private Instant instant;
+    private final Instant instant;
 
-    private MidiDevice midiInDev;
+    private final MidiDevice midiInDev;
     private Mixer outDev;
     private String[] progNames;
 
@@ -33,24 +33,28 @@ public class OndesSynth extends Thread implements EndListener {
      * @param sampleRate - cycles per second
      * @param in         - transmits MIDI messages that the synth responds to
      *                   e.g. note-ON, pitch bend, and so on.
-     * @param out        - note that "source" is from the perspective of the
+     * @param od        - note that "source" is from the perspective of the
      *                   mixer. From our perspective, it is a target.
-     * @param pn         - a list of strings identifying the programs
-     *                   These may be file names or resource names (?)
-     *                   TODO - clarify
+     * @param pn         - a list of 16 strings identifying the programs
+     *                   for each channel. A loose "contains" match compares
+     *                   the input with the 'name' property of the program.
      */
     public OndesSynth(
         int sampleRate,
         MidiDevice in,
-        Mixer out,
+        Mixer od,
         String[] pn
     ) {
         midiInDev = in;
-        outDev = out;
+        outDev = od;
         progNames = pn;
 
-        //  TODO - where should the sample rate come from?
-        instant = new Instant(sampleRate);
+        //  TODO - allow the user to specify the sample rate,
+        //            rather than only accepting the default.
+
+        mainMix = new MainMix(outDev);
+        instant = new Instant(mainMix.getSampleRate());
+
     }
 
     /**
@@ -139,7 +143,7 @@ public class OndesSynth extends Thread implements EndListener {
 
         for (;;) {
             instant.next();
-            tangle.update();
+            //tangle.update();  // mainMix should pull it all in.
             mainMix.update();
             try {
 
