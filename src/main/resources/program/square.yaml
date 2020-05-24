@@ -2,13 +2,12 @@
 name: square
 
 osc1:
+  midi: true
   type: wave
-  in:
-    - midi
   shape: square
   out: main
 
-  # n.b. out: could be a list too, like in:
+  # n.b. in: and out: could be lists.
 
 
 

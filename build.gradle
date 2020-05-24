@@ -33,6 +33,7 @@ dependencies {
     testImplementation 'org.testng:testng:6.14.3'
 
     extraLibs 'org.yaml:snakeyaml:1.26'
+    //implementation 'org.jetbrains:annotations:15.0'
 }
 
 // Define the main class for the application

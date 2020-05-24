@@ -164,4 +164,5 @@ public class OndesSynth extends Thread implements EndListener {
 
     public Tangle getTangle() { return tangle; }
     public MainMix getMainMix() { return mainMix; }
+    public Instant getInstant() { return instant; }
 }

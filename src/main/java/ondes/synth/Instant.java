@@ -3,7 +3,7 @@ package ondes.synth;
 import java.util.ArrayList;
 
 public class Instant  {
-    class PhaseClock {
+    public class PhaseClock {
         private float frequency;
         private double delta;
         private double phase;
@@ -38,11 +38,12 @@ public class Instant  {
 
             // // // // //
 
+    public PhaseClock addPhaseClock() { return addPhaseClock(0); }
     public PhaseClock addPhaseClock(int f) {
         return addPhaseClock(((float) f)/1_000_000);
     }
-    public PhaseClock addPhaseClock(float f) {
-        PhaseClock pc=new PhaseClock(f);
+    public PhaseClock addPhaseClock(float frequency) {
+        PhaseClock pc=new PhaseClock(frequency);
         clocks.add(pc);
         return pc;
     }

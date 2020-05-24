@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.*;
 import static java.lang.System.out;
 import static java.lang.System.err;
 
-import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.*;
 import static ondes.mlz.Util.getResourceAsString;
 import static ondes.mlz.Util.listResourceFiles;
 
@@ -117,14 +117,38 @@ public class VoiceMaker {
 
     }
 
+    /**
+     * Get the shortest name that contains the one given
+     * Because: if you have "square" and "square plus,"
+     * asking for "square" should give you the first one.
+     *
+     * @param progName - the name to search for
+     * @return - a map representing the program.
+     */
     public static Map findProg(String progName) {
-        progName = progName.toLowerCase();
-        for (Map m : programs) {
-            if (m.get("name").toString()
-                .toLowerCase()
-                .contains(progName)) return m;
+        String lcProgName = progName.toLowerCase();
+
+        List<Map> matches = programs.stream()
+            .filter( m-> m.get("name").toString().toLowerCase()
+                .contains(lcProgName) )
+            .collect(toList());
+
+        int minLen=Integer.MAX_VALUE;
+        Map rs=null;
+        for (Map m : matches) {
+            int nameLen = m.get("name").toString().length();
+            if (nameLen < minLen) {
+                rs = m;
+                minLen = nameLen;
+            }
         }
-        return null;
+        return rs;
+    }
+
+    public static List<String> progNames() {
+        return programs.stream()
+            .map( p -> p.get("name").toString() )
+            .collect(toList());
     }
 
     //////////////////////////////////////////////////////////////////////

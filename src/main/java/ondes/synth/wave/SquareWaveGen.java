@@ -6,18 +6,19 @@ import ondes.synth.wire.WiredIntSupplier;
 import java.util.Map;
 import java.util.function.IntConsumer;
 
+import static java.lang.System.out;
+
 /**
  * Generate a plain square wave, with duty cycle of 0.5
  */
 class SquareWaveGen extends WaveGen {
 
-    private double phase = 0; // range: 0-1
-
+    Instant.PhaseClock phaseClock;
 
     private double dutyCycle = 0.5;
 
     int currentValue() {
-        return  ((phase>dutyCycle)?amp:-amp);
+        return  ((phaseClock.getPhase()>dutyCycle)?amp:-amp);
     }
 
     //  TODO - can we move configure up to the WaveGen level?
@@ -25,6 +26,12 @@ class SquareWaveGen extends WaveGen {
 
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
+        phaseClock = synth.getInstant().addPhaseClock();
+        // Note ON will set frequency
+
+        out.println("configure() - midi: " + config.get("midi"));
+        out.println("config: "+config);
+
 
 
 
@@ -32,12 +39,10 @@ class SquareWaveGen extends WaveGen {
 
     @Override
     void reset() {
-        phase = 0;
     }
 
     @Override
     public void update(Instant now) {
-
     }
 
     @Override

@@ -17,7 +17,7 @@ public abstract class Component {
     public List<WiredIntSupplier> outputs = new ArrayList<>();
     public List<IntConsumer> inputs = new ArrayList<>();
 
-    private OndesSynth synth;
+    protected OndesSynth synth;
 
     /**
      * This should be the only place to acquire components from.
