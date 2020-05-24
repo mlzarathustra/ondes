@@ -1,7 +1,7 @@
 package ondes.synth.wave;
 
 import ondes.synth.Instant;
-import ondes.synth.WiredIntSupplier;
+import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.function.IntConsumer;
 

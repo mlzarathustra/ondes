@@ -7,9 +7,7 @@ import ondes.midi.MlzMidi;
 import ondes.synth.mix.MainMix;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
-
-import java.util.HashMap;
-import java.util.Map;
+import ondes.synth.wire.Tangle;
 
 import static java.lang.System.out;
 

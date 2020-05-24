@@ -1,4 +1,4 @@
-package ondes.synth;
+package ondes.synth.wire;
 
 import java.util.function.IntSupplier;
 

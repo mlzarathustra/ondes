@@ -1,7 +1,7 @@
 package ondes.synth.envelope;
 
 import ondes.synth.Component;
-import ondes.synth.WiredIntSupplier;
+import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.ArrayList;
 import java.util.Map;

@@ -1,5 +1,6 @@
-package ondes.synth;
+package ondes.synth.wire;
 
+import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
 /**
@@ -9,7 +10,7 @@ import java.util.function.IntSupplier;
  *
  *
  *
- * @see ondes.synth.Wire
+ * @see Wire
  */
 public class Tangle {
 
@@ -43,7 +44,7 @@ public class Tangle {
 
     //  remove all with this supplier
     //
-    void remove(IntSupplier in) {
+    public void remove(IntSupplier in) {
         Wire w=head;
         while (w != null) {
             Wire next = w.next;
@@ -53,8 +54,20 @@ public class Tangle {
             w = next;
         }
     }
+    //  remove all with this consumer
+    //
+    public void remove(IntConsumer out) {
+        Wire w=head;
+        while (w != null) {
+            Wire next = w.next;
+            if (w.out == out) {
+                remove(w);
+            }
+            w = next;
+        }
+    }
 
-    void update() {
+    public void update() {
         Wire w=head;
         while (w != null) {
             w.setVisited(false);

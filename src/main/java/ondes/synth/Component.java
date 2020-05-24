@@ -3,6 +3,7 @@ package ondes.synth;
 import ondes.synth.envelope.EnvMaker;
 import ondes.synth.mix.Mixer;
 import ondes.synth.wave.WaveMaker;
+import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +38,6 @@ public abstract class Component {
      *      <br/><br/>
      * @return
      */
-
-
     public static Component getComponent(Map specs, OndesSynth synth) {
         Component rs;
         switch (specs.get("type").toString()) {
@@ -72,6 +71,7 @@ public abstract class Component {
      */
     public void release() {
         outputs.forEach( o -> synth.getTangle().remove(o) );
+        inputs.forEach( i -> synth.getTangle().remove(i) );
 
     }
 

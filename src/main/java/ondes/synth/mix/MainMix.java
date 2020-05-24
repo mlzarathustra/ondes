@@ -1,7 +1,7 @@
 package ondes.synth.mix;
 
 import ondes.synth.Component;
-import ondes.synth.WiredIntSupplier;
+import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.Map;
 import java.util.function.IntConsumer;
