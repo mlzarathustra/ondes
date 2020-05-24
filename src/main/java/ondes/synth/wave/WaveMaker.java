@@ -1,7 +1,5 @@
 package ondes.synth.wave;
 
-import ondes.synth.Component;
-
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;

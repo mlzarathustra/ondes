@@ -3,9 +3,26 @@ package ondes.synth.wire;
 import java.util.function.IntSupplier;
 
 public abstract class WiredIntSupplier implements IntSupplier {
-    private boolean visited;
-    private int curOut;
+    protected boolean visited;
+    protected int curOut;
 
+    public WiredIntSupplier() {
+
+    //  TODO - register this in a global (LINKED) list for reset
+    //    they will have to be removed by any component
+    //    releasing them, or they will build up.
+    }
+
+    /**
+     * Acts as a latch so that loops won't be infinite
+     * If a Supplier has already been visited, it returns
+     * the value it already computed in this cycle.
+     * <br/><br/>
+     *
+     * So "visited" needs to be reset for each sample.
+     *
+     * @return - a possibly cached value
+     */
     public int getAsInt() {
         if (visited) return curOut;
         visited = true;

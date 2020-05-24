@@ -37,8 +37,6 @@ class SquareWaveGen extends WaveGen {
 
 
 
-
-
     }
 
     @Override
@@ -50,20 +48,16 @@ class SquareWaveGen extends WaveGen {
     }
 
     @Override
-    public WiredIntSupplier getOutput() {
+    public WiredIntSupplier getMainOutput() {
         WiredIntSupplier wireOut =  new WiredIntSupplier() {
             public int updateInputs() { return currentValue(); }
         };
-        outputs.add(wireOut);
         return wireOut;
     }
 
     @Override
-    public IntConsumer getInput() {
+    public void setMainOutput() {
 
-        //  TODO - should be able to add LFO or ENV
-
-        return null;
     }
 
 

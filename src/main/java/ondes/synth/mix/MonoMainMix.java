@@ -1,7 +1,6 @@
 package ondes.synth.mix;
 
-import ondes.synth.Component;
-import ondes.synth.OndesSynth;
+import ondes.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.sampled.*;
@@ -17,7 +16,7 @@ import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
 
 /**
  * The inputs to this class will direct output
- * to the Javasound audio system.
+ * to the JavaSound audio system.
  * <br/><br/>
  *
  * For now, copy the input channel to both L and R
@@ -26,18 +25,15 @@ import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
  *
  */
 @SuppressWarnings("FieldMayBeFinal")
-public class MainMix extends Component {
+public class MonoMainMix extends MonoComponent {
 
-    ArrayList<WiredIntSupplier> inputs;
+    ArrayList<WiredIntSupplier> inputs = new ArrayList<>();
+
+    private boolean DB=true;
 
     SourceDataLine srcLine;
     private int sampleRate;
 
-    //
-    private boolean DB=true;
-
-    private Thread playThread;
-    private boolean playing;
     private int bufSize=2048;
     private int bytesPerSample;
 
@@ -46,13 +42,10 @@ public class MainMix extends Component {
 
     private byte[] lineBuffer;
     private int[] outputBuffer;
-
-
-
     //
 
 
-    public MainMix(Mixer mixer) {
+    public MonoMainMix(Mixer mixer) {
         Line.Info[] lineInfo = mixer.getSourceLineInfo();
         out.println(Arrays.toString(lineInfo));
 
@@ -132,6 +125,10 @@ public class MainMix extends Component {
                 split[si] = (byte)(val & 0xff);
                 val >>>= 8;
             }
+
+            // copy the same signal to both channels
+            //  todo - implement multiple channels
+            //
             for (int i=0; i<channels; ++i) {
                 for (int j=0; j<bytesPerSample; ++j) {
                     lineBuffer[lbIdx++] = split[j];
@@ -169,18 +166,17 @@ public class MainMix extends Component {
         // outputs will connect TO here.
     }
 
-//    @Override
-//    public void update() { }
-
     @Override
-    public WiredIntSupplier getOutput() {
+    public WiredIntSupplier getMainOutput() {
         return null;
     }
 
+    /**
+     * A dummy function in this class, as our output is to the
+     * JavaSound audio system.
+     */
     @Override
-    public IntConsumer getInput() {
-        return null;
-    }
+    public void setMainOutput() { }
 
     public int getSampleRate() {
         return sampleRate;

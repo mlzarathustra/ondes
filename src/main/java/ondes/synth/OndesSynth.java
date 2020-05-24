@@ -4,20 +4,19 @@ import javax.sound.midi.*;
 import javax.sound.sampled.Mixer;
 
 import ondes.midi.MlzMidi;
-import ondes.synth.mix.MainMix;
+import ondes.synth.mix.MonoMainMix;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
-import ondes.synth.wire.Tangle;
 
 import static java.lang.System.out;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class OndesSynth extends Thread implements EndListener {
 
     //  16 MIDI channels x 128 Notes
     private final Voice [][]voices = new Voice[16][128];
 
-    private final Tangle tangle = new Tangle();
-    private MainMix mainMix;
+    private MonoMainMix monoMainMix;
 
     private final Instant instant;
 
@@ -52,8 +51,8 @@ public class OndesSynth extends Thread implements EndListener {
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
 
-        mainMix = new MainMix(outDev);
-        instant = new Instant(mainMix.getSampleRate());
+        monoMainMix = new MonoMainMix(outDev);
+        instant = new Instant(monoMainMix.getSampleRate());
 
     }
 
@@ -143,8 +142,7 @@ public class OndesSynth extends Thread implements EndListener {
 
         for (;;) {
             instant.next();
-            //tangle.update();  // mainMix should pull it all in.
-            mainMix.update();
+            monoMainMix.update();
             try {
 
                 //  TODO --  stub; implement  the above
@@ -166,7 +164,6 @@ public class OndesSynth extends Thread implements EndListener {
         voices[chan][note] = null;
     }
 
-    public Tangle getTangle() { return tangle; }
-    public MainMix getMainMix() { return mainMix; }
+    public MonoMainMix getMonoMainMix() { return monoMainMix; }
     public Instant getInstant() { return instant; }
 }

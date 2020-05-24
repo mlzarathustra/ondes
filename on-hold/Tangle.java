@@ -10,13 +10,13 @@ import java.util.function.IntSupplier;
  *
  *
  *
- * @see Wire
+ * @see Junction
  */
 public class Tangle {
 
-    Wire head, tail;
+    Junction head, tail;
 
-    public void add(Wire w) {
+    public void add(Junction w) {
         if (head == null) {
             head = tail = w;
             w.prev = w.next = null;
@@ -28,7 +28,7 @@ public class Tangle {
         }
     }
 
-    void remove(Wire w) {
+    void remove(Junction w) {
         if (w == null) return;
         if (w == head) {
             head = w.next;
@@ -45,9 +45,9 @@ public class Tangle {
     //  remove all with this supplier
     //
     public void remove(IntSupplier in) {
-        Wire w=head;
+        Junction w=head;
         while (w != null) {
-            Wire next = w.next;
+            Junction next = w.next;
             if (w.in == in) {
                 remove(w);
             }
@@ -57,9 +57,9 @@ public class Tangle {
     //  remove all with this consumer
     //
     public void remove(IntConsumer out) {
-        Wire w=head;
+        Junction w=head;
         while (w != null) {
-            Wire next = w.next;
+            Junction next = w.next;
             if (w.out == out) {
                 remove(w);
             }
@@ -68,7 +68,7 @@ public class Tangle {
     }
 
     public void update() {
-        Wire w=head;
+        Junction w=head;
         while (w != null) {
             w.setVisited(false);
             w=w.next;

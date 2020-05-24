@@ -1,6 +1,6 @@
 package ondes.synth.envelope;
 
-import ondes.synth.Component;
+import ondes.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.function.IntConsumer;
  * held until the noteOFF triggers the release step.
  *
  */
-class Env extends Component {
+class Env extends MonoComponent {
     /**
      stepIdx range: 0..steps.size() inclusive
      < steps.size() means it's an index into steps
@@ -137,14 +137,15 @@ class Env extends Component {
     }
 
     @Override
-    public WiredIntSupplier getOutput() {
+    public WiredIntSupplier getMainOutput() {
         return null;
     }
 
     @Override
-    public IntConsumer getInput() {
-        return null;
+    public void setMainOutput() {
+
     }
+
 
     public void configure(Map config, Map components) {
 

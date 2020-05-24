@@ -1,23 +1,13 @@
-package ondes.synth;
+package ondes.component;
 
+import ondes.synth.OndesSynth;
 import ondes.synth.envelope.EnvMaker;
-import ondes.synth.mix.Junction;
 import ondes.synth.wave.WaveMaker;
-import ondes.synth.wire.WiredIntSupplier;
+import ondes.synth.wire.Junction;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.function.IntConsumer;
 
-@SuppressWarnings("rawtypes")
-public abstract class Component {
-
-    //  Need to be public so Wires can see them (for release())
-    public List<WiredIntSupplier> outputs = new ArrayList<>();
-    public List<IntConsumer> inputs = new ArrayList<>();
-
-    protected OndesSynth synth;
+public class ComponentMaker {
 
     /**
      * This should be the only place to acquire components from.
@@ -39,8 +29,8 @@ public abstract class Component {
      *
      * @return - a new Component as specified
      */
-    public static Component getComponent(Map specs, OndesSynth synth) {
-        Component rs;
+    public static MonoComponent getMonoComponent(Map specs, OndesSynth synth) {
+        MonoComponent rs;
         switch (specs.get("type").toString()) {
 
             case "wave":
@@ -61,26 +51,5 @@ public abstract class Component {
         rs.setSynth(synth);
         return rs;
     }
-
-    public abstract void configure(Map config, Map components);
-    //public abstract void update();
-
-    void setSynth(OndesSynth s) { synth = s; }
-
-    /**
-     * removes all Wire connections to and from this component.
-     */
-    public void release() {
-        outputs.forEach( o -> synth.getTangle().remove(o) );
-        inputs.forEach( i -> synth.getTangle().remove(i) );
-
-    }
-
-
-    //  "output" from the perspective of this component
-    //
-    public abstract WiredIntSupplier getOutput();
-    public abstract IntConsumer getInput();
-
 
 }

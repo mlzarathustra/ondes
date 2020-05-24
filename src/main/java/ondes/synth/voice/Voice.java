@@ -1,9 +1,9 @@
 package ondes.synth.voice;
 
-import ondes.synth.Component;
+import ondes.component.MonoComponent;
+import ondes.component.ComponentMaker;
 import ondes.synth.EndListener;
 import ondes.synth.OndesSynth;
-import ondes.synth.mix.MainMix;
 
 import javax.sound.midi.MidiMessage;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Map;
 import static java.lang.System.err;
 
 public class Voice {
-    private HashMap<String,Component> components=new HashMap<>();
+    private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
     private OndesSynth synth;
 
@@ -27,7 +27,7 @@ public class Voice {
                 Object value=info.get(key);
                 if (!(value instanceof Map)) return;
                 Map valMap=(Map)info.get(key);
-                Component c=Component.getComponent(valMap, synth);
+                MonoComponent c= ComponentMaker.getMonoComponent(valMap, synth);
                 if (c == null) {
                     err.println("ERROR - could not load component "+key);
                     err.println("  --> "+info.get(key));
@@ -38,7 +38,7 @@ public class Voice {
 
         // step 1a: add the main mixer to the components.
         //    currently it is the only global component.
-        components.put("main", synth.getMainMix());
+        components.put("main", synth.getMonoMainMix());
 
         // step 2 : configure
         //          (including: connect to other components)

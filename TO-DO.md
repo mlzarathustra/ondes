@@ -2,7 +2,7 @@
 
  - Do we need *both* suppliers and consumers, or is it enough just to provide the suppliers? 
  
- 
+ - I think the best policy on voice construction is to give a warning rather than halting. That opinion may well change with experience.  
 
 
 

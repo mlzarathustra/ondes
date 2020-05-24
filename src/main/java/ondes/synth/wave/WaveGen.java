@@ -1,10 +1,8 @@
 package ondes.synth.wave;
 
-import ondes.synth.Component;
+import ondes.component.MonoComponent;
 import ondes.synth.DeltaListener;
 import ondes.synth.Instant;
-
-import java.util.Map;
 
 /**
  * The parent abstract class that defines the interface of the wave generators.
@@ -12,7 +10,7 @@ import java.util.Map;
  *
  *
  */
-public abstract class WaveGen extends Component implements DeltaListener {
+public abstract class WaveGen extends MonoComponent implements DeltaListener {
     /**
      * reset the note to zero
      */
