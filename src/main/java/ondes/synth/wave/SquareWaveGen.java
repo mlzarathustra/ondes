@@ -3,6 +3,7 @@ package ondes.synth.wave;
 import ondes.synth.Instant;
 import ondes.synth.wire.WiredIntSupplier;
 
+import java.util.Map;
 import java.util.function.IntConsumer;
 
 /**
@@ -19,7 +20,15 @@ class SquareWaveGen extends WaveGen {
         return  ((phase>dutyCycle)?amp:-amp);
     }
 
+    //  TODO - can we move configure up to the WaveGen level?
+    //             It has to set up the phase clock(s).
 
+    @SuppressWarnings("rawtypes")
+    public void configure(Map config, Map components) {
+
+
+
+    }
 
     @Override
     void reset() {

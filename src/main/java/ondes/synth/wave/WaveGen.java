@@ -23,13 +23,13 @@ public abstract class WaveGen extends Component implements DeltaListener {
 
     void setFreq(double freq) { this.freq = freq; }
 
-    @SuppressWarnings("rawtypes")
-    public void configure(Map config, Map components) {
-
-        //  TODO -  each individual class will probably need its own one of these.
-        //     this parent class should probably have IntConsumer and IntSupplier lists.
-
-    }
+//    @SuppressWarnings("rawtypes")
+//    public void configure(Map config, Map components) {
+//
+//        //  TODO -  each individual class will probably need its own one of these.
+//        //     this parent class should probably have IntConsumer and IntSupplier lists.
+//
+//    }
 
     public void update() {
         //  TODO -  each individual class will probably need its own one of these.

@@ -53,15 +53,24 @@ public class OndesSynth extends Thread implements EndListener {
         instant = new Instant(sampleRate);
     }
 
+    /**
+     * we're only supporting one voice on each note
+     * for a given channel, so if they somehow hit it again
+     * before the "off" we re-trigger.
+     */
     void noteON(MidiMessage msg) {
         int chan = msg.getStatus() & 0xf;
         int note = msg.getMessage()[1];
 
-        Voice v = VoiceMaker.getVoice(progNames[chan], this);
-        if (v == null) return;
+        if (voices[chan][note] != null) {
+            voices[chan][note].noteON(msg);
+            return;
+        }
 
+        Voice v = VoiceMaker.getVoice(progNames[chan], this);
         voices[chan][note]=v;
         v.setEndListener(this);
+        v.noteON(msg);
     }
 
     void noteOFF(MidiMessage msg) {
@@ -81,10 +90,10 @@ public class OndesSynth extends Thread implements EndListener {
         int s=msg.getStatus()>>4;
         switch (s) {
             case 0x8: status = "Note OFF";
-                noteON(msg);
+                noteOFF(msg);
                 break;
             case 0x9: status = "Note ON";
-                noteOFF(msg);
+                noteON(msg);
                 break;
 
             //  TODO - implement at least some of these

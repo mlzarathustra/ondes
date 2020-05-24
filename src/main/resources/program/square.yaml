@@ -5,9 +5,10 @@ osc1:
   type: wave
   in:
     - midi
-    - lfo1, 0.1
   shape: square
   out: main
+
+  # n.b. out: could be a list too, like in:
 
 
 

@@ -42,8 +42,6 @@ public class Voice {
 
         // step 2 : configure
         //          (including: connect to other components)
-
-
         components.keySet().forEach( c->{
                 Map valMap=(Map)info.get(c);
                 components.get(c).configure(valMap,components);

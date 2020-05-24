@@ -40,7 +40,13 @@ import static ondes.mlz.Util.listResourceFiles;
 @SuppressWarnings("rawtypes")
 public class VoiceMaker {
 
-    static final List<Map> programs=new ArrayList<Map>();
+    static boolean DB=false;
+
+    static final List<Map> programs=new ArrayList<>();
+
+    static {
+        loadPrograms();
+    }
 
     private static void addLabeledProg(Map prog, String fn) {
         if (prog == null) return; // file read error, reported elsewhere
@@ -60,7 +66,7 @@ public class VoiceMaker {
     }
 
     static Map loadFile(Path path) {
-        out.println("path: "+path);
+        if (DB) out.println("path: "+path);
         if (path.toFile().isDirectory()) return null;
         try {
             String text = Files.lines(path, StandardCharsets.UTF_8)
@@ -101,7 +107,7 @@ public class VoiceMaker {
         // Next, load the internal resources.
         //
         List<String> fileNames = listResourceFiles("program");
-        out.println("resource files: "+fileNames);
+        if (DB) out.println("resource files: "+fileNames);
 
         fileNames.forEach( fn -> {
             Map prog = loadResource("program/"+fn);
@@ -133,13 +139,7 @@ public class VoiceMaker {
             System.exit(-1);  // load default program instead?
         }
 
-
-
-
-            // TODO - implement
-
-
-        return null;
+        return new Voice(m, synth);
     }
 
 

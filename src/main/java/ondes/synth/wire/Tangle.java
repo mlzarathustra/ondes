@@ -16,7 +16,7 @@ public class Tangle {
 
     Wire head, tail;
 
-    void add(Wire w) {
+    public void add(Wire w) {
         if (head == null) {
             head = tail = w;
             w.prev = w.next = null;
