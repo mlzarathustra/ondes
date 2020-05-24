@@ -76,7 +76,7 @@ public abstract class Component {
     }
 
 
-    //  Naming is from the perspective of this component
+    //  "output" from the perspective of this component
     //
     public abstract WiredIntSupplier getOutput();
     public abstract IntConsumer getInput();

@@ -29,8 +29,12 @@ class SquareWaveGen extends WaveGen {
         phaseClock = synth.getInstant().addPhaseClock();
         // Note ON will set frequency
 
-        out.println("configure() - midi: " + config.get("midi"));
-        out.println("config: "+config);
+//        out.println("configure() - midi: " + config.get("midi"));
+//        out.println("config: "+config);
+//        out.println("out type: "+config.get("out").getClass());
+//        out.println("outList type: "+config.get("outList").getClass());
+
+
 
 
 

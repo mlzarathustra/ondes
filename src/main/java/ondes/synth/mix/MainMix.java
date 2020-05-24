@@ -3,8 +3,10 @@ package ondes.synth.mix;
 import ondes.synth.Component;
 import ondes.synth.wire.WiredIntSupplier;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 
 /**
  * The inputs to this class will direct output
@@ -13,11 +15,13 @@ import java.util.function.IntConsumer;
  */
 public class MainMix extends Component {
 
-    WiredIntSupplier in;
+    ArrayList<WiredIntSupplier> inputs;
+
 
     @Override
     public void configure(Map config, Map components) {
-
+        // as the final endpoint, this shouldn't need any connections....
+        // outputs will connect TO here.
     }
 
     @Override

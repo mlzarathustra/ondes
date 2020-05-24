@@ -65,7 +65,7 @@ public class VoiceMaker {
 
     }
 
-    static Map loadFile(Path path) {
+    private static Map loadFile(Path path) {
         if (DB) out.println("path: "+path);
         if (path.toFile().isDirectory()) return null;
         try {
@@ -80,12 +80,12 @@ public class VoiceMaker {
         }
     }
 
-    static Map loadResource(String resName) {
+    private static Map loadResource(String resName) {
         String text = getResourceAsString(resName);
         Yaml yaml=new Yaml();
         return yaml.load(text);
     }
-    static void loadPrograms() {
+    private static void loadPrograms() {
 
         //  First load the .yaml files from the filesystem,
         //  (in the ./program/ directory) so those will supersede
@@ -116,6 +116,10 @@ public class VoiceMaker {
         });
 
     }
+    
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
 
     /**
      * Get the shortest name that contains the one given
@@ -150,9 +154,6 @@ public class VoiceMaker {
             .map( p -> p.get("name").toString() )
             .collect(toList());
     }
-
-    //////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////
 
 
     public static Voice getVoice(String progName, OndesSynth synth) {

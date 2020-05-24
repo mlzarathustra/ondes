@@ -26,9 +26,15 @@ public class Wire {
 
     void setScale(double v) { scale = v; }
 
+    int getValue() { return (int)(scale * in.getAsInt()); }
+
     public void update() {
-        out.accept( (int)(scale * in.getAsInt()) );
+        out.accept( getValue() );
     }
+
+
+
+
 
     Wire prev, next;
 
