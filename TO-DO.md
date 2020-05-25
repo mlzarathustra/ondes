@@ -1,7 +1,14 @@
 # Ondes synth - to do
 
- - Do we need *both* suppliers and consumers, or is it enough just to provide the suppliers? 
+ - reset visited flag on all WiredIntSuppliers for each sample. That means (you guessed it) a `WiredIntSupplierMaker` class at the Synth level that will keep track of all of them. 
  
+ - at the start, create a frequency table on the fly (may as well - it's fast)
+  
+ - and of course, use it to set the note frequency.
+ 
+ 
+ ----------- 
+  
  - I think the best policy on voice construction is to give a warning rather than halting. That opinion may well change with experience.  
 
 

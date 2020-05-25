@@ -11,6 +11,11 @@ import ondes.synth.Instant;
  *
  */
 public abstract class WaveGen extends MonoComponent implements DeltaListener {
+
+
+    protected Instant.PhaseClock phaseClock;
+
+
     /**
      * reset the note to zero
      */
@@ -20,22 +25,6 @@ public abstract class WaveGen extends MonoComponent implements DeltaListener {
     int amp = 32767;  // assume 16-bits (signed) for now.
 
     void setFreq(double freq) { this.freq = freq; }
-
-//    @SuppressWarnings("rawtypes")
-//    public void configure(Map config, Map components) {
-//
-//        //  TODO -  each individual class will probably need its own one of these.
-//        //     this parent class should probably have IntConsumer and IntSupplier lists.
-//
-//    }
-
-    public void update() {
-        //  TODO -  each individual class will probably need its own one of these.
-
-    }
-
-    //  to implement DeltaListener
-    abstract public void update(Instant now);
 
 
 }

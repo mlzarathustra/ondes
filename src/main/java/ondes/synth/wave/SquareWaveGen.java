@@ -6,7 +6,6 @@ import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.IntConsumer;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -15,8 +14,6 @@ import static java.lang.System.out;
  * Generate a plain square wave, with duty cycle of 0.5
  */
 class SquareWaveGen extends WaveGen {
-
-    Instant.PhaseClock phaseClock;
 
     private double dutyCycle = 0.5;
 
@@ -66,15 +63,14 @@ class SquareWaveGen extends WaveGen {
 
     @Override
     public WiredIntSupplier getMainOutput() {
-        WiredIntSupplier wireOut =  new WiredIntSupplier() {
-            public int updateInputs() { return currentValue(); }
-        };
-        return wireOut;
-    }
-
-    @Override
-    public void setMainOutput() {
-
+        if (mainOutput == null) {
+            mainOutput = new WiredIntSupplier() {
+                public int updateInputs() {
+                    return currentValue();
+                }
+            };
+        }
+        return mainOutput;
     }
 
 

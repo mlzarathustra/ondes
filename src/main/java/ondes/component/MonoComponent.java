@@ -29,19 +29,14 @@ public abstract class MonoComponent {
      * their own. For example, a delay could intake a signal
      * and be modulated by a separate LFO.
      *
-     * "in" - is the data coming in to the wire from the
-     * IntSupplier source. It is cached for each time slice
-     * by WiredIntSupplier, to avoid infinite looping
-     * (e.g. if a component uses its output as input,
-     * common in FM synthesis)
+     * The output value at each sample is cached by WiredIntSupplier,
+     * to avoid infinite looping (e.g. if a component uses its
+     * output as input, common in FM synthesis). So the "visited"
+     * flag needs to be reset for every sample.
      *
+     * Getting the output value is basically a depth-first walk.
      */
     public List<WiredIntSupplier> inputs = new ArrayList<>();
-
-    public MonoComponent() {
-        setMainOutput();
-    }
-
 
     protected OndesSynth synth;
 
@@ -50,24 +45,22 @@ public abstract class MonoComponent {
     void setSynth(OndesSynth s) { synth = s; }
 
     /**
-     * Provide the output of the component to another component.
+     * Provide the output of this component to another component.
+     * <br/><br/>
+     *
+     * The subclass generally MUST define "mainOutput," as it's the
+     * whole point of various components that the functionality of
+     * the output depends on the component.
+     * <br/><br/>
+     *
+     * The exception is MainMix, which outputs by a whole other
+     * means to the audio system.
+     *
      * @return - the supplier of output data
      */
     public WiredIntSupplier getMainOutput() {
         return mainOutput;
     }
-
-    /**
-     * The subclass generally MUST define this, as it's the whole
-     * point of various components that the functionality of the
-     * output depends on the component.
-     * <br/><br/>
-     *
-     * The exception is MainMix, which outputs by a whole other
-     * means to the audio system.
-     */
-    public abstract void setMainOutput();
-
 
     /**
      * By default, we just add whatever inputs we are requested to.
