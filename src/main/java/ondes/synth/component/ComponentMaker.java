@@ -1,4 +1,4 @@
-package ondes.component;
+package ondes.synth.component;
 
 import ondes.synth.OndesSynth;
 import ondes.synth.envelope.EnvMaker;

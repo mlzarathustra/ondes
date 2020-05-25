@@ -148,7 +148,7 @@ public class OndesSynth extends Thread implements EndListener {
                 //  TODO --  stub; implement  the above
 
                 sleep(1000);
-                out.print("breathe... ");
+                //out.print("breathe... ");
             }
             catch (Exception ignore) {}
 

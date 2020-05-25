@@ -1,9 +1,10 @@
 package ondes.synth.voice;
 
-import ondes.component.MonoComponent;
-import ondes.component.ComponentMaker;
+import ondes.synth.component.MonoComponent;
+import ondes.synth.component.ComponentMaker;
 import ondes.synth.EndListener;
 import ondes.synth.OndesSynth;
+import ondes.synth.wire.WiredIntSupplierMaker;
 
 import javax.sound.midi.MidiMessage;
 import java.util.HashMap;
@@ -16,6 +17,15 @@ public class Voice {
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
     private OndesSynth synth;
+    private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
+
+    public WiredIntSupplierMaker getWiredIntSupplierMaker() {
+        return wiredIntSupplierMaker;
+    }
+
+    public void resetWires() {
+        wiredIntSupplierMaker.reset();
+    }
 
     public void setEndListener(EndListener el) { endListener=el; }
 
@@ -44,7 +54,9 @@ public class Voice {
         //          (including: connect to other components)
         for (String compKey : components.keySet()) {
             Map compSpec=(Map)voiceSpec.get(compKey);
-            components.get(compKey).configure(compSpec,components);
+            MonoComponent comp=components.get(compKey);
+            comp.setVoice(this);
+            comp.configure(compSpec,components);
         }
     }
 
@@ -59,7 +71,6 @@ public class Voice {
         //
         endListener.noteEnded(msg);
     }
-
 
     public String toString() {
         return "Voice { components: "+

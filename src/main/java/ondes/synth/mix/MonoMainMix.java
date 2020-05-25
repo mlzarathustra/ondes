@@ -1,13 +1,12 @@
 package ondes.synth.mix;
 
-import ondes.component.MonoComponent;
+import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.sampled.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
 import static java.lang.System.out;
@@ -166,17 +165,20 @@ public class MonoMainMix extends MonoComponent {
         // outputs will connect TO here.
     }
 
-    @Override
-    public WiredIntSupplier getMainOutput() {
-        return null;
-    }
-
     /**
-     * A dummy function in this class, as our output is to the
-     * JavaSound audio system.
+     * This is the last stop on the route, and outputs directly
+     * to the audio system, so we don't provide an output
+     * other than that. It would be theoretically possible,
+     * but easier to add a Junction between and take the output
+     * from that.
+     *
+     * @return - null
      */
     @Override
-    public void setMainOutput() { }
+    public WiredIntSupplier getMainOutput() { return null; }
+
+    @Override
+    public int currentValue() { return 0; }
 
     public int getSampleRate() {
         return sampleRate;

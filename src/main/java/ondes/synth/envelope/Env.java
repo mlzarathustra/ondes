@@ -1,11 +1,10 @@
 package ondes.synth.envelope;
 
-import ondes.component.MonoComponent;
+import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.function.IntConsumer;
 
 /**
  * Env is basically a state machine. The current state is
@@ -72,6 +71,12 @@ class Env extends MonoComponent {
      *
      */
     Env(Integer... params) throws InstantiationException {
+
+        throw new InstantiationException(" This class needs to be adapted to the Ondes model!");
+        //
+        // TODO - implement, then uncomment the below and delete the above.
+
+        /*
         if (params.length < 2) {
             throw new InstantiationException("must provide at least one step ");
         }
@@ -85,6 +90,8 @@ class Env extends MonoComponent {
 
         release.destLevel = 0.0; // force the final level to zero
         setCurStep(0);
+
+         */
     }
 
 
@@ -130,11 +137,6 @@ class Env extends MonoComponent {
 
 
 
-    public void update() {
-
-        // TODO - implement
-
-    }
 
     @Override
     public WiredIntSupplier getMainOutput() {
@@ -142,8 +144,8 @@ class Env extends MonoComponent {
     }
 
     @Override
-    public void setMainOutput() {
-
+    public int currentValue() {
+        return 0;
     }
 
 

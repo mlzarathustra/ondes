@@ -1,6 +1,6 @@
 package ondes.synth.wire;
 
-import ondes.component.MonoComponent;
+import ondes.synth.component.MonoComponent;
 
 import java.util.Map;
 
@@ -24,19 +24,16 @@ public class Junction extends MonoComponent {
     public Junction(WiredIntSupplier in) {
         super();
         addInput(in);
+//        mainOutput = new WiredIntSupplier() {
+//            public int updateInputs() {
+//                return getValue();
+//            }
+//        };
+
     }
 
     @Override
-    public void setMainOutput() {
-        mainOutput = new WiredIntSupplier() {
-            public int updateInputs() {
-                return getValue();
-            }
-        };
-    }
-
-
-    private int getValue() {
+    public int currentValue() {
         // a manual loop is slightly faster than the lambda.
         int rs=0;
         for (WiredIntSupplier input : inputs) rs += input.getAsInt();

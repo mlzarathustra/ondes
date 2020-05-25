@@ -1,15 +1,19 @@
-package ondes.component;
+package ondes.synth.component;
 
 import ondes.synth.OndesSynth;
+import ondes.synth.voice.Voice;
 import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.IntConsumer;
 
 @SuppressWarnings("rawtypes")
 public abstract class MonoComponent {
+
+    Voice voice;
+    public Voice getVoice() { return voice; }
+    public void setVoice(Voice v) { voice = v; }
 
     /**
      * "mainOutput" is the IntSupplier that a target component
@@ -59,8 +63,21 @@ public abstract class MonoComponent {
      * @return - the supplier of output data
      */
     public WiredIntSupplier getMainOutput() {
+        if (mainOutput == null) {
+            mainOutput = getVoice()
+                .getWiredIntSupplierMaker()
+                .getWiredIntSupplier(this::currentValue);
+        }
         return mainOutput;
     }
+
+    /**
+     * The component should override this function with one that
+     * returns the current output value
+     *
+     * @return - the current output level of this component
+     */
+    public abstract int currentValue();
 
     /**
      * By default, we just add whatever inputs we are requested to.

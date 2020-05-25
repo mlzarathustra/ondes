@@ -3,7 +3,7 @@ package ondes.synth.wire;
 public abstract class ScalingWiredIntSupplier extends WiredIntSupplier {
 
     private double scale = 1;
-    void setScale(double v) { scale = v; }
+    public void setScale(double v) { scale = v; }
 
     /**
      * Acts as a latch so that loops won't be infinite

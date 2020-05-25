@@ -6,10 +6,10 @@ public abstract class WiredIntSupplier implements IntSupplier {
     protected boolean visited;
     protected int curOut;
 
-    public WiredIntSupplier() {
+    WiredIntSupplier() {
 
     //  TODO - register this in a global (LINKED) list for reset
-    //    they will have to be removed by any component
+    //    they will have to be removed by any Voice
     //    releasing them, or they will build up.
     }
 

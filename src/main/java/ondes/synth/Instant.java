@@ -32,7 +32,6 @@ public class Instant  {
     private long sampleNumber;
 
     private ArrayList<PhaseClock> clocks=new ArrayList<>();
-    private ArrayList<DeltaListener> deltaListeners=new ArrayList<>();
 
     Instant(int sr) { sampleRate = sr; }
 
@@ -49,9 +48,6 @@ public class Instant  {
     }
     public void delPhaseClock(PhaseClock pc) { clocks.remove(pc); }
 
-    public void addDeltaListener(DeltaListener dl) { deltaListeners.add(dl); }
-    public void delDeltaListener(DeltaListener dl) { deltaListeners.remove(dl); }
-
     public int getSampleRate() { return sampleRate; }
     public long getSampleNumber() { return sampleNumber; }
 
@@ -60,7 +56,6 @@ public class Instant  {
     void next() {
         sampleNumber++;
         clocks.forEach(PhaseClock::update);
-        deltaListeners.forEach( dl -> dl.update(this) );
     }
 
 

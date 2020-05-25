@@ -1,10 +1,10 @@
 # Ondes synth - to do
 
- - reset visited flag on all WiredIntSuppliers for each sample. That means (you guessed it) a `WiredIntSupplierMaker` class at the Synth level that will keep track of all of them. 
- 
+ - reset visited flag on all WiredIntSuppliers for each sample. The list is currently at the Voice level, so `OndesSynth` needs to get all the currently sounding voices and call `resetWires();` Rather than churn through all of the 2048 possibilities in OndesSynth.programs, let's maintain a set with the active ones parallel to the matrix.
+  
  - at the start, create a frequency table on the fly (may as well - it's fast)
   
- - and of course, use it to set the note frequency.
+ - and of course, use it to set the note frequency. Does the "midi: true" flag make sense? 
  
  
  ----------- 
