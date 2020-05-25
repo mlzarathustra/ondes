@@ -1,5 +1,8 @@
 # Ondes Synthesizer
 (under construction)
+ 
+![](notes/images/ondes-synth-architecture-diagram.png)
+
 
 ## synthesizer
 The plan is for this to become a fully modular synthesizer that will play through your computer's output device as triggered by a MIDI input device (typically an electronic keyboard, though any should work)
