@@ -8,13 +8,40 @@ import ondes.synth.mix.MonoMainMix;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
 
+import java.util.HashSet;
+import java.util.function.Consumer;
+
 import static java.lang.System.out;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class OndesSynth extends Thread implements EndListener {
 
-    //  16 MIDI channels x 128 Notes
-    private final Voice [][]voices = new Voice[16][128];
+    class VoiceTracker {
+        //  16 MIDI channels x 128 Notes
+        private final Voice [][]voices = new Voice[16][128];
+        HashSet<Voice> playing=new HashSet<>();
+
+        Voice getVoice(int chan, int note) {
+            return voices[chan][note];
+        }
+
+        void forEach(Consumer<Voice> fn) {
+            for (Voice v : playing) fn.accept(v);
+        }
+
+        void addVoice(Voice v, int chan, int note) {
+            voices[chan][note]=v;
+            playing.add(v);
+        }
+
+        void delVoice(int chan, int note) {
+            if (voices[chan][note] == null) return;
+            playing.remove(voices[chan][note]);
+            voices[chan][note] = null;
+        }
+    }
+
+    VoiceTracker voiceTracker = new VoiceTracker();
 
     private MonoMainMix monoMainMix;
 
@@ -65,13 +92,17 @@ public class OndesSynth extends Thread implements EndListener {
         int chan = msg.getStatus() & 0xf;
         int note = msg.getMessage()[1];
 
-        if (voices[chan][note] != null) {
-            voices[chan][note].noteON(msg);
+        Voice playing = voiceTracker.getVoice(chan,note);
+
+        if (playing != null) {
+            playing.noteON(msg);
             return;
         }
 
         Voice v = VoiceMaker.getVoice(progNames[chan], this);
-        voices[chan][note]=v;
+        if (v == null) return; // getVoiceMap() displays the warning
+
+        voiceTracker.addVoice(v,chan,note);
         v.setEndListener(this);
         v.noteON(msg);
     }
@@ -80,8 +111,9 @@ public class OndesSynth extends Thread implements EndListener {
         int chan = msg.getStatus() & 0xf;
         int note = msg.getMessage()[1];
 
-        if (voices[chan][note] == null) return;
-        voices[chan][note].noteOFF(msg);
+        Voice playing = voiceTracker.getVoice(chan,note);
+        if (playing == null) return;
+        playing.noteOFF(msg);
 
     }
 
@@ -141,6 +173,7 @@ public class OndesSynth extends Thread implements EndListener {
         listen();
 
         for (;;) {
+            voiceTracker.forEach( Voice::resetWires );
             instant.next();
             monoMainMix.update();
             try {
@@ -161,7 +194,7 @@ public class OndesSynth extends Thread implements EndListener {
     @Override
     public void noteEnded(int chan, int note) {
         //  Assume that the voice has released all of its components
-        voices[chan][note] = null;
+        voiceTracker.delVoice(chan,note);
     }
 
     public MonoMainMix getMonoMainMix() { return monoMainMix; }
