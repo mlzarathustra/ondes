@@ -1,7 +1,6 @@
 # Ondes synth - to do
 
- - at the start, create a frequency table on the fly (may as well - it's fast)
- - and of course, use it to set the note frequency. 
+ - and of course, use FreqTable.getFreq(int midiNum) to set the note frequency. 
  - Does the "midi: true" flag make sense? Not all WG's will want the frequency set to the note. Maybe instead: 
  
         freq: midi # or frequency: midi 

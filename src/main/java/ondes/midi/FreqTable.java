@@ -34,14 +34,11 @@ public class FreqTable {
     public static final double A3=440;
     public static final int A3MidiNum = 69;
 
-
     /**
      * The increment of a minor second.
      * if (f = freq(C)) then f * m2 = freq(C#)
      */
     public static final double m2=pow( 2, 1.0/12 );
-
-
 
     static {
         //  To avoid a minuscule loss of precision,

@@ -4,6 +4,7 @@ import ondes.synth.OndesSynth;
 import ondes.synth.voice.Voice;
 import ondes.synth.wire.WiredIntSupplier;
 
+import javax.sound.midi.MidiMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,93 @@ public abstract class MonoComponent {
     public void addInput(WiredIntSupplier input) {
         inputs.add(input);
     }
+
+    /**
+     * If this component should receive MIDI ON messages,
+     * override this function, and add the property "midi: on"
+     * in the YAML file.
+     *
+     * @param msg - a Note-ON message for this channel
+     */
+    public void noteON(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI OFF messages,
+     * override this function, and add the property "midi: off"
+     * in the YAML file.
+     *
+     * @param msg - a Note-OFF message for this channel
+     */
+    public void noteOFF(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI ON messages,
+     * override this function, and add the property "midi: after"
+     * in the YAML file.
+     *
+     * @param msg - an Aftertouch message for this channel
+     */
+    public void midiAfter(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI Control messages,
+     * override this function, and add the property "midi: control"
+     * in the YAML file.
+     * <br/><br/>
+     *
+     * Controls include
+     * <ul>
+     *     <li> 0 - bank select MSB </li>
+     *     <li> 1 - mod wheel </li>
+     *     <li> 7 - volume </li>
+     *     <li> 10 - pan </li>
+     *     <li> 32 - bank select LSB </li>
+     *     <li> 64 - sustain pedal </li>
+     *
+     * </ul>sustain pedal, volume, and modulation
+     *
+     * @param msg - a Controller message for this channel
+     */
+    public void midiControl(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI Program Change messages,
+     * override this function, and add the property "midi: program"
+     * in the YAML file.
+     *
+     * @param msg - a Program Change message for this channel
+     */
+    public void midiProgram(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI Channel Pressure messages,
+     * override this function, and add the property "midi: pressure"
+     * in the YAML file.
+     *
+     * @param msg - a Channel Pressure message for this channel
+     */
+    public void midiPressure(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI Pitch Bend messages,
+     * override this function, and add the property "midi: bend"
+     * in the YAML file.
+     *
+     * @param msg - a Pitch Bend message for this channel
+     */
+    public void midiBend(MidiMessage msg) { }
+
+    /**
+     * If this component should receive MIDI System messages,
+     * override this function, and add the property "midi: system"
+     * in the YAML file.
+     * <br/><br/>
+     *
+     * In this context, may be useful for clocks.
+     *
+     * @param msg - a System message for this channel
+     */
+    public void midiSystem(MidiMessage msg) { }
 
 
 }
