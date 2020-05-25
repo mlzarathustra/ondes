@@ -44,7 +44,7 @@ public class FreqTable {
 
 
     static {
-        //  To avoid a minuscule loss of accuracy,
+        //  To avoid a minuscule loss of precision,
         //  multiply or divide the the base A frequency
         //  to get the exact octave value, then step up
         //  from each for that octave.
