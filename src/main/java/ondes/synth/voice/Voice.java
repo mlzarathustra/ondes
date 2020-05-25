@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static java.lang.System.err;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class Voice {
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
@@ -19,22 +20,21 @@ public class Voice {
     public void setEndListener(EndListener el) { endListener=el; }
 
     @SuppressWarnings("unchecked,rawtypes")
-    Voice(Map info, OndesSynth synth) {
+    Voice(Map voiceSpec, OndesSynth synth) {
         this.synth = synth;
         // step 1 : construct components
-        info.keySet().forEach(
-            key -> {
-                Object value=info.get(key);
-                if (!(value instanceof Map)) return;
-                Map valMap=(Map)info.get(key);
-                MonoComponent c= ComponentMaker.getMonoComponent(valMap, synth);
-                if (c == null) {
-                    err.println("ERROR - could not load component "+key);
-                    err.println("  --> "+info.get(key));
-                    System.exit(-1);
-                }
-                components.put(key.toString(), c);
-            });
+        for (Object key : voiceSpec.keySet()) {
+            Object value=voiceSpec.get(key);
+            if (!(value instanceof Map)) continue;
+            Map valMap=(Map)voiceSpec.get(key);
+            MonoComponent c= ComponentMaker.getMonoComponent(valMap, synth);
+            if (c == null) {
+                err.println("ERROR - could not load component "+key);
+                err.println("  --> "+voiceSpec.get(key));
+                System.exit(-1);
+            }
+            components.put(key.toString(), c);
+        }
 
         // step 1a: add the main mixer to the components.
         //    currently it is the only global component.
@@ -42,11 +42,10 @@ public class Voice {
 
         // step 2 : configure
         //          (including: connect to other components)
-        components.keySet().forEach( c->{
-                Map valMap=(Map)info.get(c);
-                components.get(c).configure(valMap,components);
-            }
-        );
+        for (String compKey : components.keySet()) {
+            Map compSpec=(Map)voiceSpec.get(compKey);
+            components.get(compKey).configure(compSpec,components);
+        }
     }
 
     public void noteON(MidiMessage msg) {

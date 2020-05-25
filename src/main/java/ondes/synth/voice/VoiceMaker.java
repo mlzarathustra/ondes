@@ -207,6 +207,7 @@ public class VoiceMaker {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void showProgram(String progName) {
         Map m = getVoiceMap(progName);
         m.keySet().forEach( k-> {
@@ -215,7 +216,6 @@ public class VoiceMaker {
             out.println("  "+k+": "+v);
         });
     }
-
 
     public static void main(String[] args) {
         loadPrograms();
