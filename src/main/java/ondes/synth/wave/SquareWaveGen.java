@@ -1,11 +1,14 @@
 package ondes.synth.wave;
 
+import ondes.component.MonoComponent;
 import ondes.synth.Instant;
 import ondes.synth.wire.WiredIntSupplier;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.IntConsumer;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
 
 /**
@@ -21,6 +24,11 @@ class SquareWaveGen extends WaveGen {
         return  ((phaseClock.getPhase()>dutyCycle)?amp:-amp);
     }
 
+    void setOutput(MonoComponent comp) {
+        out.println("setOutput("+comp+")");
+        comp.addInput(this.getMainOutput());
+    }
+
     //  TODO - can we move configure up to the WaveGen level?
     //             It has to set up the phase clock(s).
 
@@ -29,14 +37,23 @@ class SquareWaveGen extends WaveGen {
         phaseClock = synth.getInstant().addPhaseClock();
         // Note ON will set frequency
 
-//        out.println("configure() - midi: " + config.get("midi"));
-//        out.println("config: "+config);
-//        out.println("out type: "+config.get("out").getClass());
-//        out.println("outList type: "+config.get("outList").getClass());
+        out.println("config: "+config);
+        out.println("out type: "+config.get("out").getClass());
 
-
-
-
+        Object compOut = config.get("out");
+        if (compOut == null) {
+            err.println("Missing out: key in "+this.getClass());
+            err.println("Voice will not sound without output!");
+            return;
+        }
+        if (compOut instanceof String) {
+            setOutput((MonoComponent) components.get(compOut));
+        }
+        else if (compOut instanceof List) {
+            for (Object oneOut : (List)compOut) {
+                setOutput((MonoComponent) components.get(oneOut));
+            }
+        }
     }
 
     @Override
