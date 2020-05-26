@@ -17,6 +17,8 @@ import static java.lang.System.out;
 @SuppressWarnings("FieldMayBeFinal")
 public class OndesSynth extends Thread implements EndListener {
 
+    boolean DB = false;
+
     class VoiceTracker {
         class VoiceSet extends HashSet<Voice> { }
 
@@ -149,7 +151,7 @@ public class OndesSynth extends Thread implements EndListener {
     }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
-        out.println(ts+" : "+MlzMidi.toString(msg));
+        if (DB) out.println(ts+" : "+MlzMidi.toString(msg));
 
         //  Note-ON messes with the phase clocks list
         //  so don't do it while incrementing them

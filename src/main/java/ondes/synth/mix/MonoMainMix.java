@@ -29,7 +29,14 @@ public class MonoMainMix extends MonoComponent {
     SourceDataLine srcLine;
     private int sampleRate;
 
-    private int bufSize=2048;
+    // Critical for response, as the system has to wait
+    // until the next buffer for a note to start sounding.
+    // So we want it as small as possible. However,
+    // any smaller than this and it only makes funny
+    // clicking noises (with the realtek speaker)
+    //
+    private int bufSize=512;
+
     private int bytesPerSample;
 
     private boolean signed, littleEndian;
@@ -137,8 +144,10 @@ public class MonoMainMix extends MonoComponent {
 
     int outPos = 0;
     int loops = 0;
+    long lastWrite = 0;
 
     public void update() {
+
         outputBuffer[outPos++] = inputs.stream()
             .mapToInt(IntSupplier::getAsInt)
             .sum();
@@ -158,8 +167,13 @@ public class MonoMainMix extends MonoComponent {
                 //
                 int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
 
+
                 if (DB && loops<100) {
-                    System.out.println("audTrack.write() rs="+rs); loops++;
+                    out.println("audTrack.write() rs="+rs); loops++;
+                    long now=System.nanoTime();
+                    out.println(" delta >> "+(now-lastWrite));
+                    lastWrite=now;
+
                 }
             }
         }

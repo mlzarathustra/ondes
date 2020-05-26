@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ondes.mlz.Util.getList;
+import static ondes.midi.MlzMidi.showBytes;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -30,7 +31,7 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     double freq = 440;
-    int amp = 32767;  // assume 16-bits (signed) for now.
+    int amp = 2048;  // assume 16-bits (signed) for now.
 
     void setFreq(double freq) { this.freq = freq; }
 
@@ -39,8 +40,7 @@ public abstract class WaveGen extends MonoComponent {
         phaseClock = synth.getInstant().addPhaseClock();
         // Note ON will set frequency
 
-        out.println("WaveGen.configure: "+config);
-        //out.println("out type: "+config.get("out").getClass());
+        //out.println("WaveGen.configure: "+config);
 
         Object compOut = config.get("out");
         if (compOut == null) {
@@ -61,24 +61,16 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     void setOutput(MonoComponent comp) {
-        out.println("setOutput("+comp+")");
         comp.addInput(this.getMainOutput());
         outputs.add(comp); // so we can remove it later
     }
 
-    // there is no Arrays.stream(byte[])
-    //
-    void showBytes(MidiMessage msg) {
-        for (byte b : msg.getMessage()) {
-            out.print(Integer.toHexString(b&0x00ff)+" ");
-        }
-        out.println();
-    }
+
 
     @Override
     public void noteON(MidiMessage msg) {
-        out.print("WaveGen.noteON(): ");
-        showBytes(msg);
+//        out.print("WaveGen.noteON(): ");
+//        showBytes(msg);
         double freq = FreqTable.getFreq(msg.getMessage()[1]);
         phaseClock.setFrequency((float)freq);
     }

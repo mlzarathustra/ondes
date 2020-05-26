@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.lang.System.out;
 import static java.util.stream.Collectors.*;
 
 
@@ -154,6 +155,15 @@ public class MlzMidi {
             }
         }
         return sb.toString();
+    }
+
+    // there is no Arrays.stream(byte[])
+    //
+    public static void showBytes(MidiMessage msg) {
+        for (byte b : msg.getMessage()) {
+            out.print(Integer.toHexString(b&0x00ff)+" ");
+        }
+        out.println();
     }
     
 
