@@ -5,10 +5,10 @@ import ondes.synth.Instant;
 import ondes.midi.FreqTable;
 
 import javax.sound.midi.MidiMessage;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static ondes.mlz.Util.getList;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -48,19 +48,22 @@ public abstract class WaveGen extends MonoComponent {
             err.println("Voice will not sound without output!");
             return;
         }
-        if (compOut instanceof String) {
-            setOutput((MonoComponent) components.get(compOut));
+
+        List compOutList = getList(compOut);
+        for (Object oneOut : compOutList) {
+            setOutput((MonoComponent) components.get(oneOut));
         }
-        else if (compOut instanceof List) {
-            for (Object oneOut : (List)compOut) {
-                setOutput((MonoComponent) components.get(oneOut));
-            }
-        }
+    }
+
+    public void release() {
+        synth.getInstant().delPhaseClock(phaseClock);
+        outputs.forEach( c -> c.delInput(this.getMainOutput()));
     }
 
     void setOutput(MonoComponent comp) {
         out.println("setOutput("+comp+")");
         comp.addInput(this.getMainOutput());
+        outputs.add(comp); // so we can remove it later
     }
 
     // there is no Arrays.stream(byte[])

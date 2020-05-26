@@ -51,5 +51,12 @@ public class Junction extends MonoComponent {
 
     }
 
+    @Override
+    public void release() {
+
+        // todo - implement
+
+    }
+
 
 }

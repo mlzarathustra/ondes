@@ -169,6 +169,11 @@ public class MonoMainMix extends MonoComponent {
         // outputs will connect TO here.
     }
 
+    @Override
+    public void release() {
+        //  nothing here so far... the main synth class closes the line.
+    }
+
     /**
      * This is the last stop on the route, and outputs directly
      * to the audio system, so we don't provide an output

@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -109,5 +110,38 @@ public class Util {
 
         return fileNames;
     }
+
+    /**
+     * For YAML parsing - package atoms into a list, or
+     * return a list if the object already is one.
+     *
+     * To smooth out the differences between
+     * <pre>
+     *      midi: note-on
+     * and
+     *      midi:
+     *        - note-on
+     *        - note-off
+     * and
+     *      midi: note-on, note-off
+     * </pre>
+     *
+     * @param obj - a list or something to put in a list
+     * @return - some kind of list
+     */
+    public static List<?> getList(Object obj) {
+        if (obj instanceof List) return (List<?>)obj;
+        List<Object> rs = new ArrayList<>();
+
+        if (obj instanceof String) {
+            String[] parts = obj.toString().split("[, ]+");
+            rs.addAll(Arrays.asList(parts));
+            return rs;
+        }
+
+        rs.add(obj);
+        return rs;
+    }
+
 
 }

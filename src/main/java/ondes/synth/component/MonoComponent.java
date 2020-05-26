@@ -42,10 +42,13 @@ public abstract class MonoComponent {
      * Getting the output value is basically a depth-first walk.
      */
     public List<WiredIntSupplier> inputs = new ArrayList<>();
+    public List<MonoComponent> outputs = new ArrayList<>(); // for release
 
     protected OndesSynth synth;
 
     public abstract void configure(Map config, Map components);
+
+    public abstract void release();
 
     void setSynth(OndesSynth s) { synth = s; }
 
@@ -61,7 +64,8 @@ public abstract class MonoComponent {
      *
      * </p>
      * <p>
-     *     The exception is MainMix, which outputs by a whole other means to the audio system.
+     *     The exception is MainMix, which outputs by a whole other means
+     *     to the audio system.
      * </p>
      *
      * @return - the supplier of output data
@@ -92,6 +96,15 @@ public abstract class MonoComponent {
      */
     public void addInput(WiredIntSupplier input) {
         inputs.add(input);
+    }
+
+    /**
+     * In most cases we don't have to worry about removing an input,
+     * as the rest of the components we're connected to have the same
+     * life cycle. The one exception is "main"
+     */
+    public void delInput(WiredIntSupplier input) {
+        inputs.remove(input);
     }
 
     /**

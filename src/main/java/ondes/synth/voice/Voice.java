@@ -1,16 +1,16 @@
 package ondes.synth.voice;
 
+import javax.sound.midi.MidiMessage;
+import java.util.*;
+
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.EndListener;
 import ondes.synth.OndesSynth;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
-import javax.sound.midi.MidiMessage;
-import java.util.*;
-import java.util.function.Consumer;
-
 import static java.lang.System.err;
+import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked")
 public class Voice {
@@ -29,38 +29,6 @@ public class Voice {
         for (int i=0; i<8; ++i) {
             midiListeners[i] = new ArrayList<>();
         }
-    }
-
-    /**
-     * For YAML parsing - package atoms into a list, or
-     * return a list if the object already is one.
-     *
-     * To smooth out the differences between
-     * <pre>
-     *      midi: note-on
-     * and
-     *      midi:
-     *        - note-on
-     *        - note-off
-     * and
-     *      midi: note-on, note-off
-     * </pre>
-     *
-     * @param obj - a list or something to put in a list
-     * @return - some kind of list
-     */
-    public static List<?> getList(Object obj) {
-        if (obj instanceof List) return (List<?>)obj;
-        List<Object> rs = new ArrayList<>();
-
-        if (obj instanceof String) {
-            String[] parts = obj.toString().split("[, ]+");
-            rs.addAll(Arrays.asList(parts));
-            return rs;
-        }
-
-        rs.add(obj);
-        return rs;
     }
 
     public static final String[] midiMessageTypes =
@@ -147,6 +115,7 @@ public class Voice {
         //
         if (msg.getStatus()>>4 == 8) {  // Note-OFF
             endListener.noteEnded(msg);
+            components.values().forEach(MonoComponent::release);
         }
 
     }
