@@ -3,5 +3,5 @@
 # make and run
 
 gradle uberJar
-run $* 
+run "$@" 
 

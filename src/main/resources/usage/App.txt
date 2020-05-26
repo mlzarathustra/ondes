@@ -13,6 +13,13 @@
 
       See READ.md for help finding devices in your system.
 
+        Audio System
+          -buffer-size <size>
+
+        If you get clicks or breaks in the sound, the audio buffer
+        needs to be bigger. Default is 1024, which should work with
+        most systems. See README.md for more.
+
     Program settings:
         Display then Exit:
             -show-patches

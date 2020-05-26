@@ -1,10 +1,9 @@
-package ondes.synth.mix;
+package ondes.synth;
 
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.sampled.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.IntSupplier;
@@ -35,7 +34,7 @@ public class MonoMainMix extends MonoComponent {
     // any smaller than this and it only makes funny
     // clicking noises (with the realtek speaker)
     //
-    private int bufSize=512;
+    private int bufferSize =1024;
 
     private int bytesPerSample;
 
@@ -47,7 +46,11 @@ public class MonoMainMix extends MonoComponent {
     //
 
 
-    public MonoMainMix(Mixer mixer) {
+    public MonoMainMix(Mixer mixer) { this(mixer,1024); }
+
+    public MonoMainMix(Mixer mixer, int bufferSize) {
+        this.bufferSize = bufferSize;
+
         Line.Info[] lineInfo = mixer.getSourceLineInfo();
         out.println(Arrays.toString(lineInfo));
 
@@ -92,18 +95,18 @@ public class MonoMainMix extends MonoComponent {
         //  frameSize should be == bytesPerSample * channels
         int frameSize = audFmt.getFrameSize();
         if (frameSize != AudioSystem.NOT_SPECIFIED) {
-            bufSize = bufSize - (bufSize % frameSize);
+            bufferSize = bufferSize - (bufferSize % frameSize);
         }
         int sb = audFmt.getSampleSizeInBits();
         bytesPerSample = (sb/8) + (sb%8 > 0 ? 1 : 0);
 
-        outputBuffer = new int[bufSize]; // todo - this is mono
-        lineBuffer = new byte[bufSize * bytesPerSample * channels];
+        outputBuffer = new int[bufferSize]; // todo - this is mono
+        lineBuffer = new byte[bufferSize * bytesPerSample * channels];
 
         if (DB) {
             out.println(audFmt);
             out.println(
-                "frameSize=" + frameSize + "; bufSize=" + bufSize +
+                "frameSize=" + frameSize + "; bufSize=" + bufferSize +
                     "; bytesPerSample=" + bytesPerSample +
                     "; littleEndian=" + littleEndian +
                     "; # of channels=" + channels

@@ -107,6 +107,7 @@ public class App {
 
         // contains("") will match any
         String inDevStr = "", outDevStr = "";
+        int bufferSize=1024;
 
         //  Parse command line args
         //
@@ -146,6 +147,11 @@ public class App {
                 case "-show-patch":
                 case "-show-program":
                     showProgram(args[++i]);
+                case "-buffer-size":
+                    out.println("buffer size <<");
+                    bufferSize = Integer.parseInt(args[++i]);
+                    continue;
+
             }
             if (args[i].startsWith("-ch")) {
                 try {
@@ -186,7 +192,12 @@ public class App {
         //  START UP SYNTH
         //
         OndesSynth synth = new OndesSynth(
-            44100, midiDev, mixer, progNames);
+            44100,      // sample rate
+            midiDev,    // input device
+            mixer,      // output device
+            progNames,  // patch names
+            bufferSize  // audio buffer size
+        );
 
         synth.start();
 

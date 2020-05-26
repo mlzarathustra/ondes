@@ -5,7 +5,6 @@ import javax.sound.sampled.Mixer;
 
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
-import ondes.synth.mix.MonoMainMix;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
 
@@ -91,7 +90,8 @@ public class OndesSynth extends Thread implements EndListener {
         int sampleRate,
         MidiDevice in,
         Mixer od,
-        String[] pn
+        String[] pn,
+        int bufSize
     ) {
         midiInDev = in;
         outDev = od;
@@ -100,7 +100,7 @@ public class OndesSynth extends Thread implements EndListener {
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
 
-        monoMainMix = new MonoMainMix(outDev);
+        monoMainMix = new MonoMainMix(outDev, bufSize);
         instant = new Instant(monoMainMix.getSampleRate());
 
     }

@@ -1,13 +1,7 @@
 # Ondes synth - to do
 
  - review WiredIntSupplierMaker logic - so far it only is used for "main" so make sure the other cases will work (e.g. when hooking an env generator in) 
- 
- - Use FreqTable.getFreq(int midiNum) to set the note frequency.
- 
- - remove the sleep(1000) from the main loop and review the need for any synchronization with the MIDI message Thread. 
- 
- - PhaseClocks never get removed.
-       
+  
  ----------- 
  - EnvGen needs to be hooked to a "multiply" component (like a VCA) 
  
@@ -16,6 +10,21 @@
     - If there's a designated envelope, free the voice when it is finished.
     - for now, only one envelope determines (rather than an AND or OR logic for several)
  
+ -----------
+  - Latency is a problem generally with computer sound, on account of needing to have a large buffer that needs to clear before it can respond.
+   
+    Look into using an ASIO MixerProvider `com.groovemanager.spi.asio`     referred from [here](http://jsresources.sourceforge.net/faq_misc.html#asio)
+    
+    The JSResources site looks informative in general:
+    http://jsresources.sourceforge.net/  N.B. source code is dated 2003.
+    
+    [Dr. Dobbs on "latency" and "jitter."](https://djtechtools.com/2008/09/26/is-your-midi-controller-late/)
+    Ableton also has a link to [ASIO for ALL](http://www.asio4all.org/)
+    
+    ASIO on wikipedia: "Audio Stream Input/Output (ASIO) is a computer sound card driver protocol for digital audio specified by **Steinberg,** providing a low-latency and high fidelity interface between a software application and a computer's sound card. Whereas Microsoft's DirectSound is commonly used as an intermediary signal path for non-professional users, ASIO allows musicians and sound engineers to access external hardware directly."
+    
+    Here's a project that promises ASIO for JavaSound: https://github.com/mhroth/jasiohost
+         
     
  ----------- 
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
