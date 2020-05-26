@@ -1,0 +1,42 @@
+#!/bin/bash
+
+a=5
+
+echo "loop method one:"
+
+# note that it's 'a' below
+# you can also say $a
+#
+for ((i=1; i<=a; ++i)); do
+   echo $i
+done
+
+
+echo "loop method two:"
+
+# {a..z} and {01..10} are also possible.
+# {0..100..10}  # third arg is step
+# {4..0}   # automatically decrements
+# {A..z}   # gives the ASCII between the alphabets
+#
+# below we have to use eval to get the $a expansion.
+#
+for i in $( eval echo {1..$a} ); do
+   echo $i
+done
+
+
+echo "loop method three:"
+i=1
+while [ $i -le $a ]; do
+    echo $i
+    i=$((i+1))
+done
+
+
+
+
+
+
+
+

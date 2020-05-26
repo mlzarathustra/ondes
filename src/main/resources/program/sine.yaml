@@ -1,0 +1,8 @@
+
+name: sine
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: sine
+  out: main

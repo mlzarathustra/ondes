@@ -1,0 +1,6 @@
+#!/bin/bash
+
+a=() 
+for arg in "$@"; do a+=("$arg"); done
+show-args "${a[@]}"
+

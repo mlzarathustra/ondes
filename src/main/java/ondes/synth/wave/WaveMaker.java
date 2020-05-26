@@ -55,7 +55,7 @@ public class WaveMaker {
 
     static {        //
         register("square", SquareWaveGen.class);
-//        register("sine", SineWaveGen.class);
+        register("sine", SineWaveGen.class);
 //        register("saw", SawWaveGen.class);
 //        register("pwm", PWMWaveGen.class);
 //        register("mellow", CompositeWaveGen.class);

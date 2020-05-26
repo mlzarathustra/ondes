@@ -1,0 +1,12 @@
+a=()
+a+=(abc)
+a+=(def)
+
+# $a - just gives you the first
+echo $a
+
+# to see the whole thing you have to:
+echo ${a[@]}
+
+
+show-args "${a[@]}"

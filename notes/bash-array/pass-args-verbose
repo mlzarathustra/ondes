@@ -1,0 +1,19 @@
+#!/bin/bash
+
+a=() 
+echo arglist size: $#
+for arg in "$@"; do 
+    echo $arg
+    a+=("$arg")
+done
+echo '--'
+
+echo length of a is ${#a[@]}
+echo '--'
+
+echo array is: 
+for ((i=0; i<${#a[@]}; ++i)); do echo $i ${a[$i]}; done
+echo '--'
+
+show-args "${a[@]}"
+

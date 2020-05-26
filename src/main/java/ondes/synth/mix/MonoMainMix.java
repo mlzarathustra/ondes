@@ -168,7 +168,7 @@ public class MonoMainMix extends MonoComponent {
                 int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
 
 
-                if (DB && loops<100) {
+                if (false && loops<100) {
                     out.println("audTrack.write() rs="+rs); loops++;
                     long now=System.nanoTime();
                     out.println(" delta >> "+(now-lastWrite));
