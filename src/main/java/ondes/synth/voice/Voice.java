@@ -105,13 +105,17 @@ public class Voice {
             components.put(key.toString(), c);
         }
 
-        // step 1a: add the main mixer to the components.
-        //    currently it is the only global component.
+        // step 1a: Add the main mixer to the components.
+        //    Currently it is the only global component.
+        //    Note that any others like this must be filtered out
+        //    in the following loop.
         components.put("main", synth.getMonoMainMix());
 
         // step 2 : configure
         //          (including: connect to other components)
         for (String compKey : components.keySet()) {
+            if (compKey.equals("main")) continue;
+
             Map compSpec=(Map)voiceSpec.get(compKey);
             MonoComponent comp=components.get(compKey);
             comp.setVoice(this);
@@ -122,7 +126,8 @@ public class Voice {
     }
 
     public void processMidiMessage(MidiMessage msg) {
-        ArrayList<MonoComponent> listeners = midiListeners[msg.getStatus()>>4];
+        ArrayList<MonoComponent> listeners =
+            midiListeners[7 & (msg.getStatus()>>4)];
 
         for (MonoComponent comp : listeners) {
             switch (msg.getStatus() >> 4) {

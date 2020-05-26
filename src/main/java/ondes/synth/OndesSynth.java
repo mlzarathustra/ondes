@@ -47,6 +47,14 @@ public class OndesSynth extends Thread implements EndListener {
             playing[chan].remove(voices[chan][note]);
             voices[chan][note] = null;
         }
+
+        /**
+         * @param chan - origin 0
+         * @return - the list of voices currently playing on this channel
+         */
+        VoiceSet getChannelPlaying(int chan) {
+            return playing[chan];
+        }
     }
 
     VoiceTracker voiceTracker = new VoiceTracker();
@@ -125,6 +133,16 @@ public class OndesSynth extends Thread implements EndListener {
 
     }
 
+    /**
+     * Send this message to all voices currently playing
+     * on the given channel.
+     */
+    void sendChannelMessage(MidiMessage msg) {
+        int chan = msg.getStatus() & 0xf;
+        for (Voice v : voiceTracker.getChannelPlaying(chan)) {
+            v.processMidiMessage(msg);
+        }
+    }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
         out.println(ts+" : "+MlzMidi.toString(msg));
@@ -139,15 +157,8 @@ public class OndesSynth extends Thread implements EndListener {
                 noteON(msg);
                 break;
 
-            //  TODO - implement at least some of these
-            //   (e.g. pitch bend + vol, mod, and sustain controllers)
-            //
-            case 0xa: status = "Aftertouch"; break;
-            case 0xb: status = "Controller"; break;
-            case 0xc: status = "Program Change"; break;
-            case 0xd: status = "Channel Pressure"; break;
-            case 0xe: status = "Pitch Bend"; break;
-            case 0xf: status = "System"; break;
+            default:
+                sendChannelMessage(msg);
         }
     }
 
