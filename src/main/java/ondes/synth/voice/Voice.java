@@ -37,13 +37,13 @@ public class Voice {
      *
      * To smooth out the differences between
      * <pre>
-     *      midi: on
+     *      midi: note-on
      * and
      *      midi:
-     *        - on
-     *        - off
+     *        - note-on
+     *        - note-off
      * and
-     *      midi: on, off
+     *      midi: note-on, note-off
      * </pre>
      *
      * @param obj - a list or something to put in a list
@@ -64,7 +64,7 @@ public class Voice {
     }
 
     public static final String[] midiMessageTypes =
-        "off on after control program pressure bend system".split(" ");
+        "note-off note-on after control program pressure bend system".split(" ");
 
     @SuppressWarnings("rawtypes")
     private void addMidiListeners(MonoComponent comp, Map compSpec) {

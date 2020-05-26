@@ -134,6 +134,8 @@ public class MonoMainMix extends MonoComponent {
         }
     }
 
+    boolean DRY = true;
+
     int outPos = 0;
     int loops = 0;
 
@@ -146,13 +148,19 @@ public class MonoMainMix extends MonoComponent {
             toLineFmt(outputBuffer); // copies into lineBuffer
             outPos = 0;
 
-            //  Send the samples to the sound module.
-            //  It blocks if needed.
-            //
-            int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
+            if (DRY) {
+                //out.println("outputBuffer: "+Arrays.toString(outputBuffer));
+            }
+            else {
 
-            if (DB && loops<100) {
-                System.out.println("audTrack.write() rs="+rs); loops++;
+                //  Send the samples to the sound module.
+                //  It blocks if needed.
+                //
+                int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
+
+                if (DB && loops<100) {
+                    System.out.println("audTrack.write() rs="+rs); loops++;
+                }
             }
         }
     }

@@ -96,7 +96,7 @@ public abstract class MonoComponent {
 
     /**
      * If this component should receive MIDI ON messages,
-     * override this function, and add the property "midi: on"
+     * override this function, and add the property "midi: note-on"
      * in the YAML file.
      *
      * @param msg - a Note-ON message for this channel
@@ -105,7 +105,7 @@ public abstract class MonoComponent {
 
     /**
      * If this component should receive MIDI OFF messages,
-     * override this function, and add the property "midi: off"
+     * override this function, and add the property "midi: note-off"
      * in the YAML file.
      *
      * @param msg - a Note-OFF message for this channel

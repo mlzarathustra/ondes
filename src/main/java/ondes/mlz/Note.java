@@ -13,7 +13,9 @@ package ondes.mlz;
  * </p>
  *
  */
+
 class Note {
+    /*
     String flatName, sharpName;
     double freq;
     boolean white;
@@ -48,4 +50,6 @@ class Note {
         return "Note {"+flatName+"; "+freq+" }";
     }
 
+
+ */
 }

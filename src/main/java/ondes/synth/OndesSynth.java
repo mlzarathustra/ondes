@@ -201,7 +201,7 @@ public class OndesSynth extends Thread implements EndListener {
                 //  TODO - think about race conditions
                 //   and need for synchronization with the above
 
-                sleep(1000);
+                //sleep(1000);
                 //out.print("breathe... ");
             }
             catch (Exception ignore) {}

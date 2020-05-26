@@ -3,6 +3,8 @@ package ondes.synth.wave;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.Instant;
 
+import javax.sound.midi.MidiMessage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +61,8 @@ public abstract class WaveGen extends MonoComponent {
         comp.addInput(this.getMainOutput());
     }
 
-
-
-
+    @Override
+    public void noteON(MidiMessage msg) {
+        out.println(Arrays.toString(msg.getMessage()));
+    }
 }

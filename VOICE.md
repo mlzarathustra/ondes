@@ -11,7 +11,7 @@ Below is a basic set of specifications.
  name: square
  
  osc1:
-   midi: on   # send this component note ON messages
+   midi: note-on   # send this component note ON messages
    type: wave
    shape: square
    out: main
@@ -39,8 +39,8 @@ A program can contain multiple components but the above has only one, a square w
  
  ## MIDI message types
  The codes for the MIDI messages are:
- - **on** - Note-ON
- - **off** - Note-OFF
+ - **note-on** - Note-ON
+ - **note-off** - Note-OFF
  - **after** - After-touch
  - **control** - MIDI controllers, including 
     - 0 - bank select MSB
@@ -55,6 +55,8 @@ A program can contain multiple components but the above has only one, a square w
  - **system** - system message     
  
 Note: the above is almost in numeric order. The first two are swapped, because it bugs me to see Note OFF (0x8) before Note ON (0x9). The rest are sequential. In real life, the ON comes first, right? Even though 0x9 has the 1 bit set and 0x8 doesn't (is that why they swapped them?)
+
+Note also: the reason it's "note-on" instead of just "on" is that YAML insists on converting the word "on" into a boolean. (same is true of a list of other words... on,off,yes,no,true,false, in whatever case).
  
  ## wave shapes
  possible wave shapes at this point are:

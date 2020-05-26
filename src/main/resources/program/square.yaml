@@ -2,7 +2,7 @@
 name: square
 
 osc1:
-  midi: on
+  midi: note-on
   type: wave
   shape: square
   out: main
