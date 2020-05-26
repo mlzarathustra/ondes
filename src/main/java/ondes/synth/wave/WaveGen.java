@@ -2,9 +2,11 @@ package ondes.synth.wave;
 
 import ondes.synth.component.MonoComponent;
 import ondes.synth.Instant;
+import ondes.midi.FreqTable;
 
 import javax.sound.midi.MidiMessage;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,8 +63,20 @@ public abstract class WaveGen extends MonoComponent {
         comp.addInput(this.getMainOutput());
     }
 
+    // there is no Arrays.stream(byte[])
+    //
+    void showBytes(MidiMessage msg) {
+        for (byte b : msg.getMessage()) {
+            out.print(Integer.toHexString(b&0x00ff)+" ");
+        }
+        out.println();
+    }
+
     @Override
     public void noteON(MidiMessage msg) {
-        out.println(Arrays.toString(msg.getMessage()));
+        out.print("WaveGen.noteON(): ");
+        showBytes(msg);
+        double freq = FreqTable.getFreq(msg.getMessage()[1]);
+        phaseClock.setFrequency((float)freq);
     }
 }

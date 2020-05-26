@@ -26,6 +26,10 @@ public class Instant  {
             while (phase >= 1) phase -= 1;
         }
         public double getPhase() { return phase; }
+
+        public void setFrequency(float freq) {
+            frequency = freq;
+        }
     }
 
     private int sampleRate;

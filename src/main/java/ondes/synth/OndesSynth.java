@@ -3,6 +3,7 @@ package ondes.synth;
 import javax.sound.midi.*;
 import javax.sound.sampled.Mixer;
 
+import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
 import ondes.synth.mix.MonoMainMix;
 import ondes.synth.voice.Voice;
@@ -67,6 +68,9 @@ public class OndesSynth extends Thread implements EndListener {
     private Mixer outDev;
     private String[] progNames;
 
+    final Object lock = new Object() {
+        public String toString() { return "Ondes Lock"; }
+    };
     boolean stop;
 
     /**
@@ -147,18 +151,24 @@ public class OndesSynth extends Thread implements EndListener {
     void routeMidiMessage(MidiMessage msg, long ts) {
         out.println(ts+" : "+MlzMidi.toString(msg));
 
-        String status="unknown";
-        int s=msg.getStatus()>>4;
-        switch (s) {
-            case 0x8: status = "Note OFF";
-                noteOFF(msg);
-                break;
-            case 0x9: status = "Note ON";
-                noteON(msg);
-                break;
+        //  Note-ON messes with the phase clocks list
+        //  so don't do it while incrementing them
+        synchronized(lock) {
+            String status = "unknown";
+            int s = msg.getStatus() >> 4;
+            switch (s) {
+                case 0x8:
+                    status = "Note OFF";
+                    noteOFF(msg);
+                    break;
+                case 0x9:
+                    status = "Note ON";
+                    noteON(msg);
+                    break;
 
-            default:
-                sendChannelMessage(msg);
+                default:
+                    sendChannelMessage(msg);
+            }
         }
     }
 
@@ -190,11 +200,18 @@ public class OndesSynth extends Thread implements EndListener {
 
     public void run() {
         listen();
+        FreqTable.getFreq(0); // preload the class
 
         for (;;) {
-            voiceTracker.forEach( Voice::resetWires );
-            instant.next();
-            monoMainMix.update();
+
+            //  Avoid colliding with constructor triggered by Note-ON
+            //
+            synchronized (lock){
+                voiceTracker.forEach(Voice::resetWires);
+                instant.next();
+                monoMainMix.update();
+            }
+
             try {
 
                 //  TODO --  stub; implement  the above

@@ -24,8 +24,6 @@ import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
 @SuppressWarnings("FieldMayBeFinal")
 public class MonoMainMix extends MonoComponent {
 
-    ArrayList<WiredIntSupplier> inputs = new ArrayList<>();
-
     private boolean DB=true;
 
     SourceDataLine srcLine;
@@ -149,7 +147,7 @@ public class MonoMainMix extends MonoComponent {
             outPos = 0;
 
             if (DRY) {
-                //out.println("outputBuffer: "+Arrays.toString(outputBuffer));
+                out.println("outputBuffer: "+Arrays.toString(outputBuffer));
             }
             else {
 

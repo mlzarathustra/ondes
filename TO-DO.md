@@ -5,6 +5,8 @@
  - Use FreqTable.getFreq(int midiNum) to set the note frequency.
  
  - remove the sleep(1000) from the main loop and review the need for any synchronization with the MIDI message Thread. 
+ 
+ - PhaseClocks never get removed.
        
  ----------- 
  - EnvGen needs to be hooked to a "multiply" component (like a VCA) 
