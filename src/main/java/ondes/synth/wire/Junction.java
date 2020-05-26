@@ -5,14 +5,15 @@ import ondes.synth.component.MonoComponent;
 import java.util.Map;
 
 /**
- * Basically a mixer with a single volume (scale) control.
- * It multiplies the sum of its input by "scale."
- * <br/><br/>
  *
- * For more control over the input levels,
- * @see ondes.synth.wire.ScalingWiredIntSupplier
- * <br/><br/>
- *
+ * <p>
+ *     Basically a mixer with a single volume (scale) control.
+ *     It multiplies the sum of its input by "scale."
+ * </p>
+ * <p>
+ *      For more control over the input levels,
+ *      @see ondes.synth.wire.ScalingWiredIntSupplier
+ * </p>
  */
 public class Junction extends MonoComponent {
 

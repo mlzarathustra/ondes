@@ -50,16 +50,19 @@ public abstract class MonoComponent {
     void setSynth(OndesSynth s) { synth = s; }
 
     /**
-     * Provide the output of this component to another component.
-     * <br/><br/>
      *
-     * The subclass generally MUST define "mainOutput," as it's the
-     * whole point of various components that the functionality of
-     * the output depends on the component.
-     * <br/><br/>
+     * <p>
+     *     Provide the output of this component to another component.
+     * </p>
+     * <p>
+     *     The subclass generally MUST define "mainOutput," as it's the
+     *     whole point of various components that the functionality of
+     *     the output depends on the component.
      *
-     * The exception is MainMix, which outputs by a whole other
-     * means to the audio system.
+     * </p>
+     * <p>
+     *     The exception is MainMix, which outputs by a whole other means to the audio system.
+     * </p>
      *
      * @return - the supplier of output data
      */
@@ -119,12 +122,15 @@ public abstract class MonoComponent {
     public void midiAfter(MidiMessage msg) { }
 
     /**
+     * <p>
      * If this component should receive MIDI Control messages,
      * override this function, and add the property "midi: control"
      * in the YAML file.
-     * <br/><br/>
+     * </p>
      *
+     * <p>
      * Controls include
+     * </p>
      * <ul>
      *     <li> 0 - bank select MSB </li>
      *     <li> 1 - mod wheel </li>
@@ -133,8 +139,7 @@ public abstract class MonoComponent {
      *     <li> 32 - bank select LSB </li>
      *     <li> 64 - sustain pedal </li>
      *
-     * </ul>sustain pedal, volume, and modulation
-     *
+     * </ul>
      * @param msg - a Controller message for this channel
      */
     public void midiControl(MidiMessage msg) { }
@@ -167,10 +172,11 @@ public abstract class MonoComponent {
     public void midiBend(MidiMessage msg) { }
 
     /**
+     * <p>
      * If this component should receive MIDI System messages,
      * override this function, and add the property "midi: system"
      * in the YAML file.
-     * <br/><br/>
+     * </p>
      *
      * In this context, may be useful for clocks.
      *

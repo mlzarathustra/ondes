@@ -11,7 +11,6 @@ import static ondes.mlz.Util.*;
  *          (simply an index into the set of points)
  *
  * @see Env
- * </p>
  */
 public class EnvMaker {
 

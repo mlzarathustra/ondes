@@ -15,12 +15,10 @@ import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
 
 /**
  * The inputs to this class will direct output
- * to the JavaSound audio system.
- * <br/><br/>
+ * to the JavaSound (stereo) audio system.
+ * Copies the input channel to both L and R out
  *
- * For now, copy the input channel to both L and R
- *
- * TODO - implement a stereo mix
+ * TODO - implement a stereo input mix
  *
  */
 @SuppressWarnings("FieldMayBeFinal")

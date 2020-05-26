@@ -16,25 +16,27 @@ import static ondes.mlz.Util.getResourceAsString;
 import static ondes.mlz.Util.listResourceFiles;
 
 /**
- * A "program" is simply a Map.
- * <br/><br/>
- *
- * We load (on startup) from the resource directory 'program' and also
- * the filesystem directory from the local dir named 'program.'
- * The key "name" at the top level of the map is expected to be a String,
- * and it will be used to identify the voice.
- * <br/><br/>
- *
- * The matching will be the same as with the devices, i.e.
- * name.toLowerCase().contains(key.toLowerCase()).
- * If more than one match, it will pick the first it encounters.
- * Since we load the programs from the filesystem first, those should
- * supersede any that match of the internal (resource) definitions.
- * <br/><br/>
- *
- * Because we're loading from Yaml, the Map is using non-generic types,
- * hence the SuppressWarnings.
- * <br/><br/>
+ * <p>
+ *     A "program" is simply a Map.
+ * </p>
+ * <p>
+ *     We load (on startup) from the resource directory 'program' and also
+ *     the filesystem directory from the local dir named 'program.'
+ *     The key "name" at the top level of the map is expected to be a String,
+ *     and it will be used to identify the voice.
+ * </p>
+ * <p>
+ *     The matching will be the same as with the devices, i.e.
+ *     name.toLowerCase().contains(key.toLowerCase()).
+ *     If more than one match, it will pick the first it encounters.
+ *     Since we load the programs from the filesystem first,
+ *     those should supersede any that match of the internal
+ *     (resource) definitions.
+ * </p>
+ * <p>
+ *     Because we're loading from Yaml, the Map is using non-generic types,
+ *     hence the SuppressWarnings.
+ * </p>
  *
  */
 @SuppressWarnings("rawtypes")

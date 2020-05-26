@@ -6,12 +6,14 @@ public abstract class ScalingWiredIntSupplier extends WiredIntSupplier {
     public void setScale(double v) { scale = v; }
 
     /**
-     * Acts as a latch so that loops won't be infinite
-     * If a Supplier has already been visited, it returns
-     * the value it already computed in this cycle.
-     * <br/><br/>
-     *
-     * So "visited" needs to be reset for each sample.
+     * <p>
+     *     Acts as a latch so that loops won't be infinite.
+     *     If a Supplier has already been visited,
+     *     it returns the value it already computed in this cycle.
+     * </p>
+     * <p>
+     *     So "visited" needs to be reset for each sample.
+     * </p>
      *
      * @return - a possibly cached value
      */

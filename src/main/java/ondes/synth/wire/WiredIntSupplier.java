@@ -14,12 +14,14 @@ public abstract class WiredIntSupplier implements IntSupplier {
     }
 
     /**
-     * Acts as a latch so that loops won't be infinite
-     * If a Supplier has already been visited, it returns
-     * the value it already computed in this cycle.
-     * <br/><br/>
-     *
-     * So "visited" needs to be reset for each sample.
+     * <p>
+     *     Acts as a latch so that loops won't be infinite.
+     *     If a Supplier has already been visited,
+     *     it returns the value it already computed in this cycle.
+     * </p>
+     * <p>
+     *     So "visited" needs to be reset for each sample.
+     * </p>
      *
      * @return - a possibly cached value
      */
@@ -33,6 +35,9 @@ public abstract class WiredIntSupplier implements IntSupplier {
     /**
      * Override to update all inputs to the Component
      * if there are any, and return the current value
+     *
+     * @return - the current output value (level) of this
+     * component after all the inputs have been updated
      */
     abstract public int updateInputs();
 

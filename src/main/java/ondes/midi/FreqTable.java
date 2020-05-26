@@ -7,13 +7,16 @@ import static java.lang.System.out;
 import static ondes.midi.MlzMidi.midiNumToStr;
 
 /**
- * Generate a table from MIDI note number to frequency
- * rather than trying to serialize it as data, it's easy
- * enough to just regenerate each time.
- * <br/><br/>
- *
- * The math isn't too hairy, otherwise it would be the
- * Furry Freq Brothers. :^)
+
+ * <p>
+ *    Generate a table from MIDI note number to frequency
+ *    rather than trying to serialize it as data, it's easy
+ *    enough to just regenerate each time.
+ * </p>
+ * <p>
+ *    The math isn't too hairy, otherwise it would be the
+ *    Furry Freq Brothers. :^)
+ * </p>
  *
  */
 public class FreqTable {

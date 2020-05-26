@@ -20,9 +20,21 @@ repositories {
     jcenter()
 }
 
+//  for Javadoc
+apply plugin: 'java'
+
 configurations {
     extraLibs
 }
+
+
+javadoc {
+    source = sourceSets.main.allJava
+    //classpath = configurations.compile
+    classpath = configurations.extraLibs
+}
+//
+
 
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.

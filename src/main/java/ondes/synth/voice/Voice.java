@@ -7,21 +7,82 @@ import ondes.synth.OndesSynth;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
 import javax.sound.midi.MidiMessage;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.System.err;
 
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings("FieldMayBeFinal,unchecked")
 public class Voice {
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
     private OndesSynth synth;
+
     private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
 
     public WiredIntSupplierMaker getWiredIntSupplierMaker() {
         return wiredIntSupplierMaker;
     }
+
+    private ArrayList<MonoComponent>[] midiListeners= new ArrayList[8];
+    {
+        for (int i=0; i<8; ++i) {
+            midiListeners[i] = new ArrayList<MonoComponent>();
+        }
+    }
+
+    /**
+     * For YAML parsing - package atoms into a list, or
+     * return a list if the object already is one.
+     *
+     * To smooth out the differences between
+     * <pre>
+     *      midi: on
+     * and
+     *      midi:
+     *        - on
+     *        - off
+     * and
+     *      midi: on, off
+     * </pre>
+     *
+     * @param obj - a list or something to put in a list
+     * @return - some kind of list
+     */
+    public static List<?> getList(Object obj) {
+        if (obj instanceof List) return (List<?>)obj;
+        List<Object> rs = new ArrayList<>();
+
+        if (obj instanceof String) {
+            String[] parts = obj.toString().split("[, ]+");
+            rs.addAll(Arrays.asList(parts));
+            return rs;
+        }
+
+        rs.add(obj);
+        return rs;
+    }
+
+    public static final String[] midiMessageTypes =
+        "off on after control program pressure bend system".split(" ");
+
+    @SuppressWarnings("rawtypes")
+    private void addMidiListeners(MonoComponent comp, Map compSpec) {
+        Object obj = compSpec.get("midi");
+        if (obj == null) return;
+        for (Object val : getList(obj)) {
+            String valStr= val.toString();
+
+
+
+
+
+
+
+        }
+    }
+
+
+
 
     public void resetWires() {
         wiredIntSupplierMaker.reset();
@@ -57,7 +118,14 @@ public class Voice {
             MonoComponent comp=components.get(compKey);
             comp.setVoice(this);
             comp.configure(compSpec,components);
+
+            addMidiListeners(comp, compSpec);
         }
+    }
+
+    public void processMidiMessage(MidiMessage msg) {
+        ArrayList<MonoComponent> listeners = midiListeners[msg.getStatus()>>4];
+
     }
 
     public void noteON(MidiMessage msg) {

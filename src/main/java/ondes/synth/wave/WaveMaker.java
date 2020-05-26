@@ -6,14 +6,16 @@ import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.keyStrip;
 
 /**
- *  WaveMaker returns a WaveGen instance, given the key
- *  (given in the "shape" value of the config).
- *  It then passes along the configuration parameters
- *  and the Map of other components (to connect to)
- *  to the new instance.
- *  <br/><br/>
- *
- *  It does not set the frequency.
+ * <p>
+ *     WaveMaker returns a WaveGen instance, given the key
+ *     (given in the "shape" value of the config).
+ *     It then passes along the configuration parameters
+ *     and the Map of other components (to connect to)
+ *     to the new instance.
+ * </p>
+ * <p>
+ *     It does not set the frequency.
+ * </p>
  *
  */
 public class WaveMaker {
@@ -31,12 +33,12 @@ public class WaveMaker {
     }
 
     /**
-     * Wave Generator "factory" method
-     * <br/><br/>
-     *
-     * Does NOT configure the wave generator, as we must wait
-     * until all of the components are created, so that we can
-     * connect to any one of them.
+     * <p>
+     *     Wave Generator "factory" method
+     * </p>
+     * <p>
+     *     Does NOT configure the wave generator, as we must wait until all of the components are created, so that we can connect to any one of them.
+     * </p>
      *
      * @param shape - the key for finding this wave generator type
      * @return a wave generator as named by key

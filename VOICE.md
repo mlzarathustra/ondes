@@ -54,6 +54,7 @@ A program can contain multiple components but the above has only one, a square w
  - **bend** - pitch bend
  - **system** - system message     
  
+Note: the above is almost in numeric order. The first two are swapped, because it bugs me to see Note OFF (0x8) before Note ON (0x9). The rest are sequential. In real life, the ON comes first, right? Even though 0x9 has the 1 bit set and 0x8 doesn't (is that why they swapped them?)
  
  ## wave shapes
  possible wave shapes at this point are:
