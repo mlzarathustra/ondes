@@ -198,6 +198,8 @@ public class OndesSynth extends Thread implements EndListener {
             try {
 
                 //  TODO --  stub; implement  the above
+                //  TODO - think about race conditions
+                //   and need for synchronization with the above
 
                 sleep(1000);
                 //out.print("breathe... ");

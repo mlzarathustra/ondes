@@ -1,17 +1,19 @@
 # Ondes synth - to do
 
- - and of course, use FreqTable.getFreq(int midiNum) to set the note frequency. 
- - Does the "midi: true" flag make sense? Not all WG's will want the frequency set to the note. Maybe instead: 
+ - review WiredIntSupplierMaker logic - so far it only is used for "main" so make sure the other cases will work (e.g. when hooking an env generator in) 
  
-        freq: midi # or frequency: midi 
+ - Use FreqTable.getFreq(int midiNum) to set the note frequency.
  
- - noteOFF routing / voice management - 
-    - default: free the voice on note-OFF 
-    - If there's a designated envelope, free the voice when it is finished.
-    - for now, only one envelope determines (rather than an AND or OR logic for several)
+ - remove the sleep(1000) from the main loop and review the need for any synchronization with the MIDI message Thread. 
        
  ----------- 
  - EnvGen needs to be hooked to a "multiply" component (like a VCA) 
+ 
+ - noteOFF routing / voice management - 
+    - default: free the voice on note-OFF (as it is now)
+    - If there's a designated envelope, free the voice when it is finished.
+    - for now, only one envelope determines (rather than an AND or OR logic for several)
+ 
     
  ----------- 
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 

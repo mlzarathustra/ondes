@@ -6,13 +6,6 @@ public abstract class WiredIntSupplier implements IntSupplier {
     protected boolean visited;
     protected int curOut;
 
-    WiredIntSupplier() {
-
-    //  TODO - register this in a global (LINKED) list for reset
-    //    they will have to be removed by any Voice
-    //    releasing them, or they will build up.
-    }
-
     /**
      * <p>
      *     Acts as a latch so that loops won't be infinite.

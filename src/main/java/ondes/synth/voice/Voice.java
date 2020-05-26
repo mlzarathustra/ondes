@@ -27,7 +27,7 @@ public class Voice {
     private ArrayList<MonoComponent>[] midiListeners= new ArrayList[8];
     {
         for (int i=0; i<8; ++i) {
-            midiListeners[i] = new ArrayList<MonoComponent>();
+            midiListeners[i] = new ArrayList<>();
         }
     }
 
@@ -150,18 +150,6 @@ public class Voice {
         }
 
     }
-
-//    public void noteON(MidiMessage msg) {
-//
-//    }
-//
-//    public void noteOFF(MidiMessage msg) {
-//
-//        //  TODO - below is the default behavior
-//        //           but if there is an env generator, let IT trigger the end.
-//        //
-//        endListener.noteEnded(msg);
-//    }
 
     public String toString() {
         return "Voice { components: "+
