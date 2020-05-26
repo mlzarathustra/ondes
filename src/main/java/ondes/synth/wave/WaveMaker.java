@@ -53,10 +53,10 @@ public class WaveMaker {
         }
     }
 
-    static {        //
+    static {
         register("square", SquareWaveGen.class);
         register("sine", SineWaveGen.class);
-//        register("saw", SawWaveGen.class);
+        register("saw", SawWaveGen.class);
 //        register("pwm", PWMWaveGen.class);
 //        register("mellow", CompositeWaveGen.class);
 //        register("bell", CompositeWaveGen.class);

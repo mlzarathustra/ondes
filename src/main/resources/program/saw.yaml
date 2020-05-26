@@ -1,0 +1,8 @@
+
+name: saw
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: main
