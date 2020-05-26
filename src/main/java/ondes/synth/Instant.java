@@ -7,11 +7,10 @@ public class Instant  {
         private float frequency;
         private double delta;
         private double phase;
-        long lastUpdate;
+        long lastUpdate = -1;
 
         PhaseClock(float f) {
-            frequency=f;
-            setDelta();
+            setFrequency(f);
         }
 
         void setDelta() {
@@ -19,6 +18,7 @@ public class Instant  {
         }
 
         public void update() {
+            if (lastUpdate < 0) lastUpdate = sampleNumber;
             while (lastUpdate < sampleNumber) {
                 phase += delta;
                 lastUpdate++;
@@ -27,8 +27,10 @@ public class Instant  {
         }
         public double getPhase() { return phase; }
 
+        public float getFrequency() { return frequency; }
         public void setFrequency(float freq) {
             frequency = freq;
+            setDelta();
         }
     }
 

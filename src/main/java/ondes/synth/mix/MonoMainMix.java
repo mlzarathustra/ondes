@@ -104,6 +104,7 @@ public class MonoMainMix extends MonoComponent {
         }
 
         srcLine.open(audFmt,lineBuffer.length);
+        srcLine.start(); // without this, you won't get any sound.
     }
 
     //  transform for endian-ness, multiple channels,
@@ -132,7 +133,7 @@ public class MonoMainMix extends MonoComponent {
         }
     }
 
-    boolean DRY = true;
+    boolean DRY = false;
 
     int outPos = 0;
     int loops = 0;
@@ -147,7 +148,8 @@ public class MonoMainMix extends MonoComponent {
             outPos = 0;
 
             if (DRY) {
-                out.println("outputBuffer: "+Arrays.toString(outputBuffer));
+                //out.println("outputBuffer: "+Arrays.toString(outputBuffer));
+                out.println("srcLine.write( disabled )");
             }
             else {
 
