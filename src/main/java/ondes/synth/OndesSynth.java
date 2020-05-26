@@ -17,26 +17,34 @@ import static java.lang.System.out;
 public class OndesSynth extends Thread implements EndListener {
 
     class VoiceTracker {
+        class VoiceSet extends HashSet<Voice> { }
+
         //  16 MIDI channels x 128 Notes
         private final Voice [][]voices = new Voice[16][128];
-        HashSet<Voice> playing=new HashSet<>();
+        // track playing voices per channel
+        VoiceSet[] playing=new VoiceSet[16];
+        {
+            for (int i=0; i<16; ++i) playing[i] = new VoiceSet();
+        }
 
         Voice getVoice(int chan, int note) {
             return voices[chan][note];
         }
 
         void forEach(Consumer<Voice> fn) {
-            for (Voice v : playing) fn.accept(v);
+            for (int chan=0; chan<16; ++chan) {
+                for (Voice v : playing[chan]) fn.accept(v);
+            }
         }
 
         void addVoice(Voice v, int chan, int note) {
             voices[chan][note]=v;
-            playing.add(v);
+            playing[chan].add(v);
         }
 
         void delVoice(int chan, int note) {
             if (voices[chan][note] == null) return;
-            playing.remove(voices[chan][note]);
+            playing[chan].remove(voices[chan][note]);
             voices[chan][note] = null;
         }
     }
@@ -95,7 +103,7 @@ public class OndesSynth extends Thread implements EndListener {
         Voice playing = voiceTracker.getVoice(chan,note);
 
         if (playing != null) {
-            playing.noteON(msg);
+            playing.processMidiMessage(msg);
             return;
         }
 
@@ -104,7 +112,7 @@ public class OndesSynth extends Thread implements EndListener {
 
         voiceTracker.addVoice(v,chan,note);
         v.setEndListener(this);
-        v.noteON(msg);
+        v.processMidiMessage(msg);
     }
 
     void noteOFF(MidiMessage msg) {
@@ -113,7 +121,7 @@ public class OndesSynth extends Thread implements EndListener {
 
         Voice playing = voiceTracker.getVoice(chan,note);
         if (playing == null) return;
-        playing.noteOFF(msg);
+        playing.processMidiMessage(msg);
 
     }
 

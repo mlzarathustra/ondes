@@ -8,6 +8,7 @@ import ondes.synth.wire.WiredIntSupplierMaker;
 
 import javax.sound.midi.MidiMessage;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.lang.System.err;
 
@@ -72,17 +73,14 @@ public class Voice {
         for (Object val : getList(obj)) {
             String valStr= val.toString();
 
-
-
-
-
-
-
+            for (int i=0; i<midiMessageTypes.length; ++i) {
+                if (valStr.equals(midiMessageTypes[i])) {
+                    midiListeners[i].add(comp);
+                    break;
+                }
+            }
         }
     }
-
-
-
 
     public void resetWires() {
         wiredIntSupplierMaker.reset();
@@ -126,19 +124,39 @@ public class Voice {
     public void processMidiMessage(MidiMessage msg) {
         ArrayList<MonoComponent> listeners = midiListeners[msg.getStatus()>>4];
 
-    }
+        for (MonoComponent comp : listeners) {
+            switch (msg.getStatus() >> 4) {
+                case 0x8: comp.noteOFF(msg); break;
+                case 0x9: comp.noteON(msg); break;
+                case 0xa: comp.midiAfter(msg); break;
+                case 0xb: comp.midiControl(msg); break;
+                case 0xc: comp.midiProgram(msg); break;
+                case 0xd: comp.midiPressure(msg); break;
+                case 0xe: comp.midiBend(msg); break;
+                case 0xf: comp.midiSystem(msg); break;
+            }
+        }
 
-    public void noteON(MidiMessage msg) {
-
-    }
-
-    public void noteOFF(MidiMessage msg) {
-
-        //  TODO - below is the default behavior
-        //           but if there is an env generator, let IT trigger the end.
+        // TODO - if an envelope handles the notification,
+        //        we won't do it here.
         //
-        endListener.noteEnded(msg);
+        if (msg.getStatus()>>4 == 8) {  // Note-OFF
+            endListener.noteEnded(msg);
+        }
+
     }
+
+//    public void noteON(MidiMessage msg) {
+//
+//    }
+//
+//    public void noteOFF(MidiMessage msg) {
+//
+//        //  TODO - below is the default behavior
+//        //           but if there is an env generator, let IT trigger the end.
+//        //
+//        endListener.noteEnded(msg);
+//    }
 
     public String toString() {
         return "Voice { components: "+
