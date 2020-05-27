@@ -1,0 +1,18 @@
+
+
+name: fourths
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: anharmonic
+  waves:
+    # powers of 2^(5/12)
+    - 1 1
+    - 1.3348398541700344 1
+    - 1.7817974362806785 2
+    - 2.378414230005442  3
+    - 3.174802103936399  4
+    - 4.237852377437181  5
+
+  out: main

@@ -6,6 +6,7 @@ import java.util.*;
 
 import static java.lang.System.err;
 import static java.util.stream.Collectors.joining;
+import static ondes.mlz.SineLookup.sineLookup;
 
 /**
  * <p>
@@ -39,6 +40,10 @@ class AnharmonicWaveGen extends WaveGen {
     @Override
     void setFreq(double freq) {
         super.setFreq(freq);
+        for (int wp=0; wp<waves.length-1; wp+=2) {
+            clocks.get(wp/2)
+                .setFrequency( (float)(freq * waves[wp]) );
+        }
 
         scaledAmp = (int)(getAmp() * (1.0 + 55.0/(2*freq) ));
         // TODO - pitch scaling, to help out the bass notes
@@ -79,16 +84,33 @@ class AnharmonicWaveGen extends WaveGen {
             }
         }
 
-        if (waves == null) {
+        if (waves == null || waves.length == 0) {
             err.println(
                 "Anharmonic composite wave form currently requires \n" +
                     "a list of value pairs (frequency, divisor).\n");
         }
+        for (int i=0; i<waves.length-1; i += 2) {
+            clocks.add(synth.getInstant().addPhaseClock());
+        }
     }
 
+    @Override
+    public void release() {
+        super.release();
+        clocks.forEach( synth.getInstant()::delPhaseClock );
+    }
 
+    /**
+     * @return component level at the instant of this sample.
+     */
     @Override
     public int currentValue() {
-        return 0;
+        double sum=0;
+        for (int ov = 0; ov< waves.length-1; ov+=2) {
+            sum += sineLookup( clocks.get(ov/2).getPhase() * TAO )
+                / waves[ov+1];
+        }
+
+        return (int) (sum * getAmp());  //   *scaledAmp?
     }
 }

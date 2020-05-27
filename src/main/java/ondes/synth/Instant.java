@@ -2,6 +2,7 @@ package ondes.synth;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class Instant  {
     public class PhaseClock {
         private float frequency;

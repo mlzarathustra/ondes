@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 
 import static java.util.stream.Collectors.joining;
 import static ondes.mlz.SineLookup.sineLookup;
@@ -121,7 +122,6 @@ class HarmonicWaveGen extends WaveGen {
     }
 
     /**
-     *
      * @return component level at the instant of this sample.
      */
     @Override
