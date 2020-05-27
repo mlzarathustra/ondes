@@ -1,0 +1,14 @@
+
+name: buzz
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2.3 1
+    - 4.4 1
+    - 8.27 1
+    - 16 16
+  out: main

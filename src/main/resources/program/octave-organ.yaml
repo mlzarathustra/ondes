@@ -1,0 +1,27 @@
+
+name: octave organ
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 4 4
+    - 8 8
+    - 16 16
+  out: main
+
+osc2:
+  midi: note-on
+  detune: 7
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 4 4
+    - 8 8
+    - 16 16
+  out: main

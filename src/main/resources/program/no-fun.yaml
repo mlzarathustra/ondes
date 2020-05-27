@@ -1,0 +1,31 @@
+
+# see also "no fundamental plus ten"
+
+name: no fundamental
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves:
+    - 2 2
+    - 3 3
+    - 6 6
+    - 8 8
+#    - 10 10
+  out: main
+
+
+osc2:
+  midi: note-on
+  type: wave
+  detune: 8
+  shape: harmonic
+  waves:
+    - 2 2
+    - 3 3
+    - 4 4
+    - 6 6
+    - 9 9
+#    - 10 10
+  out: main

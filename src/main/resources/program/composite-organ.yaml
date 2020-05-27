@@ -2,19 +2,19 @@
 # sounds more like strings than
 # organ or bell!
 
-name: composite
+name: strings
 
 osc1:
   midi: note-on
   type: wave
-  shape: composite
+  shape: harmonic
   preset: organ
   out: main
 
 osc2:
   midi: note-on
   type: wave
-  shape: composite
+  shape: harmonic
   preset: bell
   detune: 7
   out: main

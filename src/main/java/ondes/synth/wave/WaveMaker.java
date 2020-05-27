@@ -60,7 +60,7 @@ public class WaveMaker {
         register("sine", SineWaveGen.class);
         register("saw", SawWaveGen.class);
 
-        register("composite", CompositeWaveGen.class);
+        register("harmonic", HarmonicWaveGen.class);
 
 //        register("pwm", PWMWaveGen.class);
 //        register("sample", SampleWaveGen.class);
