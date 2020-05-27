@@ -37,7 +37,9 @@ public class WaveMaker {
      *     Wave Generator "factory" method
      * </p>
      * <p>
-     *     Does NOT configure the wave generator, as we must wait until all of the components are created, so that we can connect to any one of them.
+     *     Does NOT configure the wave generator, as we must wait
+     *     until all of the components are created, so that we
+     *     can connect to any one of them.
      * </p>
      *
      * @param shape - the key for finding this wave generator type

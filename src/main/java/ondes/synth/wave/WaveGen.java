@@ -11,6 +11,8 @@ import java.util.Map;
 import static ondes.mlz.Util.getList;
 import static ondes.midi.MlzMidi.showBytes;
 
+import static java.lang.Math.pow;
+
 import static java.lang.System.err;
 import static java.lang.System.out;
 
@@ -21,7 +23,11 @@ import static java.lang.System.out;
  *
  */
 public abstract class WaveGen extends MonoComponent {
+    public static boolean VERBOSE = false;
+
     protected Instant.PhaseClock phaseClock;
+    static final double oneStep = pow(2, 1.0/12);
+    static final double oneCent = pow(2, 1.0/1200);
 
     /**
      * reset the note to zero
@@ -33,7 +39,26 @@ public abstract class WaveGen extends MonoComponent {
     double freq = 440;
     int amp = 2048;  // assume 16-bits (signed) for now.
 
-    void setFreq(double freq) { this.freq = freq; }
+    float detune = 0;  // detune in cents
+    int offset = 0;    // interval offset in minor seconds
+
+    double freqMultiplier = 1;
+    double getFreqMultiplier() {
+        if (detune == 0 && offset == 0) {
+            freqMultiplier=1;
+            return 1;
+        }
+        freqMultiplier =
+            pow(oneStep,offset) * pow(oneCent,detune);
+        return freqMultiplier;
+    }
+
+
+
+    void setFreq(double freq) {
+        this.freq = freq;
+        phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
+    }
 
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
@@ -48,10 +73,24 @@ public abstract class WaveGen extends MonoComponent {
             err.println("Voice will not sound without output!");
             return;
         }
-
         List compOutList = getList(compOut);
         for (Object oneOut : compOutList) {
             setOutput((MonoComponent) components.get(oneOut));
+        }
+
+        Object detune = config.get("detune");
+        if (detune != null) {
+            try { this.detune = Float.parseFloat(detune.toString()); }
+            catch (Exception ex) {
+                err.println("'detune' must be a number. can be floating.");
+            }
+        }
+        Object offset = config.get("offset");
+        if (offset != null) {
+            try { this.offset = Integer.parseInt(offset.toString()); }
+            catch (Exception ex) {
+                err.println("'offset' must be an integer.");
+            }
         }
     }
 
@@ -65,13 +104,12 @@ public abstract class WaveGen extends MonoComponent {
         outputs.add(comp); // so we can remove it later
     }
 
-
-
     @Override
     public void noteON(MidiMessage msg) {
-//        out.print("WaveGen.noteON(): ");
-//        showBytes(msg);
-        double freq = FreqTable.getFreq(msg.getMessage()[1]);
-        phaseClock.setFrequency((float)freq);
+        if (VERBOSE) {
+            out.print("WaveGen.noteON(): ");
+            showBytes(msg);
+        }
+        setFreq(FreqTable.getFreq(msg.getMessage()[1]));
     }
 }

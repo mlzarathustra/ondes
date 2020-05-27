@@ -14,8 +14,7 @@ package ondes.synth.wave;
  */
 class CompositeWaveGen extends WaveGen {
 
-    static double twoPI=Math.PI*2.0;
-    private double phase=0;
+    static double TAO=Math.PI*2.0;
     private int scaledAmp;
 
     @Override
@@ -27,9 +26,6 @@ class CompositeWaveGen extends WaveGen {
         scaledAmp = (int)(amp * (1.0 + 55.0/(2*freq) ));
         // pitch scaling, to help out the bass notes
     }
-
-    @Override
-    public void reset() { phase=0; }
 
     // a crude, inefficient (but easy to initialize) hashmap
     //
@@ -50,19 +46,13 @@ class CompositeWaveGen extends WaveGen {
 
     private double[] wave=waves[0];
 
-    @Override
-    protected void setWaveKey(String key) {
-        for (int i=0; i<labels.length; ++i) {
-            if (key.equals(labels[i])) wave=waves[i];
-        }
-    }
 
 
-    @Override
+    /*
     synchronized long[] nextBuf() {
         //System.out.print("*");
 
-        while (phase > twoPI) phase -= twoPI;
+        while (phase > TAO) phase -= TAO;
         for (int i = 0; i< samples.length; ++i) {
             double sum=0;
             for (int ov=0; ov<wave.length-1; ov+=2) {
@@ -76,4 +66,15 @@ class CompositeWaveGen extends WaveGen {
         return samples;
     }
 
+     */
+
+    /**
+     * TODO - transfer the above logic to here using the sampled sine waves
+     *
+     * @return component level at the instant of this sample.
+     */
+    @Override
+    public int currentValue() {
+        return 0;
+    }
 }

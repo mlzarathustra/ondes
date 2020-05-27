@@ -1,0 +1,22 @@
+
+name: saw and square
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: main
+
+osc2:
+  midi: note-on
+  type: wave
+  shape: square
+  out: main
+  detune: -12
+
+osc3:
+  midi: note-on
+  type: wave
+  shape: square
+  out: main
+  detune: 12
