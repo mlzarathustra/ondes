@@ -1,6 +1,8 @@
 # Ondes synth - to do
 
- - review WiredIntSupplierMaker logic - so far it only is used for "main" so make sure the other cases will work (e.g. when hooking an env generator in) 
+ - review WiredIntSupplierMaker logic - so far it only is used for "main" so make sure the other cases will work (e.g. when hooking an env generator in)
+ 
+ - look into channel overload. Compress somehow. 
   
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
  

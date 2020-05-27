@@ -1,5 +1,5 @@
 
-name: saw and square
+name: four sour
 
 osc1:
   midi: note-on
@@ -20,3 +20,12 @@ osc3:
   shape: square
   out: main
   detune: 12
+
+osc4:
+  midi: note-on
+  type: wave
+  shape: sin
+  offset: 7
+  detune: 4
+  out: main
+  scale: .4

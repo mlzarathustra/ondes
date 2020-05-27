@@ -23,7 +23,7 @@ class CompositeWaveGen extends WaveGen {
 
         //scaledAmp = amp;
 
-        scaledAmp = (int)(amp * (1.0 + 55.0/(2*freq) ));
+        scaledAmp = (int)(getAmp() * (1.0 + 55.0/(2*freq) ));
         // pitch scaling, to help out the bass notes
     }
 

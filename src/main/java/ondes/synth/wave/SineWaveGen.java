@@ -10,12 +10,14 @@ class SineWaveGen extends WaveGen {
 
     static double TAO = PI*2;
 
-    int scale = 2; // sine waves are very quiet
+    int sinScale = 2; // sine waves are very quiet
+    // we may want to boost more for the lower freqs
 
     @Override
     public int currentValue() {
         return  (int)(
-            sineLookup(phaseClock.getPhase() * TAO) * amp * scale
+            sineLookup(phaseClock.getPhase() * TAO) *
+                getAmp() * sinScale
         );
     }
 

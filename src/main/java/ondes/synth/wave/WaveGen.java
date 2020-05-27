@@ -36,11 +36,16 @@ public abstract class WaveGen extends MonoComponent {
         //  phaseClock.align() or something like that
     }
 
-    double freq = 440;
-    int amp = 2048;  // assume 16-bits (signed) for now.
+    private double freq = 440;
+    private int amp = 2048;  // assume 16-bits (signed) for now.
+
+    public int getAmp() {
+        return (int)(scale * amp);
+    }
 
     float detune = 0;  // detune in cents
     int offset = 0;    // interval offset in minor seconds
+    float scale = 1;
 
     double freqMultiplier = 1;
     double getFreqMultiplier() {
@@ -52,8 +57,6 @@ public abstract class WaveGen extends MonoComponent {
             pow(oneStep,offset) * pow(oneCent,detune);
         return freqMultiplier;
     }
-
-
 
     void setFreq(double freq) {
         this.freq = freq;
@@ -90,6 +93,19 @@ public abstract class WaveGen extends MonoComponent {
             try { this.offset = Integer.parseInt(offset.toString()); }
             catch (Exception ex) {
                 err.println("'offset' must be an integer.");
+            }
+        }
+        Object scale = config.get("scale");
+        if (scale != null) {
+            try {
+                this.scale = Float.parseFloat(scale.toString());
+                if (this.scale < 0 || this.scale > 1) {
+                    err.println("'scale' must (floating) be between 0 and 1.");
+                    scale = 1;
+                }
+            }
+            catch (Exception ex) {
+                err.println("'scale' must be a floating number.");
             }
         }
     }

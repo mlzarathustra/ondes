@@ -122,6 +122,8 @@ public class App {
             switch(args[i]) {
                 case "-show-patches":
                 case "-show-programs":
+                case "-list-patches":
+                case "-list-programs":
                     showPrograms(); // exits
 
                 case "-help": case "-h": case "?": case "-?":
