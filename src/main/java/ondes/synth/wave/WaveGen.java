@@ -19,8 +19,6 @@ import static java.lang.System.out;
 /**
  * The parent abstract class that defines the interface of the wave generators.
  * All wave generators must extend this class.
- *
- *
  */
 public abstract class WaveGen extends MonoComponent {
     public static boolean VERBOSE = false;

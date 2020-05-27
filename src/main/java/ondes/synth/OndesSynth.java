@@ -206,6 +206,7 @@ public class OndesSynth extends Thread implements EndListener {
     //
     public void run() {
         // preload class data
+
         FreqTable.getFreq(0);
         SineLookup.sineLookup(0);
 

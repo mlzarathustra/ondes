@@ -1,5 +1,14 @@
 package ondes.synth.wave;
 
+import java.util.Arrays;
+import java.util.Map;
+
+import static java.lang.System.err;
+import static java.lang.System.out;
+
+import static ondes.mlz.SineLookup.sineLookup;
+
+
 /**
  * <p>
  *   perform additive synthesis by constructing a wave composed of one or more harmonics
@@ -27,8 +36,6 @@ class CompositeWaveGen extends WaveGen {
         // pitch scaling, to help out the bass notes
     }
 
-    // a crude, inefficient (but easy to initialize) hashmap
-    //
     /** the keys of the "hash-map." The correspondingly indexed
      *  element of waves is the value.
      */
@@ -46,27 +53,29 @@ class CompositeWaveGen extends WaveGen {
 
     private double[] wave=waves[0];
 
-
-
-    /*
-    synchronized long[] nextBuf() {
-        //System.out.print("*");
-
-        while (phase > TAO) phase -= TAO;
-        for (int i = 0; i< samples.length; ++i) {
-            double sum=0;
-            for (int ov=0; ov<wave.length-1; ov+=2) {
-                sum += Math.sin(phase*wave[ov])/wave[ov+1];
-            }
-
-            samples[i] = (long) (scaledAmp * sum);
-            phase += twoPI * freq / sampleRate;
+    double[] getWaves(String preset) {
+        for (int i=0; i<labels.length; ++i) {
+            if (labels[i].equals(preset)) return waves[i];
         }
-        //if (loops<3) { loops++; System.out.println(Arrays.toString(samples)); }
-        return samples;
+        return null;
     }
 
-     */
+    @Override
+    @SuppressWarnings("rawtypes")
+    public void configure(Map config, Map components) {
+        super.configure(config,components);
+
+        Object preset = config.get("preset");
+        double[] waves = getWaves(preset.toString());
+        if (!(preset instanceof String) || waves == null) {
+            err.println("composite wave form currently requires preset string");
+            err.println("current options: "+String.join(" ",labels));
+            return;
+            // TODO - or a list of freqs/divisors
+        }
+
+        //out.println("waves: "+ Arrays.toString(waves));
+    }
 
     /**
      * TODO - transfer the above logic to here using the sampled sine waves
@@ -75,6 +84,13 @@ class CompositeWaveGen extends WaveGen {
      */
     @Override
     public int currentValue() {
-        return 0;
+        double sum=0;
+        for (int ov=0; ov<wave.length-1; ov+=2) {
+            sum += sineLookup(
+                phaseClock.getPhase() * wave[ov] )
+                / wave[ov+1];
+        }
+
+        return (int) sum * getAmp();  //   *scaledAmp?
     }
 }

@@ -1,5 +1,5 @@
 
-name: basic square
+name: square with env
 
 osc1:
   type: wave
@@ -12,7 +12,7 @@ osc1:
 env1:
   type: env
   shape: clavier
-  out: voiceMix
+  out: main
   points:
     - 0,100
     - 2,75
@@ -20,15 +20,12 @@ env1:
     - 50,0
     - 10,0
 
-voiceMix:
-  type: mix
-  out: mainMix
-  scale: 1
-
 lfo1:
   type: wave
   freq: 1.7
   shape: saw
+  out: osc1
+  amp: 5     # q: what should these units be?
 
 
 

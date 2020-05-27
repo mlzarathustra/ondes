@@ -1,0 +1,20 @@
+
+# sounds more like strings than
+# organ or bell!
+
+name: composite
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: composite
+  preset: organ
+  out: main
+
+osc2:
+  midi: note-on
+  type: wave
+  shape: composite
+  preset: bell
+  detune: 7
+  out: main
