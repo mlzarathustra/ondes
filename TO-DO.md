@@ -2,6 +2,26 @@
 
  - review WiredIntSupplierMaker logic - so far it only is used for "main" so make sure the other cases will work (e.g. when hooking an env generator in) 
   
+ - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
+ 
+ - Look into clicks at the end of sine waves. Taper off? 
+
+
+ - Multi-channel (e.g. Stereo) components
+   The input and output would be an int array 
+   or a `long` for just two channels.
+   
+   ```java    
+       Supplier<int[]> getOutputs() {
+           
+       }
+ 
+       Consumer<int[]> getInputs() {
+           
+       }
+   ```     
+
+  
  ----------- 
  - EnvGen needs to be hooked to a "multiply" component (like a VCA) 
  
@@ -27,22 +47,6 @@
          
     
  ----------- 
- - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
-
-
- - Multi-channel (e.g. Stereo) components
-    The input and output would be an int array 
-    or a `long` for just two channels.
-    
-    ```java    
-        Supplier<int[]> getOutputs() {
-            
-        }
-
-        Consumer<int[]> getInputs() {
-            
-        }
-    ```     
 
 - Add a hierarchy of namespaces so we can create components at different levels 
     - global

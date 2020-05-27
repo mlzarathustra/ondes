@@ -5,6 +5,7 @@ import javax.sound.sampled.Mixer;
 
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
+import ondes.mlz.SineLookup;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
 
@@ -200,34 +201,25 @@ public class OndesSynth extends Thread implements EndListener {
         }
     }
 
+    //  The core is synchronized to avoid colliding with
+    //  a constructor triggered by Note-ON
+    //
     public void run() {
+        // preload class data
+        FreqTable.getFreq(0);
+        SineLookup.sineLookup(0);
+
         listen();
-        FreqTable.getFreq(0); // preload the class
 
         for (;;) {
-
-            //  Avoid colliding with constructor triggered by Note-ON
-            //
             synchronized (lock){
                 voiceTracker.forEach(Voice::resetWires);
                 instant.next();
                 monoMainMix.update();
             }
 
-            try {
-
-                //  TODO --  stub; implement  the above
-                //  TODO - think about race conditions
-                //   and need for synchronization with the above
-
-                //sleep(1000);
-                //out.print("breathe... ");
-            }
-            catch (Exception ignore) {}
-
             if (stop) return;
         }
-
     }
 
 

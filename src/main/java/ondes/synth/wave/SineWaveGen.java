@@ -1,6 +1,6 @@
 package ondes.synth.wave;
 
-import static java.lang.Math.sin;
+import static ondes.mlz.SineLookup.sineLookup;
 import static java.lang.Math.PI;
 
 /**
@@ -15,7 +15,7 @@ class SineWaveGen extends WaveGen {
     @Override
     public int currentValue() {
         return  (int)(
-            sin(phaseClock.getPhase() * TAO) * amp * scale
+            sineLookup(phaseClock.getPhase() * TAO) * amp * scale
         );
     }
 

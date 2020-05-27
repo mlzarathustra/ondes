@@ -4,9 +4,10 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
 /**
- * A linked list of Wires,
- * doing what they always do!
- *y
+ * A linked list of Wires, doing what they always do!
+ * Not being used currently, but the linked list may
+ * come in handy at some point.
+ *
  * @see Junction
  */
 public class Tangle {
