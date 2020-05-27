@@ -1,0 +1,11 @@
+
+name: bassoon
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: composite
+  waves:
+    - 1     1
+    - 6.3     2
+  out: main
