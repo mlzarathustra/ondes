@@ -12,6 +12,8 @@ Below is a basic set of specifications.
  
  osc1:
    midi: note-on   # send this component note ON messages
+   detune: -12
+   offset: 7 
    type: wave
    shape: square
    out: main
@@ -27,10 +29,15 @@ A program can contain multiple components but the above has only one, a square w
  
  - **midi** - tell which type(s) of MIDI message this component should receive. Possibilities are listed below.
  
+ - **detune** - cents relative to the base frequency. 100 cents equals a half step, so adding detune plus offset you can choose any frequency relative to the base. May be positive or negative.
+ 
+ - **offset** - number of half steps to offset the frequency from the base. -12 is down an octave. 6 is a tritone. Dust off your music theory books! 
+ 
  - **type** - what type of component this is.  These values may be found in the `ComponentMaker` switch. Currently options are:
     - wave - wave generator
     - env - envelope generator
     - mixer - a junction between voices
+    - limiter - keeps a signal from overflowing
     
    More will follow in the future.
  - **shape** - specific to the wave generator. Other components may have the same label but with different possible values.

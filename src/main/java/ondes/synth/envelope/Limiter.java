@@ -3,18 +3,20 @@ package ondes.synth.envelope;
 
 import ondes.mlz.MaxTracker;
 import ondes.synth.component.MonoComponent;
+import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.Map;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 
 public class Limiter extends MonoComponent {
 
     long maxIn, maxOut, threshold;
+    double slope;
     int delayMs;
 
     MaxTracker maxTracker;
-
 
     long hexOrInt(String s) {
         if (s.toLowerCase().startsWith("0x")) {
@@ -23,12 +25,9 @@ public class Limiter extends MonoComponent {
         return Integer.parseInt(s);
     }
 
-
-
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-
         try {
             maxIn = hexOrInt( config.get("max-in").toString() );
             maxOut = hexOrInt( config.get("max-out").toString() );
@@ -39,23 +38,53 @@ public class Limiter extends MonoComponent {
             err.println("Could not configure limiter "+config+
                 "\n"+ex);
         }
+        if (maxIn <= threshold) {
+            err.println("Limiter "+config.get("name")+" is configured " +
+                "such that the maximum input is lower than the threshold, " +
+                "so it won't be doing anything.");
+            return; // leave maxTracker null.
+            // n.b. maxIn==threshold will cause divide by 0 below
+        }
+
+        slope = ((double)(maxOut - threshold)) /
+            ((double)(maxIn - threshold));
+
         maxTracker = new MaxTracker((int)(
             ( ((float) delayMs)/1000.0 ) * synth.getSampleRate()
         ));
-
     }
 
     @Override
-    public void release() {
+    public void release() { }
 
-    }
+
+    int ct=0;
+    boolean first=true;
 
     @Override
     public int currentValue() {
+        int sum=0;
+        for (WiredIntSupplier input : inputs) {
+            sum += input.getAsInt();
+        }
+        if (maxTracker == null) return sum;
 
-        // TODO - make sure our latch will get reset
+        // it may help to limit the delta of currentMax
+        // on the other hand, funky sound when you're overloading
+        // is probably tough to avoid.
+        //
+        maxTracker.accept(sum);
+        double max = maxTracker.getCurrentMax();
+        if (max < threshold) return sum;
 
-        return 0;
+        if (first) {
+            out.println("<> = OVERLOAD!");
+            first = false;
+        }
+        if (ct++%10_000 == 0) out.print("<>");
+
+        double adjusted = ((slope * (max-threshold)) + threshold);
+        return (int)((adjusted/max) * sum);
     }
 
 }

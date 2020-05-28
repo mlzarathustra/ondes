@@ -11,6 +11,6 @@ max-in: 0x7fffffff
 max-out: 0x7fff
 
 # headroom of 256  (= 0x100)
-threshold: 0x7eff
+threshold: 0x6fff
 
-delay-ms: 100
+delay-ms: 200

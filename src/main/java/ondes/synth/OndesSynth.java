@@ -7,6 +7,7 @@ import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
 import ondes.mlz.SineLookup;
 import ondes.synth.component.ComponentMaker;
+import ondes.synth.component.MonoComponent;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
@@ -126,6 +127,8 @@ public class OndesSynth extends Thread implements EndListener {
      */
     boolean stop;
 
+    boolean USE_LIMITER=true;
+
     /**
      * The constructor only sets
      *
@@ -153,10 +156,14 @@ public class OndesSynth extends Thread implements EndListener {
         //            rather than only accepting the default.
         monoMainMix = new MonoMainMix(outDev, bufSize);
         this.sampleRate = monoMainMix.getSampleRate();
-
         mainLimiter  = getMainLimiter();
         instant = new Instant(sampleRate);
 
+        //
+        //
+        if (USE_LIMITER) {
+            monoMainMix.addInput(mainLimiter.getMainOutput());
+        }
     }
 
     /**
@@ -294,7 +301,7 @@ public class OndesSynth extends Thread implements EndListener {
             synchronized (lock){
                 resetWires();
                 instant.next();
-                getMainOutput().update();
+                monoMainMix.update();
             }
 
             if (stop) return;
@@ -308,7 +315,13 @@ public class OndesSynth extends Thread implements EndListener {
         voiceTracker.delVoice(chan,note);
     }
 
-    public MonoMainMix getMainOutput() { return monoMainMix; }
+    public MonoComponent getMainOutput() {
+        if (USE_LIMITER) {
+            return getMainLimiter();
+        }
+        return monoMainMix;
+
+    }
     public Instant getInstant() { return instant; }
 
     public int getSampleRate() { return sampleRate; }
