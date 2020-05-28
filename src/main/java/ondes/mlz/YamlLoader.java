@@ -15,7 +15,6 @@ import static ondes.mlz.Util.getResourceAsString;
 public class YamlLoader {
     static boolean DB = false;
 
-
     public static Map loadFile(Path path) {
         if (DB) out.println("path: " + path);
         if (path.toFile().isDirectory()) return null;

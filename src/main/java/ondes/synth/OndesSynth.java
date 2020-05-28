@@ -10,20 +10,24 @@ import ondes.synth.component.ComponentMaker;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
+import ondes.synth.wire.WiredIntSupplier;
+import ondes.synth.wire.WiredIntSupplierMaker;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
+import static ondes.mlz.YamlLoader.*;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class OndesSynth extends Thread implements EndListener {
 
     boolean DB = false;
 
-    class VoiceTracker {
-        class VoiceSet extends HashSet<Voice> { }
+    static class VoiceTracker {
+        static class VoiceSet extends HashSet<Voice> { }
 
         //  16 MIDI channels x 128 Notes
         private final Voice [][]voices = new Voice[16][128];
@@ -74,14 +78,29 @@ public class OndesSynth extends Thread implements EndListener {
     private Mixer outDev;
     private String[] progNames;
 
+    /**
+     * The Main Limiter is a bit unusual, being a component that
+     * doesn't belong to a voice. The other is monoMainMix. But
+     * unlike monoMainMix, the limiter has an output latch that
+     * needs to be reset on every sample.
+     *
+     * @return - the Main Limiter. Creates and configures one if it doesn't
+     * already exist.
+     */
     @SuppressWarnings("rawtypes")
     Limiter getMainLimiter() {
-        Map config=null;
-
-        Limiter lim = (Limiter)ComponentMaker.getMonoComponent(config, this);
-        lim.configure(config,null);
-
-        return lim;
+        if (mainLimiter == null) {
+            Map config = loadResource("config/main-limiter-config.yaml");
+            mainLimiter = (Limiter) ComponentMaker.getMonoComponent(config, this);
+            if (mainLimiter == null) {
+                err.println("Cannot open Main Limiter!");
+                System.exit(-1);
+            }
+            mainLimiter.mainOutput = new WiredIntSupplierMaker()
+                .getWiredIntSupplier(mainLimiter::currentValue);
+            mainLimiter.configure(config, null);
+        }
+        return mainLimiter;
     }
 
     /**
