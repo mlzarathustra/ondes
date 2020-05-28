@@ -4,9 +4,18 @@ public class SawWaveGen extends WaveGen {
 
     @Override
     public int currentValue() {
-        return (int)(
-            (phaseClock.getPhase() * 2.0 - 1.0)
-                * getAmp());
+        double phi = phaseClock.getPhase();
+
+        if (phi < 0.5) {
+            return (int) (
+                (4.0 * phi - 1.0) * getAmp()
+            );
+        }
+        else {
+            return (int) (
+                (4.0 * (1.0 - phi) - 1.0) * getAmp()
+            );
+        }
     }
 
 

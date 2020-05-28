@@ -1,0 +1,8 @@
+
+name: ramp-up
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: ramp-up
+  out: main
