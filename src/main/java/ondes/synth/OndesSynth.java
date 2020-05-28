@@ -6,10 +6,13 @@ import javax.sound.sampled.Mixer;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
 import ondes.mlz.SineLookup;
+import ondes.synth.component.ComponentMaker;
+import ondes.synth.envelope.Limiter;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static java.lang.System.out;
@@ -63,6 +66,7 @@ public class OndesSynth extends Thread implements EndListener {
     VoiceTracker voiceTracker = new VoiceTracker();
 
     private MonoMainMix monoMainMix;
+    private Limiter mainLimiter;
 
     private final Instant instant;
 
@@ -70,9 +74,26 @@ public class OndesSynth extends Thread implements EndListener {
     private Mixer outDev;
     private String[] progNames;
 
+    @SuppressWarnings("rawtypes")
+    Limiter getMainLimiter() {
+        Map config=null;
+
+        Limiter lim = (Limiter)ComponentMaker.getMonoComponent(config, this);
+        lim.configure(config,null);
+
+        return lim;
+    }
+
+    /**
+     * For main loop concurrency
+     */
     final Object lock = new Object() {
         public String toString() { return "Ondes Lock"; }
     };
+
+    /**
+     * To signal the main loop to stop
+     */
     boolean stop;
 
     /**
@@ -102,6 +123,7 @@ public class OndesSynth extends Thread implements EndListener {
         //            rather than only accepting the default.
 
         monoMainMix = new MonoMainMix(outDev, bufSize);
+        mainLimiter  = getMainLimiter();
         instant = new Instant(monoMainMix.getSampleRate());
 
     }
@@ -201,6 +223,30 @@ public class OndesSynth extends Thread implements EndListener {
         }
     }
 
+    /**
+     * <p>
+     *     The "wires" are output objects of type WiredIntProvider
+     *     (they're also input objects - the outputting component
+     *     provides one for the inputting component to call.
+     * </p>
+     * <p>
+     *     It is perfectly valid for a component to use its output as
+     *     input, for FM. So to avoid infinite looping, it latches the
+     *     current value on the first visit of this sample, then resets
+     *     before the next sample.
+     * </p>
+     */
+    void resetWires() {
+        //  resetWires sets the "visited" flag "false" for each output.
+        voiceTracker.forEach(Voice::resetWires);
+
+        //  only one output "wire" is not in the voices: the main limiter.
+        //  (the main mix output is not a WiredIntSupplier, but instead
+        //  writes to a buffer eventually written to the audio system.
+        getMainLimiter().getMainOutput().setVisited(false);
+
+    }
+
     //  The core is synchronized to avoid colliding with
     //  a constructor triggered by Note-ON
     //
@@ -214,9 +260,9 @@ public class OndesSynth extends Thread implements EndListener {
 
         for (;;) {
             synchronized (lock){
-                voiceTracker.forEach(Voice::resetWires);
+                resetWires();
                 instant.next();
-                monoMainMix.update();
+                getMainOutput().update();
             }
 
             if (stop) return;
@@ -230,6 +276,6 @@ public class OndesSynth extends Thread implements EndListener {
         voiceTracker.delVoice(chan,note);
     }
 
-    public MonoMainMix getMonoMainMix() { return monoMainMix; }
+    public MonoMainMix getMainOutput() { return monoMainMix; }
     public Instant getInstant() { return instant; }
 }

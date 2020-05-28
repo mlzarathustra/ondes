@@ -56,6 +56,8 @@ public abstract class MonoComponent {
      *
      * <p>
      *     Provide the output of this component to another component.
+     *     Creates one if needed, or returns the existing one.
+     *
      * </p>
      * <p>
      *     The subclass generally MUST define "mainOutput," as it's the

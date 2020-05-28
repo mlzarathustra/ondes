@@ -15,9 +15,6 @@ import static java.lang.Math.abs;
  *     3x as fast as the brute for the cases
  *     I tried.
  * </p>
- *
- *
- *
  */
 public class MaxTracker {
 

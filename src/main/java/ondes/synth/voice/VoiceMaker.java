@@ -14,6 +14,7 @@ import static java.lang.System.err;
 import static java.util.stream.Collectors.*;
 import static ondes.mlz.Util.getResourceAsString;
 import static ondes.mlz.Util.listResourceFiles;
+import static ondes.mlz.YamlLoader.*;
 
 /**
  * <p>
@@ -65,27 +66,6 @@ public class VoiceMaker {
         }
         else programs.add(prog);
 
-    }
-
-    private static Map loadFile(Path path) {
-        if (DB) out.println("path: "+path);
-        if (path.toFile().isDirectory()) return null;
-        try {
-            String text = Files.lines(path, StandardCharsets.UTF_8)
-                .collect(joining("\n"));
-            Yaml yaml=new Yaml();
-            return yaml.load(text);
-        }
-        catch (Exception ex) {
-            err.println("Exception reading file "+path+": "+ex);
-            return null;
-        }
-    }
-
-    private static Map loadResource(String resName) {
-        String text = getResourceAsString(resName);
-        Yaml yaml=new Yaml();
-        return yaml.load(text);
     }
     private static void loadPrograms() {
 

@@ -77,7 +77,7 @@ public class Voice {
         //    Currently it is the only global component.
         //    Note that any others like this must be filtered out
         //    in the following loop.
-        components.put("main", synth.getMonoMainMix());
+        components.put("main", synth.getMainOutput());
 
         // step 2 : configure
         //          (including: connect to other components)

@@ -1,0 +1,14 @@
+
+
+main-limiter:
+
+  type: limiter
+
+  # 32 bits (= 4 bytes = 8 hex digits)
+  max-in: 0x7fffffff
+
+  # 16 bits (= 2 bytes = 4 hex digits)
+  max-out: 0x7fff
+
+  # headroom of 256  (= 0x100)
+  threshold: 0x7eff

@@ -2,6 +2,7 @@ package ondes.synth.component;
 
 import ondes.synth.OndesSynth;
 import ondes.synth.envelope.EnvMaker;
+import ondes.synth.envelope.Limiter;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Junction;
 
@@ -41,6 +42,10 @@ public class ComponentMaker {
 
             case "mix":
                 rs = new Junction();
+                break;
+
+            case "limiter":
+                rs = new Limiter();
                 break;
 
             default:
