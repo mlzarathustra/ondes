@@ -75,14 +75,23 @@ public class OndesSynth extends Thread implements EndListener {
     private final Instant instant;
 
     private final MidiDevice midiInDev;
-    private Mixer outDev;
     private String[] progNames;
 
     /**
-     * The Main Limiter is a bit unusual, being a component that
-     * doesn't belong to a voice. The other is monoMainMix. But
-     * unlike monoMainMix, the limiter has an output latch that
-     * needs to be reset on every sample.
+     * <p>
+     *     The Main Limiter is a bit unusual, being a component that
+     *     doesn't belong to a voice. The other is monoMainMix. But
+     *     unlike monoMainMix, the limiter has an output latch that
+     *     needs to be reset on every sample.
+     * </p>
+     * <p>
+     *     That means we throw away the WiredIntSupplierMaker right away
+     *     as we're not tracking WiredIntSuppliers in a Voice. Here, there's
+     *     just one which gets reset manually in the resetWires() function.
+     * </p>
+     * <p>
+     * @see #resetWires
+     * </p>
      *
      * @return - the Main Limiter. Creates and configures one if it doesn't
      * already exist.
@@ -118,25 +127,25 @@ public class OndesSynth extends Thread implements EndListener {
     /**
      * The constructor only sets
      *
-     * @param sampleRate - cycles per second
-     * @param in         - transmits MIDI messages that the synth responds to
+     * @param sampleRate - cycles per second. Currently ignored here
+     *                   see TODO below
+     * @param midiInDev         - transmits MIDI messages that the synth responds to
      *                   e.g. note-ON, pitch bend, and so on.
-     * @param od        - note that "source" is from the perspective of the
+     * @param outDev     - note that "source" is from the perspective of the
      *                   mixer. From our perspective, it is a target.
-     * @param pn         - a list of 16 strings identifying the programs
+     * @param progNames         - a list of 16 strings identifying the programs
      *                   for each channel. A loose "contains" match compares
      *                   the input with the 'name' property of the program.
      */
     public OndesSynth(
-        int sampleRate,
-        MidiDevice in,
-        Mixer od,
-        String[] pn,
-        int bufSize
+        int         sampleRate,
+        MidiDevice  midiInDev,
+        Mixer       outDev,
+        String[]    progNames,
+        int         bufSize
     ) {
-        midiInDev = in;
-        outDev = od;
-        progNames = pn;
+        this.midiInDev = midiInDev;
+        this.progNames = progNames;
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
@@ -251,16 +260,17 @@ public class OndesSynth extends Thread implements EndListener {
      * <p>
      *     It is perfectly valid for a component to use its output as
      *     input, for FM. So to avoid infinite looping, it latches the
-     *     current value on the first visit of this sample, then resets
-     *     before the next sample.
+     *     current value on the first visit of this sample, then it must
+     *     reset before the next sample. Below is where that happens.
      * </p>
      */
     void resetWires() {
-        //  resetWires sets the "visited" flag "false" for each output.
+        //  resetWires sets the "visited" flag "false" for each output
+        //  in each Voice.
         voiceTracker.forEach(Voice::resetWires);
 
-        //  only one output "wire" is not in the voices: the main limiter.
-        //  (the main mix output is not a WiredIntSupplier, but instead
+        //  only one output "wire" is not in the voices: the Main Limiter.
+        //  (the Main Mix output is not a WiredIntSupplier, but instead
         //  writes to a buffer eventually written to the audio system.
         getMainLimiter().getMainOutput().setVisited(false);
 
