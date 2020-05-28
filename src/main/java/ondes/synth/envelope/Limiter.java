@@ -1,6 +1,7 @@
 package ondes.synth.envelope;
 
 
+import ondes.mlz.MaxTracker;
 import ondes.synth.component.MonoComponent;
 
 import java.util.Map;
@@ -10,6 +11,9 @@ import static java.lang.System.err;
 public class Limiter extends MonoComponent {
 
     long maxIn, maxOut, threshold;
+    int delayMs;
+
+    MaxTracker maxTracker;
 
 
     long hexOrInt(String s) {
@@ -29,11 +33,16 @@ public class Limiter extends MonoComponent {
             maxIn = hexOrInt( config.get("max-in").toString() );
             maxOut = hexOrInt( config.get("max-out").toString() );
             threshold = hexOrInt( config.get("threshold").toString() );
+            delayMs = (int)hexOrInt( config.get("delay-ms").toString() );
         }
         catch (Exception ex) {
             err.println("Could not configure limiter "+config+
                 "\n"+ex);
         }
+        maxTracker = new MaxTracker((int)(
+            ( ((float) delayMs)/1000.0 ) * synth.getSampleRate()
+        ));
+
     }
 
     @Override

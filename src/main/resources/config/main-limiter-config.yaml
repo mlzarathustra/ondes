@@ -12,3 +12,5 @@ max-out: 0x7fff
 
 # headroom of 256  (= 0x100)
 threshold: 0x7eff
+
+delay-ms: 100

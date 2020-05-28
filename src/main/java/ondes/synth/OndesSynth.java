@@ -26,6 +26,7 @@ public class OndesSynth extends Thread implements EndListener {
 
     boolean DB = false;
 
+
     static class VoiceTracker {
         static class VoiceSet extends HashSet<Voice> { }
 
@@ -73,6 +74,7 @@ public class OndesSynth extends Thread implements EndListener {
     private Limiter mainLimiter;
 
     private final Instant instant;
+    private int sampleRate;
 
     private final MidiDevice midiInDev;
     private String[] progNames;
@@ -149,10 +151,11 @@ public class OndesSynth extends Thread implements EndListener {
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
-
         monoMainMix = new MonoMainMix(outDev, bufSize);
+        this.sampleRate = monoMainMix.getSampleRate();
+
         mainLimiter  = getMainLimiter();
-        instant = new Instant(monoMainMix.getSampleRate());
+        instant = new Instant(sampleRate);
 
     }
 
@@ -307,4 +310,8 @@ public class OndesSynth extends Thread implements EndListener {
 
     public MonoMainMix getMainOutput() { return monoMainMix; }
     public Instant getInstant() { return instant; }
+
+    public int getSampleRate() { return sampleRate; }
+
+
 }

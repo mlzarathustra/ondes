@@ -22,7 +22,7 @@ public class MaxTracker {
         new TreeMap<>((a, b) -> b-a);
     int[] buf;
 
-    MaxTracker(int cap) {
+    public MaxTracker(int cap) {
         buf = new int[cap];
     }
 
