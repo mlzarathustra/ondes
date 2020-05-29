@@ -17,6 +17,8 @@ import static java.lang.Math.abs;
  * </p>
  */
 public class MaxTracker {
+    int here = -1;
+    boolean first = true;
 
     TreeMap<Integer,Integer> bufMap =
         new TreeMap<>((a, b) -> b-a);
@@ -24,10 +26,13 @@ public class MaxTracker {
 
     public MaxTracker(int cap) {
         buf = new int[cap];
+        reset();
     }
 
-    int here =-1;
-    boolean first = true;
+    public void reset() {
+        here = -1;
+        first = true;
+    }
 
     public void accept(int val) {
         val = abs(val);

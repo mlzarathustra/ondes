@@ -16,6 +16,9 @@ public class Limiter extends MonoComponent {
     double slope;
     int delayMs;
 
+    // it's expensive, so we don't start it until we need it.
+    boolean bypass=true;
+
     MaxTracker maxTracker;
 
     long hexOrInt(String s) {
@@ -67,7 +70,8 @@ public class Limiter extends MonoComponent {
         for (WiredIntSupplier input : inputs) {
             sum += input.getAsInt();
         }
-        if (maxTracker == null) return sum;
+        if ((bypass && sum < threshold) ||
+            maxTracker == null) return sum;
 
         // it may help to limit the delta of currentMax
         // on the other hand, funky sound when you're overloading
@@ -75,8 +79,13 @@ public class Limiter extends MonoComponent {
         //
         maxTracker.accept(sum);
         double max = maxTracker.getCurrentMax();
-        if (max < threshold) return sum;
+        if (max < threshold) {
+            bypass = true;
+            maxTracker.reset();
+            return sum;
+        }
 
+        bypass = false;
         if (first) {
             out.println("<> = OVERLOAD!");
             first = false;

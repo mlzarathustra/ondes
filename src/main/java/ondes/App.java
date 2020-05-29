@@ -50,6 +50,8 @@ import static ondes.mlz.Util.getResourceAsString;
  */
 public class App {
 
+    public static boolean LOG_MAIN_OUT = false;
+
     static Mixer getMixer(String outDevStr) {
         Mixer.Info[] info= AudioSystem.getMixerInfo();
         List<Mixer.Info> list = Arrays.stream(info)
@@ -130,6 +132,9 @@ public class App {
 
                 case "-help": case "-h": case "?": case "-?":
                     usage(); //exits
+
+                case "-log-main-out": LOG_MAIN_OUT=true;
+                continue;
             }
 
             // options with following args - if we get here

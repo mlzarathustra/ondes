@@ -1,5 +1,6 @@
 package ondes.synth;
 
+import ondes.App;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
@@ -9,7 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.IntSupplier;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -171,7 +171,9 @@ public class MonoMainMix extends MonoComponent {
      */
 
     boolean DRY = false;
-    boolean VERBOSE = true; // WARNING - will overwrite update.log
+
+    boolean LOG_MAIN_OUT = App.LOG_MAIN_OUT;
+    // WARNING - will overwrite update.log
 
     int outPos = 0;
     int loops = 0;
@@ -179,7 +181,7 @@ public class MonoMainMix extends MonoComponent {
     File updateLog = new File("update.log");
     BufferedWriter log;
     {
-        if (VERBOSE) {
+        if (LOG_MAIN_OUT) {
             try {
                 log = new BufferedWriter(new FileWriter(updateLog));
             } catch (Exception ex) {
@@ -218,7 +220,7 @@ public class MonoMainMix extends MonoComponent {
                 int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
 
 
-                if (VERBOSE) {
+                if (LOG_MAIN_OUT) {
                     long now=System.nanoTime();
                     // loops++; for limiting # of outputs
 
