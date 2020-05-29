@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static ondes.mlz.Util.getList;
 import static ondes.midi.MlzMidi.showBytes;
+import static ondes.mlz.PitchScaling.*;
 
 import static java.lang.Math.pow;
 
@@ -45,6 +46,8 @@ public abstract class WaveGen extends MonoComponent {
     int offset = 0;    // interval offset in minor seconds
     float scale = 1;
 
+    double scaleFactor = 10; // see ondes.mlz.PitchScaling
+
     double freqMultiplier = 1;
     double getFreqMultiplier() {
         if (detune == 0 && offset == 0) {
@@ -59,6 +62,8 @@ public abstract class WaveGen extends MonoComponent {
     void setFreq(double freq) {
         this.freq = freq;
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
+
+        scale = (float)getScaling(scaleFactor, freq);
     }
 
     @SuppressWarnings("rawtypes")

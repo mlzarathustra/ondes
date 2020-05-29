@@ -127,7 +127,7 @@ public class OndesSynth extends Thread implements EndListener {
      */
     boolean stop;
 
-    boolean USE_LIMITER=true;
+    boolean USE_LIMITER=false;
 
     /**
      * The constructor only sets

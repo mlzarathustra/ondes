@@ -107,7 +107,9 @@ public class App {
 
         // contains("") will match any
         String inDevStr = "", outDevStr = "";
-        int bufferSize=1024;
+
+        // seems to the smallest reliable
+        int bufferSize=2048;
 
         //  Parse command line args
         //

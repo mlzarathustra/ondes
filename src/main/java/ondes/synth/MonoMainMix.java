@@ -4,10 +4,14 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.sampled.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.IntSupplier;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
@@ -28,13 +32,21 @@ public class MonoMainMix extends MonoComponent {
     SourceDataLine srcLine;
     private int sampleRate;
 
-    // Critical for response, as the system has to wait
-    // until the next buffer for a note to start sounding.
-    // So we want it as small as possible. However,
-    // any smaller than this and it only makes funny
-    // clicking noises (with the realtek speaker)
+
+    /**
+     * Critical for response, as the system has to wait until
+     * the next buffer for a note to start sounding. So we want
+     * it as small as possible. However, any smaller than about
+     * 1024, and it only makes funny clicking noises.
+     *
+     * See timing.md for more.
+     *
+     * IMPORTANT: Don't set it here. It's set from a command-line
+     * argument.
+     *
+     */
+    private int bufferSize;
     //
-    private int bufferSize =1024;
 
     private int bytesPerSample;
 
@@ -120,7 +132,7 @@ public class MonoMainMix extends MonoComponent {
     //  transform for endian-ness, multiple channels,
     //  unsigned samples.
     //
-    private synchronized void toLineFmt(int[] outputBuffer) {
+    private void toLineFmt(int[] outputBuffer) {
         byte[] split = new byte[bytesPerSample];
         int lbIdx=0;
         long unsignedOffset = signed ? 0 : 1 << (8*bytesPerSample - 1);
@@ -143,17 +155,51 @@ public class MonoMainMix extends MonoComponent {
         }
     }
 
+    /*
+     *
+     *
+     * The "update()" function here is the center of timing, as it's
+     * where we send the data to the speakers.
+     *
+     * By setting VERBOSE to true, you can watch the gory details
+     * of the timing, i.e. how much time the synthesis is taking
+     * and how long the system blocks before the next buffer.
+     *
+     * See timing.md for more.
+     *
+     *
+     */
+
     boolean DRY = false;
+    boolean VERBOSE = true; // WARNING - will overwrite update.log
 
     int outPos = 0;
     int loops = 0;
     long lastWrite = 0;
+    File updateLog = new File("update.log");
+    BufferedWriter log;
+    {
+        if (VERBOSE) {
+            try {
+                log = new BufferedWriter(new FileWriter(updateLog));
+            } catch (Exception ex) {
+                err.println("error opening update long " + ex);
+            }
+        }
+    }
+    void logWrite(String s) {
+        try {
+            log.write(s, 0, s.length());
+            log.write("\n");
+        }
+        catch (Exception ex) { err.println("error writing to "+log); }
+    }
 
     public void update() {
+        int sum=0;
+        for (WiredIntSupplier input : inputs) sum += input.getAsInt();
 
-        outputBuffer[outPos++] = inputs.stream()
-            .mapToInt(IntSupplier::getAsInt)
-            .sum();
+        outputBuffer[outPos++] = sum;
 
         if (outPos == outputBuffer.length) {
             toLineFmt(outputBuffer); // copies into lineBuffer
@@ -164,6 +210,7 @@ public class MonoMainMix extends MonoComponent {
                 out.println("srcLine.write( disabled )");
             }
             else {
+                long beforeWrite = System.nanoTime();
 
                 //  Send the samples to the sound module.
                 //  It blocks if needed.
@@ -171,10 +218,15 @@ public class MonoMainMix extends MonoComponent {
                 int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
 
 
-                if (false && loops<100) {
-                    out.println("audTrack.write() rs="+rs); loops++;
+                if (VERBOSE) {
                     long now=System.nanoTime();
-                    out.println(" delta >> "+(now-lastWrite));
+                    // loops++; for limiting # of outputs
+
+                    logWrite("srcLine.write() rs="+rs+
+                        "   delta >> "+ String.format("%,d ns",(now-lastWrite))+
+                        "    write took "+ String.format("%,d ns",(now-beforeWrite))+
+                        "    process "+ String.format("%,d ns", (beforeWrite - lastWrite))
+                    );
                     lastWrite=now;
 
                 }
