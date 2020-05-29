@@ -242,6 +242,21 @@ public class MonoMainMix extends MonoComponent {
         // outputs will connect TO here.
     }
 
+
+    /**
+     * As a singleton component that will always be
+     * running when the synth is, we will not pause or resume.
+     */
+    @Override
+    public void pause() { }
+
+    /**
+     * As a singleton component that will always be
+     * running when the synth is, we will not pause or resume.
+     */
+    @Override
+    public void resume() { }
+
     @Override
     public void release() {
         //  nothing here so far... the main synth class closes the line.
@@ -265,4 +280,6 @@ public class MonoMainMix extends MonoComponent {
     public int getSampleRate() {
         return sampleRate;
     }
+
+
 }

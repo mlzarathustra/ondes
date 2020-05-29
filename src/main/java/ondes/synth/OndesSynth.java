@@ -187,6 +187,7 @@ public class OndesSynth extends Thread implements EndListener {
 
         voiceTracker.addVoice(v,chan,note);
         v.setEndListener(this);
+        v.resume();
         v.processMidiMessage(msg);
     }
 
@@ -311,8 +312,10 @@ public class OndesSynth extends Thread implements EndListener {
 
     @Override
     public void noteEnded(int chan, int note) {
-        //  Assume that the voice has released all of its components
+        Voice voice = voiceTracker.getVoice(chan,note);
+        if (voice != null) voice.pause();
         voiceTracker.delVoice(chan,note);
+
     }
 
     public MonoComponent getMainOutput() {

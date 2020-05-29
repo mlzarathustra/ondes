@@ -22,17 +22,6 @@ public class Junction extends MonoComponent {
 
     public Junction() { super(); }
 
-    public Junction(WiredIntSupplier in) {
-        super();
-        addInput(in);
-//        mainOutput = new WiredIntSupplier() {
-//            public int updateInputs() {
-//                return getValue();
-//            }
-//        };
-
-    }
-
     @Override
     public int currentValue() {
         // a manual loop is slightly faster than the lambda.
@@ -41,22 +30,20 @@ public class Junction extends MonoComponent {
         return (int)(scale * rs);
     }
 
-
     // // // //
 
     @Override
-    public void configure(Map config, Map components) {
-
-        // todo - implement
-
-    }
+    @SuppressWarnings("rawtypes")
+    public void configure(Map config, Map components) { }
 
     @Override
-    public void release() {
+    public void pause() { }
 
-        // todo - implement
+    @Override
+    public void resume() { }
 
-    }
+    @Override
+    public void release() { }
 
 
 }

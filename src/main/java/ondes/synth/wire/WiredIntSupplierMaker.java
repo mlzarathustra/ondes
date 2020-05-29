@@ -7,7 +7,6 @@ import java.util.function.IntSupplier;
  * The list of connections within a single voice
  * We need to keep the list because they all need to
  * have the 'visited' flag reset for every sample.
- *
  */
 public class WiredIntSupplierMaker  {
 

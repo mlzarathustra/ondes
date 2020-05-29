@@ -6,13 +6,11 @@ import java.nio.file.Path;
 import java.util.*;
 
 import ondes.synth.OndesSynth;
-import org.yaml.snakeyaml.*;
 
 import static java.lang.System.out;
 import static java.lang.System.err;
 
 import static java.util.stream.Collectors.*;
-import static ondes.mlz.Util.getResourceAsString;
 import static ondes.mlz.Util.listResourceFiles;
 import static ondes.mlz.YamlLoader.*;
 

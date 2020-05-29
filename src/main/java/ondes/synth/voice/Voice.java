@@ -7,6 +7,7 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.EndListener;
 import ondes.synth.OndesSynth;
+import ondes.synth.wire.Junction;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
 import static java.lang.System.err;
@@ -16,7 +17,6 @@ import static ondes.mlz.Util.getList;
 public class Voice {
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
-    private OndesSynth synth;
 
     private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
 
@@ -24,6 +24,16 @@ public class Voice {
         return wiredIntSupplierMaker;
     }
 
+    /**
+     * Components connect to our junction rather than the main mix
+     * so that we can disconnect them from main when deactivating
+     * the voice, but re-attach again easily.
+     */
+    Junction voiceMix = new Junction();
+
+    /**
+     * Eight listeners, one for each message type (MIDI status >> 4)
+     */
     private ArrayList<MonoComponent>[] midiListeners= new ArrayList[8];
     {
         for (int i=0; i<8; ++i) {
@@ -50,6 +60,13 @@ public class Voice {
         }
     }
 
+    public void resume() {
+        // TODO - implement
+    }
+    public void pause() {
+        // TODO - implement
+    }
+
     public void resetWires() {
         wiredIntSupplierMaker.reset();
     }
@@ -58,7 +75,6 @@ public class Voice {
 
     @SuppressWarnings("unchecked,rawtypes")
     Voice(Map voiceSpec, OndesSynth synth) {
-        this.synth = synth;
         // step 1 : construct components
         for (Object key : voiceSpec.keySet()) {
             Object value=voiceSpec.get(key);

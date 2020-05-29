@@ -19,6 +19,10 @@
     - pitch mod
     - envelope mod (create an `OpAmp` component)
  
+ -----------
+ 
+ migrate test case t8() from ondes.Test to wherever it should go. 
+ 
  ----------- 
  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
  

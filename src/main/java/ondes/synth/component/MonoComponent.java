@@ -48,6 +48,20 @@ public abstract class MonoComponent {
 
     public abstract void configure(Map config, Map components);
 
+    /**
+     * disconnect phase clocks.
+     */
+    public abstract void pause();
+
+    /**
+     * restart phase clocks.
+     */
+    public abstract void resume();
+
+    /**
+     * Detach this component:
+     * disconnect from main mix and stop phase clocks.
+     */
     public abstract void release();
 
     void setSynth(OndesSynth s) { synth = s; }

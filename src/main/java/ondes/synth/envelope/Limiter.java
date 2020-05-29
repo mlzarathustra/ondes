@@ -58,6 +58,16 @@ public class Limiter extends MonoComponent {
     }
 
     @Override
+    public void pause() {
+        // no phase clocks here, so no need to pause() or resume()
+    }
+
+    @Override
+    public void resume() {
+        // no phase clocks here, so no need to pause() or resume()
+    }
+
+    @Override
     public void release() { }
 
 

@@ -58,7 +58,7 @@ If you get nothing but clicks or sound with breaks in it, the audio buffer needs
 
 A limitation of computer-based sound is that the signal needs to be sent in big chunks, namely the buffer. If the buffer is too small, the audio system can't send the bytes fast enough and you get clicks or breaks as described above.
 
-The problem with making the buffer bigger is that whenever you trigger a note, the system needs to wait for the current buffer to be processed before anything new can emerge. Since a buffer of about 2048 samples seems to be generally required, that means a delay of up to 2048/44100 seconds before the not begins to sound. How long that delay is will depend on where it happens to be in filling the buffer when you hit the note. 
+The problem with making the buffer bigger is that whenever you trigger a note, the system needs to wait for the current buffer to be processed before anything new can emerge. Since a buffer of about 2048 samples seems to be generally required, that means a delay of up to 2048/44100 seconds before the note begins to sound. How long that delay is will depend on where it happens to be in filling the buffer when you hit the note. 
 
 The delay is called "latency." The variation in the delay is called "jitter." 
 

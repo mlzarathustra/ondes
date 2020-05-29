@@ -66,6 +66,7 @@ public abstract class WaveGen extends MonoComponent {
         scale = (float)getScaling(scaleFactor, freq);
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         phaseClock = synth.getInstant().addPhaseClock();
@@ -113,8 +114,25 @@ public abstract class WaveGen extends MonoComponent {
         }
     }
 
+    @Override
+    public void pause() {
+        synth.getInstant().delPhaseClock(phaseClock);
+    }
+
+    @Override
+    public void resume() {
+        phaseClock = synth.getInstant().addPhaseClock(); // note-ON sets freq
+    }
+
+
+
+    @Override
     public void release() {
         synth.getInstant().delPhaseClock(phaseClock);
+
+        // TODO - Is this necessary? The main output will now be managed
+        //        at the voice level. So a simple `pause()` should be enough.
+        //
         outputs.forEach( c -> c.delInput(this.getMainOutput()));
     }
 
