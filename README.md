@@ -5,11 +5,24 @@
 
 
 ## synthesizer
-The plan is for this to become a fully modular synthesizer that will play through your computer's output device as triggered by a MIDI input device (typically an electronic keyboard, though any should work). Due to the nature of computer sound, it will not be as responsive as a real synthesizer. Please see "audio buffer size" below for more.
+The plan is for this to become a fully modular synthesizer that will play through your computer's output device as triggered by a MIDI input device (typically an electronic keyboard, though any should work). 
 
 Programs (patches) are represented in YAML files so that you will be able to either use presets or roll your own. 
 
-Some of the tools are probably useful, but the rest is in progress, so check back soon!
+It currently works on my system by using the `run` script in the main directory like this:
+
+        run -in 828 -out "main out" -ch1 octave -ch2 10
+
+Please note that you will need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `run` with no arguments for command line help.
+
+(This is all assuming you ran Gradle to build the jar file. See below)
+
+Given the state of computer sound responding to MIDI (sluggish) this app is not suitable for live performance of anything requiring timing. However, it should still be useful for exploring sound creation, and for producing sound in cases where timing is not critical.  Please see "audio buffer size" below for more on why computer sound responds sluggishly to MIDI.  
+
+Features are still a bit thin - so far it only does wave combining.
+
+See [the to-do file](TO-DO.md) for more. A couple of items high on the list should improve efficiency (e.g. pre-building voices, harmonic waves) which should help when creating complex patches.  
+
 
 ## requirements 
 
@@ -45,14 +58,13 @@ If you get nothing but clicks or sound with breaks in it, the audio buffer needs
 
 A limitation of computer-based sound is that the signal needs to be sent in big chunks, namely the buffer. If the buffer is too small, the audio system can't send the bytes fast enough and you get clicks or breaks as described above.
 
-The problem with making the buffer bigger is that whenever you trigger a note, the system needs to wait for the current buffer to be processed before anything new can emerge. Since a buffer of about 1024 samples seems to be generally required, that means a delay of up to 1024/44100 seconds before the not begins to sound. How long that delay is will depend on where it happens to be in filling the buffer when you hit the note. 
+The problem with making the buffer bigger is that whenever you trigger a note, the system needs to wait for the current buffer to be processed before anything new can emerge. Since a buffer of about 2048 samples seems to be generally required, that means a delay of up to 2048/44100 seconds before the not begins to sound. How long that delay is will depend on where it happens to be in filling the buffer when you hit the note. 
 
 The delay is called "latency." The variation in the delay is called "jitter." 
 
-1024/44100 is about 0.023219954 seconds or 23 milliseconds. It's quite palpable. 
+2048/44100 is about  0.0464399 seconds or 46 milliseconds. It's quite palpable. 
 
-It's possible ASIO might help with this problem, but JavaSound offers no official support.
-For more on the gory details, see: http://jsresources.sourceforge.net/faq_misc.html#asio  
+It's possible ASIO might help with this problem, but JavaSound offers no official support. Also, I've had the same trouble with ASIO, so it may not even help. For more on the gory details, see: http://jsresources.sourceforge.net/faq_misc.html#asio  
   
 
 ## JavaSound naming convention
