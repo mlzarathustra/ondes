@@ -26,9 +26,9 @@ lfo1:
   out: osc1
 
 lfo2:
-  freq: 0.21
+  freq: 0.11
   type: wave
-  shape: saw
+  shape: sine
   output-amp: 1000
   out: osc2
 

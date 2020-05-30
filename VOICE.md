@@ -44,6 +44,15 @@ A program can contain multiple components but the above has only one, a square w
   
  - **out** - where this component&rsquo;s output is sent to. Here it's going directly to the main out, but it could equally go to a DCA (digitally controlled amplifier) modulated with an envelope generator.
  
+ ## other properties 
+  - **output-amp** - Sets the output amplitude, overriding other considerations. For sound WaveGens, we scale according to pitch, so that that low frequencies won't get lost, and note-velocity if specified. However, for an LFO we need to control the output level very precisely. It's meant to be paired with the **input-amp** setting on the destination, i.e. both should be the same.
+  
+  - **input-amp** - The expected maximum amplitude of the input. For a single source, it should be the same as the **output-amp** setting on the source. For multiple sources, you'll have to do some math. The sources are added together.
+  
+  - **mod-percent** - The percentage of modulation for a PWM wave. See `pwm.yaml` in the resources directory for examples.
+  
+  All signals traveling inside the voice are of type integer, so 32 bits of accuracy. They can be positive or negative.  
+ 
  ## MIDI message types
  The codes for the MIDI messages are:
  - **note-on** - Note-ON

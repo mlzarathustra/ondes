@@ -2,10 +2,11 @@
 
  - velocity 
  - pitch bend
- - wave gens need a level control; distinguish between it, and the ampOverride set using output-amp. 
+ - wave gens 
+     - need a level control; 
+     - distinguish between it, and the ampOverride set using output-amp. 
 
  - LFO 
-    - PWM 
     - pitch mod
     - envelope mod (create an `OpAmp` component)
     
