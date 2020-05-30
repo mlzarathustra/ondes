@@ -220,7 +220,6 @@ public class MonoMainMix extends MonoComponent {
                 //
                 int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
 
-
                 if (LOG_MAIN_OUT) {
                     long now=System.nanoTime();
                     // loops++; for limiting # of outputs

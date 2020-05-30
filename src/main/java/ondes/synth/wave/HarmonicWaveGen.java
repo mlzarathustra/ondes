@@ -1,5 +1,9 @@
 package ondes.synth.wave;
 
+import ondes.mlz.WaveLookup;
+
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +44,14 @@ import static ondes.mlz.SineLookup.sineLookup;
 class HarmonicWaveGen extends WaveGen {
 
     static double TAO=Math.PI*2.0;
-    private int scaledAmp;
+
+    static HashMap<String,WaveLookup> waveLookups=new HashMap<>();
+
+    WaveLookup waveLookup;
 
     @Override
     void setFreq(double freq) {
         super.setFreq(freq);
-
-        scaledAmp = (int)(getAmp() * (1.0 + 55.0/(2*freq) ));
-        // pitch scaling, to help out the bass notes
     }
 
     /** the keys of the "hash-map." The correspondingly indexed
@@ -114,6 +118,15 @@ class HarmonicWaveGen extends WaveGen {
             }
         }
 
+        // TODO  - set up waveLookup from waves
+        String waveKey = Arrays.toString(waves);
+        waveLookup = waveLookups.get(waveKey);
+        if (waveLookup == null) {
+            out.println("generating wave lookup.");
+            waveLookup = new WaveLookup(this::currentValue);
+            waveLookups.put(waveKey, waveLookup);
+        }
+
         if (!(preset instanceof String) && presets == null) {
             err.println("harmonic wave form currently requires either a" +
                 " preset string or a list of values.\n");
@@ -121,18 +134,27 @@ class HarmonicWaveGen extends WaveGen {
         }
     }
 
+    private double currentValue(double phase) {
+        double sum=0;
+        for (int ov = 0; ov< waves.length-1; ov+=2) {
+            sum += sineLookup(
+                phase * TAO * waves[ov] )
+                / waves[ov+1];
+        }
+
+        return sum;
+    }
+
+
     /**
      * @return component level at the instant of this sample.
      */
     @Override
     public int currentValue() {
-        double sum=0;
-        for (int ov = 0; ov< waves.length-1; ov+=2) {
-            sum += sineLookup(
-                phaseClock.getPhase() * TAO * waves[ov] )
-                / waves[ov+1];
-        }
+        //return (int) (currentValue(phaseClock.getPhase()) * getAmp());
+        return (int)(
+            waveLookup.valueAt(phaseClock.getPhase()) * getAmp()
+        );
 
-        return (int) (sum * getAmp());  //   *scaledAmp?
     }
 }

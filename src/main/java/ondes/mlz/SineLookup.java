@@ -5,8 +5,8 @@ import static java.lang.Math.sin;
 
 public class SineLookup {
     static int tableSize = 512_000;
-    static double[] sineLookupTable = new double[tableSize];
-    static double TAO=2*PI;
+    private final static double[] sineLookupTable = new double[tableSize];
+    final static double TAO=2*PI;
 
     static {
         for (int i = 0; i < tableSize; ++i) {
