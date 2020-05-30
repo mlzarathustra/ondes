@@ -54,11 +54,6 @@ public class ChannelVoicePool {
 
     int count=0;
     public Voice getVoice() {
-        //out.println("getVoice: available="+available.size());
-        if (++count == 11) {
-            out.println("11th voice");
-        }
-
         Voice voice;
         if (available.size() > 0) voice = available.pop();
         else voice = VoiceMaker.getVoice(progName,synth);
@@ -71,7 +66,6 @@ public class ChannelVoicePool {
     }
 
     public void releaseVoice(Voice voice) {
-        //out.println("releaseVoice()");
         voice.pause();
         inUse.remove(voice);
         available.add(voice);

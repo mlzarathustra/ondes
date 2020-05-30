@@ -11,6 +11,7 @@ import static java.lang.System.err;
  * <p>
  *     Basically a mixer with a single volume (scale) control.
  *     It multiplies the sum of its input by "scale."
+ *     About the simplest component you could have!
  * </p>
  * <p>
  *      For more control over the input levels,

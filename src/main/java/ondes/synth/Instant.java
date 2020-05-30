@@ -51,13 +51,11 @@ public class Instant  {
         return addPhaseClock(((float) f)/1_000_000);
     }
     public PhaseClock addPhaseClock(float frequency) {
-        out.println("addPhaseClock: count is "+clocks.size());
         PhaseClock pc=new PhaseClock(frequency);
         clocks.add(pc);
         return pc;
     }
     public void delPhaseClock(PhaseClock pc) {
-        out.println("delPhaseClock: count is "+clocks.size());
         clocks.remove(pc);
     }
 

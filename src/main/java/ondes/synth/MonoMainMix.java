@@ -58,7 +58,7 @@ public class MonoMainMix extends MonoComponent {
     //
 
 
-    public MonoMainMix(Mixer mixer) { this(mixer,1024); }
+    public MonoMainMix(Mixer mixer) { this(mixer,2048); }
 
     public MonoMainMix(Mixer mixer, int bufferSize) {
         this.bufferSize = bufferSize;
@@ -161,12 +161,13 @@ public class MonoMainMix extends MonoComponent {
      * The "update()" function here is the center of timing, as it's
      * where we send the data to the speakers.
      *
-     * By setting VERBOSE to true, you can watch the gory details
+     * By setting LOG_MAIN_OUT to true, you can watch the gory details
      * of the timing, i.e. how much time the synthesis is taking
      * and how long the system blocks before the next buffer.
      *
-     * See timing.md for more.
+     * It proves that sometimes the gaps are the system's fault!
      *
+     * See timing.md for how to interpret the output in "update.log."
      *
      */
 

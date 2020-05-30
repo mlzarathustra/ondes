@@ -28,14 +28,7 @@ public abstract class WaveGen extends MonoComponent {
     static final double oneStep = pow(2, 1.0/12);
     static final double oneCent = pow(2, 1.0/1200);
 
-    /**
-     * reset the note to zero
-     */
-    void reset() {
-        //  phaseClock.align() or something like that
-    }
-
-    private double freq = 440;
+    //private double freq;
     private int amp = 1024;  // assume 16-bits (signed) for now.
     // it adds up fast for composite waves.
 
@@ -61,19 +54,13 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     void setFreq(double freq) {
-        this.freq = freq;
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
-
         scale = (float)getScaling(scaleFactor, freq);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-
-        //phaseClock = synth.getInstant().addPhaseClock();
-        // Note ON will set frequency
-
         //out.println("WaveGen.configure: "+config);
 
         Object compOut = config.get("out");
@@ -107,7 +94,7 @@ public abstract class WaveGen extends MonoComponent {
                 this.scale = Float.parseFloat(scale.toString());
                 if (this.scale < 0 || this.scale > 1) {
                     err.println("'scale' must (floating) be between 0 and 1.");
-                    scale = 1;
+                    this.scale = 1;
                 }
             }
             catch (Exception ex) {

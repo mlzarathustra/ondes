@@ -45,6 +45,7 @@ public class Voice {
 
     /**
      * Eight listeners, one for each message type (MIDI status >> 4)
+     * @see #processMidiMessage(MidiMessage)
      */
     private ArrayList<MonoComponent>[] midiListeners= new ArrayList[8];
     {
@@ -147,7 +148,6 @@ public class Voice {
         //
         if (msg.getStatus()>>4 == 8) {  // Note-OFF
             endListener.noteEnded(msg);
-            //components.values().forEach(MonoComponent::release);
         }
 
     }
