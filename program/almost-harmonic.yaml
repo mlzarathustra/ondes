@@ -1,0 +1,42 @@
+
+
+name: almost
+
+osc1:
+  midi: note-on
+  type: wave
+  offset: 0
+  shape: anharmonic
+  waves:
+    # powers of 2^(5/12)
+    - 1 1
+    - 2.01 2
+    - 3.01 3
+    - 4.01 4
+    - 5.01 5
+    - 6 6.02
+    - 8 8.03
+    - 12 10
+    - 16 11
+  out: main
+
+osc2:
+  midi: note-on
+  detune: 20
+  offset: 0
+  type: wave
+  shape: anharmonic
+  waves:
+    # powers of 2^(5/12)
+    - 1 1
+    - 2.01 2
+    - 3 3
+    - 4.01 4
+    - 5.01 5
+    - 6 6.02
+    - 8 8
+    - 12 10
+    - 16 11
+  out: main
+
+

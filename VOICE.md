@@ -49,9 +49,37 @@ A program can contain multiple components but the above has only one, a square w
   
   - **input-amp** - The expected maximum amplitude of the input. For a single source, it should be the same as the **output-amp** setting on the source. For multiple sources, you'll have to do some math. The sources are added together.
   
-  - **mod-percent** - The percentage of modulation for a PWM wave. See `pwm.yaml` in the resources directory for examples.
+  - **mod-percent** - The percentage of modulation for a PWM wave. See `pwm.yaml` in the resources directory for examples. PWM stands for "Pulse Width Modulation" and refers to changing the duty cycle of a square wave, which gives a kind of combing effect.
   
-  All signals traveling inside the voice are of type integer, so 32 bits of accuracy. They can be positive or negative.  
+  All signals traveling inside the voice are of type integer, so 32 bits of accuracy. They can be positive or negative.
+  
+  - **preset** - for a harmonic wave, there are a few presets you can use as an alternative to the **waves** setting that follows. Use one or the other. You can't use both.
+  
+    Current harmonic wave presets are: 
+    - mellow
+    - odd
+    - bell
+    - organ
+  
+  - **waves** - For the harmonic or anharmonic waves, the composition of the waves is given as a series of integer pairs: 
+      - frequency multiplier - we multiply the base frequency by this number to arrive at the frequency of the sine wave you want to add. 
+      
+      - divisor - we divide the amplitude by this number to get the amplitude of your "harmonic" (or anharmonic as the case may be)
+
+      Note that for harmonic waves, you may specify non-integer values, but since the wave will be a snapshot of the single cycle (and hence harmonic) you will not hear an anharmonic tone, but rather a kind of buzzing. It can yield possibly useful results, so I left it that way.
+       
+      If you want a genuine anharmonic voice, use the "anharmonic" wave shape. Note that the anharmonic WaveGen is much less efficient than the harmonic one, as it creates all of the waves on the fly. The harmonic WaveGen takes a snapshot of a single wave and uses it as a wavetable. (which is, incidentally, also how a plain sine wave works). 
+      
+    Here are the settings that the "octave organ" uses (a harmonic WaveGen)   
+```
+          waves:
+            - 1 1
+            - 2 2
+            - 4 4
+            - 8 8
+            - 16 16
+```
+    
  
  ## MIDI message types
  The codes for the MIDI messages are:
@@ -79,10 +107,12 @@ Note also: the reason it's "note-on" instead of just "on" is that YAML insists o
  - square 
  - sine
  - saw
+ - ramp-up
+ - ramp-down
+ - harmonic
+ - anharmonic
  - pwm
- - mellow
- - bell
- - organ
+
  
  
  --

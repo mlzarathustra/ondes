@@ -2,9 +2,12 @@ package ondes.synth.wave;
 
 import ondes.synth.Instant;
 
+import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
+
 import static java.util.stream.Collectors.joining;
 import static ondes.mlz.SineLookup.sineLookup;
 
@@ -37,17 +40,32 @@ class AnharmonicWaveGen extends WaveGen {
     static double TAO=Math.PI*2.0;
     private int scaledAmp;
 
+
+    /**
+     * <p>
+     *     We get a "setFreq" message that LFO's need because
+     *     they don't get the Note-ON message. But we need to
+     *     wait for the Note-ON so the phase clocks will have
+     *     been restarted.
+     *
+     * </p>
+     *
+     * @param freq - frequency requested
+     */
     @Override
     void setFreq(double freq) {
         super.setFreq(freq);
+        if (clocks.size() < waves.length/2) return; // got the LFO msg
+
         for (int wp=0; wp<waves.length-1; wp+=2) {
             clocks.get(wp/2)
-                .setFrequency( (float)(freq * waves[wp]) );
+                .setFrequency( (float)(freq * waves[wp] * getFreqMultiplier()) );
         }
 
         scaledAmp = (int)(getAmp() * (1.0 + 55.0/(2*freq) ));
-        // TODO - pitch scaling, to help out the bass notes
-        //        research: what is the right formula for it?
+
+        // TODO - this is already happening in WaveGen.
+        //       probably skip it here. Test.
     }
 
     private final double[] defaultWave = { 1,1, 2,2, 3,3 };
@@ -93,6 +111,7 @@ class AnharmonicWaveGen extends WaveGen {
 
     @Override
     public void resume() {
+        super.resume();
         for (int i=0; i<waves.length-1; i += 2) {
             clocks.add(synth.getInstant().addPhaseClock());
         }
@@ -100,7 +119,9 @@ class AnharmonicWaveGen extends WaveGen {
 
     @Override
     public void pause() {
+        super.pause();
         clocks.forEach( synth.getInstant()::delPhaseClock );
+        clocks.clear();
     }
 
     /**
@@ -116,4 +137,14 @@ class AnharmonicWaveGen extends WaveGen {
 
         return (int) (sum * getAmp());  //   *scaledAmp?
     }
+
+    // DEBUG HACK
+    @Override
+    public void noteON(MidiMessage msg) {
+        super.noteON(msg);
+    }
+
+
+
+
 }
