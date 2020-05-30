@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("rawtypes")
-public abstract class MonoComponent {
+public abstract class MonoComponent implements ConfigHelper {
 
     Voice voice;
     public Voice getVoice() { return voice; }

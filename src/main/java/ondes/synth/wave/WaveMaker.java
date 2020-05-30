@@ -65,8 +65,7 @@ public class WaveMaker {
         register("harmonic", HarmonicWaveGen.class);
         register("anharmonic", AnharmonicWaveGen.class);
 
-//        register("pwm", PWMWaveGen.class);
-//        register("sample", SampleWaveGen.class);
+        register("pwm", PwmWaveGen.class);
     }
 
 }

@@ -1,15 +1,22 @@
 # Ondes synth - to do
 
- - harmonic voices - prebuild the whole wave on loading the voice. The same sample can be shared for all voices using the same patch. Look at the sine wave sample.
-
  - velocity 
  - pitch bend
- - wave gens need a level control
+ - wave gens need a level control; distinguish between it, and the ampOverride set using output-amp. 
 
  - LFO 
     - PWM 
     - pitch mod
     - envelope mod (create an `OpAmp` component)
+    
+ - configure should be able to interpret dot-notation:    
+```    
+              out: osc1
+            
+            #  should be out: osc1.pwm 
+            #  so we can have a separate input for frequency
+```
+    
  
  -----------
  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
@@ -22,7 +29,15 @@
  - Taper off to avoid clicks at the end of sine waves.
  - Sustain pedal
  
+ ------
  
+ Channel components e.g. LFO
+ Add a channel-global: on/off flag to components
+ Keep them in ChannelVoicePool
+  - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
+  - which in turn, it passes to the Voice() constructor for the configure step.
+ 
+  
  *****
  
  - review WiredIntSupplierMaker logic - so far it only is used for "main" so make sure the other cases will work (e.g. when hooking an env generator in)

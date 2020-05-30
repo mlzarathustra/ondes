@@ -1,23 +1,25 @@
 package ondes.synth.wave;
 
+import ondes.synth.wire.WiredIntSupplier;
+
+import java.util.Map;
+
+import static java.lang.System.err;
+import static java.lang.System.out;
+
 /**
  * Generate Pulse-Modulated Square wave.
  * Meaning: modulate the duty cycle with a Low-Frequency Oscillator (LFO)
- * LFO frquency is set by a formula according to the wave frequency.
  */
-class PWMWaveGen extends WaveGen {
+class PwmWaveGen extends WaveGen {
 
-    static final double twoPI = 2.0 * Math.PI;
-    private double phase = 0; // range: 0-1
     private double dutyCycle = 0.5;
-
-    private double baseLfoFreq = 1.0 / 8.0;
-    private double lfoFreq = baseLfoFreq;
-    private double lfoVar = 0.4;  // amt of variation
+    private float inputAmp = 0;
+    private float modPercent = 0, modMultiplier;
 
     private double lfoPhase = 0;
 
-    @Override
+/*
     long[] nextBuf() {
         for (int i = 0; i< samples.length; ++i) {
             while (phase > 1) phase -= 1;
@@ -32,17 +34,47 @@ class PWMWaveGen extends WaveGen {
         //if (loops<3) { loops++; System.out.println(Arrays.toString(samples)); }
         return samples;
     }
+*/
 
     @Override
-    void reset() {
-        phase = 0;
-        lfoPhase=0;
+    @SuppressWarnings("rawtypes")
+    public void configure(Map config, Map components) {
+        super.configure(config,components);
+
+        Double dblInp= getDouble(config.get("input-amp"),
+            "'input-amp' must be a number, typically " +
+                "the same as the output-amp of the sender.");
+        if (dblInp != null) inputAmp = (float)(1.0 / dblInp);
+
+        String modPctErr = "mod-percent must be a number from 0 to 100.";
+        dblInp = getDouble(config.get("mod-percent"), modPctErr);
+        if (dblInp != null) {
+            modPercent = (float)dblInp.doubleValue();
+            if (modPercent<0 || modPercent >100) {
+                err.println(modPctErr);
+                modPercent = 0;
+            }
+            modMultiplier = modPercent / 100;
+        }
     }
+
 
     @Override
-    public void setFreq(double freq) {
-        this.freq=freq;
-        lfoFreq = baseLfoFreq * (freq/200.0);
-    }
+    public int currentValue() {
+        float inpSum=0;
+        // todo - PWM should have dedicated input: main is for freq
+        for (WiredIntSupplier input : inputs) {
+            inpSum += input.getAsInt();
+        }
+        float mod = inpSum * inputAmp;
 
+        double modDutyCycle = dutyCycle + (modPercent/200.0) * mod;
+//        out.println("PWM.currentValue() inpSum="+inpSum+
+//            "; modDutyCycle="+modDutyCycle);
+
+        return  (
+            (phaseClock.getPhase() > modDutyCycle) ?
+                getAmp() : -getAmp()
+        );
+    }
 }

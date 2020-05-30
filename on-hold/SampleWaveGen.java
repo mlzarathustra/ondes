@@ -1,5 +1,14 @@
 package ondes.synth.wave;
 
+/**
+ *
+ *              This won't do well extending WaveGen, as it's not
+ *              phase-based. Try extending a timing-based component
+ *              instead.
+ *
+ */
+
+
 public class SampleWaveGen extends WaveGen {
 
     static final double twoPI = 2.0 * Math.PI;

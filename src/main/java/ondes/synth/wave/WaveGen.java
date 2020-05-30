@@ -28,11 +28,22 @@ public abstract class WaveGen extends MonoComponent {
     static final double oneStep = pow(2, 1.0/12);
     static final double oneCent = pow(2, 1.0/1200);
 
-    //private double freq;
+    /**
+     * if they specify an amplitude with the "output-amp" configuration key,
+     * it overrides the calculation.
+     *
+     * @see #getAmp()
+     * @see #configure(Map, Map)
+    */
+    private int ampOverride = -1;
+
+    // should be private.
+    protected double freq = -1; // if positive, overrides MIDI
     private int amp = 1024;  // assume 16-bits (signed) for now.
     // it adds up fast for composite waves.
 
     public int getAmp() {
+        if (ampOverride >= 0) return ampOverride;
         return (int)(scale * amp);
     }
 
@@ -40,7 +51,7 @@ public abstract class WaveGen extends MonoComponent {
     int offset = 0;    // interval offset in minor seconds
     float scale = 1;
 
-    double scaleFactor = 10; // see ondes.mlz.PitchScaling
+    double pitchScaleFactor = 10; // see ondes.mlz.PitchScaling
 
     double freqMultiplier = 1;
     double getFreqMultiplier() {
@@ -54,19 +65,28 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     void setFreq(double freq) {
+        if (this.freq > 0) freq = this.freq;
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
-        scale = (float)getScaling(scaleFactor, freq);
+        scale = (float)getScaling(pitchScaleFactor, freq);
     }
 
+    /**
+     * <p>
+     *     Note that at this point the phase clock does not yet exist.
+     *     Not until we get a note-ON.
+     * </p>
+     * @param config - the configuration map from YAML
+     * @param components - a map of all the components
+     *                   in this voice, by name.
+     */
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-        //out.println("WaveGen.configure: "+config);
 
         Object compOut = config.get("out");
         if (compOut == null) {
             err.println("Missing out: key in "+this.getClass());
-            err.println("Voice will not sound without output!");
+            err.println("WaveGen will not do much without output!");
             return;
         }
         List compOutList = getList(compOut);
@@ -74,33 +94,30 @@ public abstract class WaveGen extends MonoComponent {
             setOutput((MonoComponent) components.get(oneOut));
         }
 
-        Object detune = config.get("detune");
-        if (detune != null) {
-            try { this.detune = Float.parseFloat(detune.toString()); }
-            catch (Exception ex) {
-                err.println("'detune' must be a number. can be floating.");
-            }
+        Float fltInp;
+        fltInp = getFloat(config.get("detune"),
+            "'detune' must be a number. can be floating.");
+        if (fltInp != null) detune = (float)fltInp;
+
+        Integer intInp;
+        intInp = getInt(config.get("offset"),
+            "'offset' must be an integer.");
+        if (intInp != null) offset = intInp;
+
+        String scaleErr = "'scale' must (floating) be between 0 and 1.";
+        fltInp = getFloat(config.get("scale"), scaleErr);
+        if (fltInp != null) {
+            if (fltInp < 0 || fltInp >1) err.println(scaleErr);
+            else scale = fltInp;
         }
-        Object offset = config.get("offset");
-        if (offset != null) {
-            try { this.offset = Integer.parseInt(offset.toString()); }
-            catch (Exception ex) {
-                err.println("'offset' must be an integer.");
-            }
-        }
-        Object scale = config.get("scale");
-        if (scale != null) {
-            try {
-                this.scale = Float.parseFloat(scale.toString());
-                if (this.scale < 0 || this.scale > 1) {
-                    err.println("'scale' must (floating) be between 0 and 1.");
-                    this.scale = 1;
-                }
-            }
-            catch (Exception ex) {
-                err.println("'scale' must be a floating number.");
-            }
-        }
+
+        intInp = getInt(config.get("output-amp"),
+            "'output-amp' must be an integer.");
+        if (intInp != null)  ampOverride = intInp;
+
+        fltInp = getFloat(config.get("freq"),
+            "freq must be a number. can be floating.");
+        if (fltInp != null) freq = fltInp;
     }
 
     @Override
@@ -110,7 +127,10 @@ public abstract class WaveGen extends MonoComponent {
 
     @Override
     public void resume() {
-        phaseClock = synth.getInstant().addPhaseClock(); // note-ON sets freq
+        phaseClock = synth.getInstant().addPhaseClock();
+        // If the 'freq' variable is set, it overrides the 0.
+        // Because an LFO may not receive the note-ON
+        setFreq(0);
     }
 
     void setOutput(MonoComponent comp) {
