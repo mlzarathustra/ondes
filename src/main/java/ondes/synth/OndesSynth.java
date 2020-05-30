@@ -9,6 +9,7 @@ import ondes.mlz.SineLookup;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.envelope.Limiter;
+import ondes.synth.voice.ChannelVoicePool;
 import ondes.synth.voice.Voice;
 import ondes.synth.voice.VoiceMaker;
 import ondes.synth.wire.WiredIntSupplier;
@@ -28,6 +29,10 @@ public class OndesSynth extends Thread implements EndListener {
     boolean DB = false;
 
 
+    /**
+     * Tracks which voices are playing on each channel.
+     *
+     */
     static class VoiceTracker {
         static class VoiceSet extends HashSet<Voice> { }
 
@@ -70,6 +75,22 @@ public class OndesSynth extends Thread implements EndListener {
     }
 
     VoiceTracker voiceTracker = new VoiceTracker();
+
+    /**
+     * Each MIDI channel has its own voice pool.
+     * Rather than creating the voice each time, we retrieve one
+     * that has already been created.
+     *
+     */
+    private ChannelVoicePool[] channelVoicePool = new ChannelVoicePool[16];
+    private void fillChannelVoicePool(String[] progNames) {
+        for (int chan=0; chan<16; ++chan) {
+            if (progNames[chan] != null) {
+                channelVoicePool[chan]=
+                    new ChannelVoicePool(progNames[chan],this,10);
+            }
+        }
+    }
 
     private MonoMainMix monoMainMix;
     private Limiter mainLimiter;
@@ -158,6 +179,7 @@ public class OndesSynth extends Thread implements EndListener {
         this.sampleRate = monoMainMix.getSampleRate();
         mainLimiter  = getMainLimiter();
         instant = new Instant(sampleRate);
+        fillChannelVoicePool(progNames);
 
         //
         //
@@ -182,12 +204,12 @@ public class OndesSynth extends Thread implements EndListener {
             return;
         }
 
-        Voice v = VoiceMaker.getVoice(progNames[chan], this);
+        Voice v = channelVoicePool[chan].getVoice();
         if (v == null) return; // getVoiceMap() displays the warning
 
         voiceTracker.addVoice(v,chan,note);
         v.setEndListener(this);
-        v.resume();
+        //v.resume(); // getVoice above calls resume.
         v.processMidiMessage(msg);
     }
 
@@ -198,8 +220,17 @@ public class OndesSynth extends Thread implements EndListener {
         Voice playing = voiceTracker.getVoice(chan,note);
         if (playing == null) return;
         playing.processMidiMessage(msg);
-
     }
+
+    @Override
+    public void noteEnded(int chan, int note) {
+        Voice voice = voiceTracker.getVoice(chan,note);
+        if (voice != null) {
+            channelVoicePool[chan].releaseVoice(voice);
+        }
+        voiceTracker.delVoice(chan,note);
+    }
+
 
     /**
      * Send this message to all voices currently playing
@@ -309,14 +340,6 @@ public class OndesSynth extends Thread implements EndListener {
         }
     }
 
-
-    @Override
-    public void noteEnded(int chan, int note) {
-        Voice voice = voiceTracker.getVoice(chan,note);
-        if (voice != null) voice.pause();
-        voiceTracker.delVoice(chan,note);
-
-    }
 
     public MonoComponent getMainOutput() {
         if (USE_LIMITER) {

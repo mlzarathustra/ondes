@@ -11,21 +11,20 @@ import java.util.Map;
 public class ComponentMaker {
 
     /**
-     * This should be the only place to acquire components from.
-     * Do not use the constructors directly.
+     * <p>
+     *      This should be the only place to acquire components from.
+     *      Do not use the constructors directly.
+     * </p>
+     * <p>
+     *      A component must know its synth, but handing it to the
+     *      component constructors is awkward because WaveMaker is
+     *      using a reflected constructor.
+     * </p>
      *
      * @param specs - a map of specifications, otherwise known as a program
      *              typically from YAML
      *
      * @param synth - the synth which is using this component.
-     * <p>
-     *      A component must know its synth so release() can figure out which
-     *      wires to remove at the end (by looking them up in the tangle).
-     * </p>
-     * <p>
-     *      But handing it to the component constructors is awkward
-     *      because WaveMaker is using a reflected constructor.
-     * </p>
      * @return - a new Component as specified
      */
     public static MonoComponent getMonoComponent(Map specs, OndesSynth synth) {

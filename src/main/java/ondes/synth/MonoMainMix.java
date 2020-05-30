@@ -257,10 +257,6 @@ public class MonoMainMix extends MonoComponent {
     @Override
     public void resume() { }
 
-    @Override
-    public void release() {
-        //  nothing here so far... the main synth class closes the line.
-    }
 
     /**
      * This is the last stop on the route, and outputs directly

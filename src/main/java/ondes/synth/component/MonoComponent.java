@@ -58,12 +58,6 @@ public abstract class MonoComponent {
      */
     public abstract void resume();
 
-    /**
-     * Detach this component:
-     * disconnect from main mix and stop phase clocks.
-     */
-    public abstract void release();
-
     void setSynth(OndesSynth s) { synth = s; }
 
     /**

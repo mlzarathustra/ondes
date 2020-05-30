@@ -89,14 +89,17 @@ class AnharmonicWaveGen extends WaveGen {
                 "Anharmonic composite wave form currently requires \n" +
                     "a list of value pairs (frequency, divisor).\n");
         }
+    }
+
+    @Override
+    public void resume() {
         for (int i=0; i<waves.length-1; i += 2) {
             clocks.add(synth.getInstant().addPhaseClock());
         }
     }
 
     @Override
-    public void release() {
-        super.release();
+    public void pause() {
         clocks.forEach( synth.getInstant()::delPhaseClock );
     }
 

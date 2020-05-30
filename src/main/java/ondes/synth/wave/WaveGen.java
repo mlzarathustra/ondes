@@ -36,7 +36,8 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     private double freq = 440;
-    private int amp = 2048;  // assume 16-bits (signed) for now.
+    private int amp = 1024;  // assume 16-bits (signed) for now.
+    // it adds up fast for composite waves.
 
     public int getAmp() {
         return (int)(scale * amp);
@@ -69,7 +70,8 @@ public abstract class WaveGen extends MonoComponent {
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-        phaseClock = synth.getInstant().addPhaseClock();
+
+        //phaseClock = synth.getInstant().addPhaseClock();
         // Note ON will set frequency
 
         //out.println("WaveGen.configure: "+config);
@@ -122,18 +124,6 @@ public abstract class WaveGen extends MonoComponent {
     @Override
     public void resume() {
         phaseClock = synth.getInstant().addPhaseClock(); // note-ON sets freq
-    }
-
-
-
-    @Override
-    public void release() {
-        synth.getInstant().delPhaseClock(phaseClock);
-
-        // TODO - Is this necessary? The main output will now be managed
-        //        at the voice level. So a simple `pause()` should be enough.
-        //
-        outputs.forEach( c -> c.delInput(this.getMainOutput()));
     }
 
     void setOutput(MonoComponent comp) {

@@ -67,10 +67,6 @@ public class Limiter extends MonoComponent {
         // no phase clocks here, so no need to pause() or resume()
     }
 
-    @Override
-    public void release() { }
-
-
     int ct=0;
     boolean first=true;
 

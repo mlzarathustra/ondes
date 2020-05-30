@@ -4,6 +4,8 @@ import ondes.synth.component.MonoComponent;
 
 import java.util.Map;
 
+import static java.lang.System.err;
+
 /**
  *
  * <p>
@@ -34,16 +36,21 @@ public class Junction extends MonoComponent {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void configure(Map config, Map components) { }
+    public void configure(Map config, Map components) {
+        Object scaleStr = config.get("scale");
+        if (scaleStr != null) {
+            try { this.scale = Double.parseDouble(scaleStr.toString()); }
+            catch (Exception ex) {
+                err.println("'scale' must be a number to mutiply the output value by.\n" +
+                    "  '1' is default. Can be floating point.");
+            }
+        }
+    }
 
     @Override
     public void pause() { }
 
     @Override
     public void resume() { }
-
-    @Override
-    public void release() { }
-
 
 }

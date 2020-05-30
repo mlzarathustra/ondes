@@ -1,6 +1,8 @@
 package ondes.synth;
 
 import java.util.ArrayList;
+import static java.lang.System.out;
+
 
 @SuppressWarnings("FieldMayBeFinal")
 public class Instant  {
@@ -49,11 +51,15 @@ public class Instant  {
         return addPhaseClock(((float) f)/1_000_000);
     }
     public PhaseClock addPhaseClock(float frequency) {
+        out.println("addPhaseClock: count is "+clocks.size());
         PhaseClock pc=new PhaseClock(frequency);
         clocks.add(pc);
         return pc;
     }
-    public void delPhaseClock(PhaseClock pc) { clocks.remove(pc); }
+    public void delPhaseClock(PhaseClock pc) {
+        out.println("delPhaseClock: count is "+clocks.size());
+        clocks.remove(pc);
+    }
 
     public int getSampleRate() { return sampleRate; }
     public long getSampleNumber() { return sampleNumber; }

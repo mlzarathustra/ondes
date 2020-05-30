@@ -15,6 +15,7 @@ import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked")
 public class Voice {
+    private OndesSynth synth;
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
 
@@ -27,9 +28,20 @@ public class Voice {
     /**
      * Components connect to our junction rather than the main mix
      * so that we can disconnect them from main when deactivating
-     * the voice, but re-attach again easily.
+     * the voice, and then reattach when reactivating.
      */
-    Junction voiceMix = new Junction();
+    Junction voiceMix;
+    {
+        Map<String,String> map=new HashMap<>();
+        map.put("type","mix");
+        voiceMix = (Junction) ComponentMaker.getMonoComponent(map, synth);
+        if (voiceMix == null) {
+            err.println("Could not get a Junction for voice!");
+        }
+        else {
+            voiceMix.setVoice(this);
+        }
+    }
 
     /**
      * Eight listeners, one for each message type (MIDI status >> 4)
@@ -61,10 +73,12 @@ public class Voice {
     }
 
     public void resume() {
-        // TODO - implement
+        components.values().forEach(MonoComponent::resume);
+        synth.getMainOutput().addInput(voiceMix.getMainOutput());
     }
     public void pause() {
-        // TODO - implement
+        components.values().forEach(MonoComponent::pause);
+        synth.getMainOutput().delInput(voiceMix.getMainOutput());
     }
 
     public void resetWires() {
@@ -75,6 +89,8 @@ public class Voice {
 
     @SuppressWarnings("unchecked,rawtypes")
     Voice(Map voiceSpec, OndesSynth synth) {
+        this.synth = synth;
+
         // step 1 : construct components
         for (Object key : voiceSpec.keySet()) {
             Object value=voiceSpec.get(key);
@@ -93,7 +109,7 @@ public class Voice {
         //    Currently it is the only global component.
         //    Note that any others like this must be filtered out
         //    in the following loop.
-        components.put("main", synth.getMainOutput());
+        components.put("main", voiceMix);
 
         // step 2 : configure
         //          (including: connect to other components)
@@ -131,7 +147,7 @@ public class Voice {
         //
         if (msg.getStatus()>>4 == 8) {  // Note-OFF
             endListener.noteEnded(msg);
-            components.values().forEach(MonoComponent::release);
+            //components.values().forEach(MonoComponent::release);
         }
 
     }

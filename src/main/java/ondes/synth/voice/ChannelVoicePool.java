@@ -3,6 +3,7 @@ package ondes.synth.voice;
 import ondes.synth.OndesSynth;
 
 import java.util.ArrayDeque;
+import static java.lang.System.out;
 
 /**
  * <p>
@@ -21,7 +22,23 @@ public class ChannelVoicePool {
     ArrayDeque<Voice> available=new ArrayDeque<>();
     ArrayDeque<Voice> inUse = new ArrayDeque<>();
 
-    ChannelVoicePool(String progName,
+    /**
+     * Ten voices seems like a good default.
+     *
+     * @param progName - which program to load
+     * @param synth - what synth will be playing them
+     */
+    public ChannelVoicePool(String progName, OndesSynth synth) {
+        this(progName,synth,10);
+    }
+
+    /**
+     * Ten voices seems like a good default.
+     *
+     * @param progName - which program to load
+     * @param synth - what synth will be playing them
+     */
+    public ChannelVoicePool(String progName,
                      OndesSynth synth,
                      int count) {
         
@@ -34,8 +51,14 @@ public class ChannelVoicePool {
             available.add(voice);
         }
     }
-    
+
+    int count=0;
     public Voice getVoice() {
+        //out.println("getVoice: available="+available.size());
+        if (++count == 11) {
+            out.println("11th voice");
+        }
+
         Voice voice;
         if (available.size() > 0) voice = available.pop();
         else voice = VoiceMaker.getVoice(progName,synth);
@@ -48,6 +71,7 @@ public class ChannelVoicePool {
     }
 
     public void releaseVoice(Voice voice) {
+        //out.println("releaseVoice()");
         voice.pause();
         inUse.remove(voice);
         available.add(voice);

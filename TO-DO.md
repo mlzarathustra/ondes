@@ -21,8 +21,27 @@
  
  -----------
  
- migrate test case t8() from ondes.Test to wherever it should go. 
+ migrate test case t8() from ondes.Test to wherever it should go.
  
+ ----------- 
+ 
+ Use java.lang.StackWalker to implement "friend" restriction 
+ for Component constructors.
+ Each component type will have its own "friend," and nobody else
+ should be allowed to call the constructor.
+ 
+   - WaveGen - Wavemaker
+   - EnvGen - EnvMaker
+   - Junction, Limiter - ComponentMaker
+ 
+  
+ ```
+     StackWalker walker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+     Optional<Class<?>> callerClass = walker.walk(s ->
+         s.map(StackFrame::getDeclaringClass)
+          .filter(interestingClasses::contains)
+          .findFirst());
+``` 
  ----------- 
  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
  
