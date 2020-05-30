@@ -1,13 +1,5 @@
 # Ondes synth - to do
 
- - channel voice pool
-   - create a channel voice pool & prebuild from patches given.
-        - make sure that voices are re-entrant 
-        - remove the wires from the notifications when 
-          the voice is inactive  
-   - only if the pool is depleted, create a new voice.
-   - (optional) manage pool from a separate thread
-
  - harmonic voices - prebuild the whole wave on loading the voice. The same sample can be shared for all voices using the same patch. Look at the sine wave sample.
 
  - velocity 
@@ -20,29 +12,6 @@
     - envelope mod (create an `OpAmp` component)
  
  -----------
- 
- migrate test case t8() from ondes.Test to wherever it should go.
- 
- ----------- 
- 
- Use java.lang.StackWalker to implement "friend" restriction 
- for Component constructors.
- Each component type will have its own "friend," and nobody else
- should be allowed to call the constructor.
- 
-   - WaveGen - Wavemaker
-   - EnvGen - EnvMaker
-   - Junction, Limiter - ComponentMaker
- 
-  
- ```
-     StackWalker walker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-     Optional<Class<?>> callerClass = walker.walk(s ->
-         s.map(StackFrame::getDeclaringClass)
-          .filter(interestingClasses::contains)
-          .findFirst());
-``` 
- ----------- 
  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
  
  - noteOFF routing / voice management - 
@@ -73,8 +42,32 @@
            
        }
    ```     
+----------------
+ 
+ - migrate test case t8() from ondes.Test to wherever it should go.
+ 
+ - (optional) manage pool from a separate thread
 
+ 
+----------- 
+ 
+ Use java.lang.StackWalker to implement "friend" restriction 
+ for Component constructors.
+ Each component type will have its own "friend," and nobody else
+ should be allowed to call the constructor.
+ 
+   - WaveGen - Wavemaker
+   - EnvGen - EnvMaker
+   - Junction, Limiter - ComponentMaker
+ 
   
+ ```
+     StackWalker walker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+     Optional<Class<?>> callerClass = walker.walk(s ->
+         s.map(StackFrame::getDeclaringClass)
+          .filter(interestingClasses::contains)
+          .findFirst());
+``` 
  
  -----------
   - Latency is a problem generally with computer sound, on account of needing to have a large buffer that needs to clear before it can respond.
