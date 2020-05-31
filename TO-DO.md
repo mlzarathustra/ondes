@@ -1,6 +1,14 @@
 # Ondes synth - to do
 
- - review all "to-do" flags
+ - PWM input should be separate from main input, which would be for frequency modulation.
+ 
+     To that end, configure should be able to interpret dot-notation:    
+     ```    
+         out: osc1
+         
+         #  should be out: osc1.pwm 
+         #  so we can have a separate input for frequency
+     ```
 
  - velocity 
     - review all amplitude adjustments
@@ -22,14 +30,6 @@
  - LFO 
     - pitch mod
     - envelope mod (create an `OpAmp` component)
-    
- - configure should be able to interpret dot-notation:    
-```    
-              out: osc1
-            
-            #  should be out: osc1.pwm 
-            #  so we can have a separate input for frequency
-```
 
  - create a component that simply maps midi key to a value
     with an option for linear or logarithmic. 

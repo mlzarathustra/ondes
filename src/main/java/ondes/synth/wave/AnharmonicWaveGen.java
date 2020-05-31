@@ -61,11 +61,6 @@ class AnharmonicWaveGen extends WaveGen {
             clocks.get(wp/2)
                 .setFrequency( (float)(freq * waves[wp] * getFreqMultiplier()) );
         }
-
-        scaledAmp = (int)(getAmp() * (1.0 + 55.0/(2*freq) ));
-
-        // TODO - this is already happening in WaveGen.
-        //       probably skip it here. Test.
     }
 
     private final double[] defaultWave = { 1,1, 2,2, 3,3 };

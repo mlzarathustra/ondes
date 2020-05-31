@@ -118,7 +118,6 @@ class HarmonicWaveGen extends WaveGen {
             }
         }
 
-        // TODO  - set up waveLookup from waves
         String waveKey = Arrays.toString(waves);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
