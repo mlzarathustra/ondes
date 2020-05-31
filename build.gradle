@@ -30,7 +30,6 @@ configurations {
 
 javadoc {
     source = sourceSets.main.allJava
-    //classpath = configurations.compile
     classpath = configurations.extraLibs
 }
 //
@@ -53,6 +52,8 @@ mainClassName = 'ondes.App'
 test {
     // Use TestNG for unit tests
     useTestNG()
+    //  if true, display the standard out from testing
+    testLogging.showStandardStreams = true
 }
 
 

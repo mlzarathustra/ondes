@@ -1,7 +1,6 @@
 package ondes.synth.envelope;
 
 
-import ondes.mlz.MaxTracker;
 import ondes.mlz.MaxTrackerPQ;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
