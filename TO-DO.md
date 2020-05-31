@@ -9,6 +9,7 @@
          #  should be out: osc1.pwm 
          #  so we can have a separate input for frequency
      ```
+ - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings.  
 
  - velocity 
     - review all amplitude adjustments
@@ -17,7 +18,7 @@
         - amount (0-100)
         - base (0-100) 
         - min(100, base + (vel * (amt/100)))
-        - consider: the minimum the VS puts out is about 11, and it almost never gets to 128. So maybe find a way to spread out the limited set of values? (so that 11 might map to zero) 
+        - consider: the minimum the QS puts out is about 11, and it almost never gets to 128. So maybe find a way to spread out the limited set of values? (so that 11 might map to zero) 
         
 
  - wave gens 
@@ -29,7 +30,6 @@
  - pitch bend
  - LFO 
     - pitch mod
-    - envelope mod (create an `OpAmp` component)
 
  - create a component that simply maps midi key to a value
     with an option for linear or logarithmic. 

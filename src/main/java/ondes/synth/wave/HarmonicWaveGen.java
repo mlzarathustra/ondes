@@ -150,7 +150,6 @@ class HarmonicWaveGen extends WaveGen {
      */
     @Override
     public int currentValue() {
-        //return (int) (currentValue(phaseClock.getPhase()) * getAmp());
         return (int)(
             waveLookup.valueAt(phaseClock.getPhase()) * getAmp()
         );

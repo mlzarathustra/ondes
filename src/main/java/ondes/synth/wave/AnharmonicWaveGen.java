@@ -130,7 +130,7 @@ class AnharmonicWaveGen extends WaveGen {
                 / waves[ov+1];
         }
 
-        return (int) (sum * getAmp());  //   *scaledAmp?
+        return (int) (sum * getAmp());
     }
 
     // DEBUG HACK

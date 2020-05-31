@@ -57,15 +57,19 @@ public class WaveMaker {
 
     static {
         register("square", SquareWaveGen.class);
+        register("pwm", PwmWaveGen.class);
+
         register("sine", SineWaveGen.class);
+        register("harmonic", HarmonicWaveGen.class);
+        register("anharmonic", AnharmonicWaveGen.class);
+
         register("saw", SawWaveGen.class);
         register("ramp-up", RampUpWaveGen.class);
         register("ramp-down", RampDownWaveGen.class);
 
-        register("harmonic", HarmonicWaveGen.class);
-        register("anharmonic", AnharmonicWaveGen.class);
+        register("noise", NoiseWaveGen.class);
 
-        register("pwm", PwmWaveGen.class);
+
     }
 
 }

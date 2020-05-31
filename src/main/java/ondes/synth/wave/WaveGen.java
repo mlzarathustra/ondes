@@ -37,6 +37,17 @@ public abstract class WaveGen extends MonoComponent {
     */
     private int ampOverride = -1;
 
+    /**
+     * <p>
+     *     scale the output level of this wave gen.
+     *     Note that if we're using ampOverride,
+     *     (invoked by the "output-amp" property)
+     *     scale will be ignored.
+     * </p>
+     */
+    float scale = 1;
+
+
     // should be private.
     protected double freq = -1; // if positive, overrides MIDI
     private int amp = 1024;  // assume 16-bits (signed) for now.
@@ -51,7 +62,7 @@ public abstract class WaveGen extends MonoComponent {
 
     float detune = 0;  // detune in cents
     int offset = 0;    // interval offset in minor seconds
-    float scale = 1;
+
 
     double pitchScaleFactor = 10; // see ondes.mlz.PitchScaling
 
@@ -67,9 +78,12 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     void setFreq(double freq) {
-        if (this.freq > 0) freq = this.freq;
+        if (this.freq > 0) {
+            freq = this.freq;
+            // noise has no frequency, but should not be scaled at infinity!
+            scale = (float)getScaling(pitchScaleFactor, freq);
+        }
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
-        scale = (float)getScaling(pitchScaleFactor, freq);
     }
 
     /**

@@ -2,8 +2,8 @@
 # Program Configuration
 
 ## Terminology 
- - `program` refers to a set of specifications for a synth patch. It starts out in YAML and then turns into a Map when parsed. That's how it's kept internally.
- - `voice` when we wish to use those specifications to make noise, the engine turns them into a Voice. 
+ - `program` refers to a set of specifications for a synth patch. It starts out in YAML and then turns into a Map when parsed. It's kept as a Map internally. The application looks in two places for them: the resources directory `program` and a directory called `program` (if it exists) relative to the working directory.
+ - `voice` when we wish to use those specifications to make noise, the engine turns them into a Voice. Voices are managed by the `ChannelVoicePool` class. The sirens were voices on an island, these are voices in a pool. By creating voices and beforehand and re-using them, we can avoid some of the agony of garbage collection delays. 
  
 ## Specifications (YAML) 
 Below is a basic set of specifications.
@@ -19,37 +19,60 @@ Below is a basic set of specifications.
    out: main
 ```
 
+## Voice
 The properties are as follows:
- - **name** - a label used so you can tell the synth you want this sound. Use the name or a distinct substring with the -all or -ch<n> command-line options to the synth. Alternately, you may use the index of the sound given by the `-list-programs` option. 
+ - **name** - a label for the `Voice` composed of various components. So you can tell the synth you want this sound. Use the name or a distinct substring with the -all or -ch<n> command-line options to the synth. Alternately, you may use the index of the sound given by the `-list-programs` option. 
  
-A program can contain multiple components but the above has only one, a square wave generator by the name of osc1. 
+ - in the future, there will be other properties that can be specified at the voice level.
+
+## Components 
+A program can contain multiple components. The above has only one: a square wave generator by the name of `osc1`
+
+What a component will do is defined by a series of properties listed below the name key. The most important is **type**
+
+ - **type** - what type of component this is.  These values are in the `ComponentMaker` switch. Currently, options are:
+    - **wave**  - wave generator
+    - **env** - envelope generator
+    - **mixer** - a junction between voices
+    - **limiter** - keeps a signal from overflowing
+    - **op-amp** - multiplies two signals together, so that one can control the output envelope of the other. For example an LFO or an Envelope can do amplitude modulation.
+    
+   More will follow in the future. 
+ 
   
  - **osc1** - this is the label of the component. It's available for use by any component in the same voice (i.e. this same file).
  Note that the global **main** component (the MainMix object) is declared by default for every voice. If you neglect to put a line `out: main` in some component, the voice has no way of sounding.
  
- - **midi** - tell which type(s) of MIDI message this component should receive. Possibilities are listed below.
+ - **midi** - tell which type(s) of MIDI message this component should receive. The **MIDI message types** section below lists the eight types.
  
  - **detune** - cents relative to the base frequency. 100 cents equals a half step, so adding detune plus offset you can choose any frequency relative to the base. May be positive or negative.
  
  - **offset** - number of half steps to offset the frequency from the base. -12 is down an octave. 6 is a tritone. Dust off your music theory books! 
  
- - **type** - what type of component this is.  These values may be found in the `ComponentMaker` switch. Currently options are:
-    - wave - wave generator
-    - env - envelope generator
-    - mixer - a junction between voices
-    - limiter - keeps a signal from overflowing
-    
-   More will follow in the future.
- - **shape** - specific to the wave generator. Other components may have the same label but with different possible values.
+ - **scale** - output scaling. 1 is unchanged. .5 is half as loud. 2 is twice as loud. The app does not check limits, so be careful! 
+
+ - **shape** - For a wave, the wave form. Envelopes will have a different list, once I get around to implementing them. Following are the key words (which must be exact) for specifying the different wave forms:
+    - **sine** - pure sine wave
+    - **square** - with 50% duty cycle
+    - **pwm** - a square wave with pulse width modulation. In other words, you can hook it up to an LFO to modulate the duty cycle.  
+    - **saw** - with a linear rise and a linear fall, with a 50% duty cycle
+    - **ramp-up** - a linear rise and instantaneous fall (like a saw with a 100% duty cycle)
+    - **ramp-down** - a linear fall and instantaneous rise (a saw with a 0% duty cycle)
+    - **harmonic** - allows you to combine sine waves at harmonic intervals. More efficient than the anharmonic WaveGen, because it creates a snapshot of a single cycle at the outset and then plays back from a wavetable. 
+    - **anharmonic** - allows you to combine sine waves at whatever intervals you want. Because they are not harmonic, they will have to be computed on the fly.
   
  - **out** - where this component&rsquo;s output is sent to. Here it's going directly to the main out, but it could equally go to a DCA (digitally controlled amplifier) modulated with an envelope generator.
  
  ## other properties 
-  - **output-amp** - Sets the output amplitude, overriding other considerations. For sound WaveGens, we scale according to pitch, so that that low frequencies won't get lost, and note-velocity if specified. However, for an LFO we need to control the output level very precisely. It's meant to be paired with the **input-amp** setting on the destination, i.e. both should be the same.
+  - **output-amp** - Sets the output amplitude, overriding other considerations. For sound WaveGens, we scale amplitude (or actually, peak deviation) according to pitch, so that that low frequencies won't get lost, and note-velocity if specified. However, for an LFO we need to control the output level very precisely. It's meant to be paired with the **input-amp** setting on the destination, i.e. both should be the same.
   
   - **input-amp** - The expected maximum amplitude of the input. For a single source, it should be the same as the **output-amp** setting on the source. For multiple sources, you'll have to do some math. The sources are added together.
   
   - **mod-percent** - The percentage of modulation for a PWM wave. See `pwm.yaml` in the resources directory for examples. PWM stands for "Pulse Width Modulation" and refers to changing the duty cycle of a square wave, which gives a kind of combing effect.
+  
+  - **signed** - When `false` tells the WaveGen to output only values above zero. For an LFO, that's probably what you want. For audible waves, you want **signed** to be `true` 
+  
+  - **scale** - a multiplier for controlling level on an output. Currently only available on `op-amp` components. 1 means at the same level. .5 for half the volume, 2 for twice the volume.
   
   All signals traveling inside the voice are of type integer, so 32 bits of accuracy. They can be positive or negative.
   

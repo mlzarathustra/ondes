@@ -88,6 +88,9 @@ public class App {
         }
     }
 
+    static boolean hold = false; // kludge - suppress note offs for drone!
+    public static boolean holdValue() { return hold; }
+
     static void showPrograms() {
         VoiceMaker.showPrograms();
         System.exit(0);
@@ -97,7 +100,6 @@ public class App {
         VoiceMaker.showProgram(progName);
         System.exit(0);
     }
-
 
     static void usage() {
         out.println(getResourceAsString("usage/App.txt"));
@@ -135,6 +137,8 @@ public class App {
 
                 case "-log-main-out": LOG_MAIN_OUT=true;
                 continue;
+
+                case "-hold": hold=true; continue;
             }
 
             // options with following args - if we get here

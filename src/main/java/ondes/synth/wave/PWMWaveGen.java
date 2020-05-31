@@ -53,8 +53,6 @@ class PwmWaveGen extends WaveGen {
         float mod = inpSum * inputAmp;
 
         double modDutyCycle = dutyCycle + (modPercent/200.0) * mod;
-//        out.println("PWM.currentValue() inpSum="+inpSum+
-//            "; modDutyCycle="+modDutyCycle);
 
         return  (
             (phaseClock.getPhase() > modDutyCycle) ?

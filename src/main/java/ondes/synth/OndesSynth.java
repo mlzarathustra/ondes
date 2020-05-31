@@ -3,6 +3,7 @@ package ondes.synth;
 import javax.sound.midi.*;
 import javax.sound.sampled.Mixer;
 
+import ondes.App;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
 import ondes.mlz.SineLookup;
@@ -27,7 +28,6 @@ import static ondes.mlz.YamlLoader.*;
 public class OndesSynth extends Thread implements EndListener {
 
     boolean DB = false;
-
 
     /**
      * Tracks which voices are playing on each channel.
@@ -99,7 +99,6 @@ public class OndesSynth extends Thread implements EndListener {
     private int sampleRate;
 
     private final MidiDevice midiInDev;
-    private String[] progNames;
 
     /**
      * <p>
@@ -171,7 +170,6 @@ public class OndesSynth extends Thread implements EndListener {
         int         bufSize
     ) {
         this.midiInDev = midiInDev;
-        this.progNames = progNames;
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
@@ -214,6 +212,7 @@ public class OndesSynth extends Thread implements EndListener {
     }
 
     void noteOFF(MidiMessage msg) {
+        if (App.holdValue()) return;
         int chan = msg.getStatus() & 0xf;
         int note = msg.getMessage()[1];
 
