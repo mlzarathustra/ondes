@@ -42,6 +42,8 @@ public abstract class WaveGen extends MonoComponent {
     private int amp = 1024;  // assume 16-bits (signed) for now.
     // it adds up fast for composite waves.
 
+    protected boolean signed = true;
+
     public int getAmp() {
         if (ampOverride >= 0) return ampOverride;
         return (int)(scale * amp);
@@ -94,6 +96,10 @@ public abstract class WaveGen extends MonoComponent {
             setOutput((MonoComponent) components.get(oneOut));
         }
 
+        //  Do we give negative output? Doesn't work so well for LFO's.
+        Object blInp = config.get("signed");
+        if (blInp != null) signed = (boolean)blInp;
+
         Float fltInp;
         fltInp = getFloat(config.get("detune"),
             "'detune' must be a number. can be floating.");
@@ -131,11 +137,6 @@ public abstract class WaveGen extends MonoComponent {
         // If the 'freq' variable is set, it overrides the 0.
         // Because an LFO may not receive the note-ON
         setFreq(0);
-    }
-
-    void setOutput(MonoComponent comp) {
-        comp.addInput(this.getMainOutput());
-        outputs.add(comp); // so we can remove it later
     }
 
     @Override

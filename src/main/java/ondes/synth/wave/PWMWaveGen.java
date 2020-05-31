@@ -19,22 +19,6 @@ class PwmWaveGen extends WaveGen {
 
     private double lfoPhase = 0;
 
-/*
-    long[] nextBuf() {
-        for (int i = 0; i< samples.length; ++i) {
-            while (phase > 1) phase -= 1;
-            while (lfoPhase > 1) lfoPhase -= 1;
-            double modDutyCycle = dutyCycle + Math.sin(lfoPhase*twoPI) * lfoVar;
-
-            samples[i] = (long) ((phase>modDutyCycle)?amp:-amp);
-
-            phase += freq / sampleRate;
-            lfoPhase += lfoFreq / sampleRate;
-        }
-        //if (loops<3) { loops++; System.out.println(Arrays.toString(samples)); }
-        return samples;
-    }
-*/
 
     @Override
     @SuppressWarnings("rawtypes")

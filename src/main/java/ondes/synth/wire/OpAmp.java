@@ -2,9 +2,12 @@ package ondes.synth.wire;
 
 import ondes.synth.component.MonoComponent;
 
+import java.util.List;
 import java.util.Map;
+import static java.lang.System.out;
 
 import static java.lang.System.err;
+import static ondes.mlz.Util.getList;
 
 /**
  *
@@ -34,6 +37,7 @@ import static java.lang.System.err;
 public class OpAmp extends MonoComponent {
 
     private double scale = 1;
+    private float inputAmp;
     void setScale(double v) { scale = v; }
 
     public OpAmp() { super(); }
@@ -43,6 +47,7 @@ public class OpAmp extends MonoComponent {
         // a manual loop is slightly faster than the lambda.
         double rs = 1;
         for (WiredIntSupplier input : inputs) rs *= input.getAsInt();
+        //out.println("OpAmp.currentValue(): "+scale*rs);
         return (int)(scale * rs);
     }
 
@@ -51,14 +56,27 @@ public class OpAmp extends MonoComponent {
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-        Object scaleStr = config.get("scale");
-        if (scaleStr != null) {
-            try { this.scale = Double.parseDouble(scaleStr.toString()); }
-            catch (Exception ex) {
-                err.println("'scale' must be a number to mutiply the output value by.\n" +
-                    "  '1' is default. Can be floating point.");
-            }
+        Object compOut = config.get("out");
+        if (compOut == null) {
+            err.println("Missing out: key in "+this.getClass());
+            err.println("OpAmp will not do much without output!");
+            return;
         }
+        List compOutList = getList(compOut);
+        for (Object oneOut : compOutList) {
+            setOutput((MonoComponent) components.get(oneOut));
+        }
+
+        Double dblInp;
+        dblInp = getDouble( config.get("scale"),
+            "'scale' must be a number to multiply the output value by.\n" +
+                "  '1' is default. Can be floating point.");
+        if (dblInp != null) scale = dblInp;
+
+        dblInp= getDouble(config.get("input-amp"),
+            "'input-amp' must be a number, typically " +
+                "the same as the output-amp of the sender.");
+        if (dblInp != null) inputAmp = (float)(1.0 / dblInp);  // is this needed? just use scale.
     }
 
     @Override

@@ -5,8 +5,11 @@ import ondes.synth.envelope.EnvMaker;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Junction;
+import ondes.synth.wire.OpAmp;
 
 import java.util.Map;
+
+import static java.lang.System.err;
 
 public class ComponentMaker {
 
@@ -29,6 +32,11 @@ public class ComponentMaker {
      */
     public static MonoComponent getMonoComponent(Map specs, OndesSynth synth) {
         MonoComponent rs;
+        if (specs.get("type") == null) {
+            err.println("Missing 'type' property for component "+
+                specs.get("name"));
+            return null;
+        }
         switch (specs.get("type").toString()) {
 
             case "wave":
@@ -45,6 +53,10 @@ public class ComponentMaker {
 
             case "limiter":
                 rs = new Limiter();
+                break;
+
+            case "op-amp":
+                rs = new OpAmp();
                 break;
 
             default:

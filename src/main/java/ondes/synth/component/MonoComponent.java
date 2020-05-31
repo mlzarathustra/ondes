@@ -16,6 +16,11 @@ public abstract class MonoComponent implements ConfigHelper {
     public Voice getVoice() { return voice; }
     public void setVoice(Voice v) { voice = v; }
 
+    public void setOutput(MonoComponent comp) {
+        comp.addInput(this.getMainOutput());
+        outputs.add(comp); // so we can remove it later
+    }
+
     /**
      * "mainOutput" is the IntSupplier that a target component
      * can use as input.

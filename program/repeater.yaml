@@ -1,0 +1,34 @@
+
+
+name: repeater
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  out: vca
+
+lfo1:
+  freq: 0.2
+  type: wave
+  shape: saw
+  output-amp: 1000
+  out: osc1
+
+vca-lfo:
+  type: wave
+  signed: false
+  freq: 3
+  shape: ramp-up
+  output-amp: 1000
+  out: vca
+
+vca:
+  type: op-amp
+  scale: .001
+  out: main
+
+#  should be out: osc1.pwm
+#  so we can have a separate input for frequency
