@@ -2,6 +2,7 @@ package ondes.synth.envelope;
 
 
 import ondes.mlz.MaxTracker;
+import ondes.mlz.MaxTrackerPQ;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
@@ -19,7 +20,7 @@ public class Limiter extends MonoComponent {
     // it's expensive, so we don't start it until we need it.
     boolean bypass=true;
 
-    MaxTracker maxTracker;
+    MaxTrackerPQ maxTracker;
 
     long hexOrInt(String s) {
         if (s.toLowerCase().startsWith("0x")) {
@@ -52,7 +53,7 @@ public class Limiter extends MonoComponent {
         slope = ((double)(maxOut - threshold)) /
             ((double)(maxIn - threshold));
 
-        maxTracker = new MaxTracker((int)(
+        maxTracker = new MaxTrackerPQ((int)(
             ( ((float) delayMs)/1000.0 ) * synth.getSampleRate()
         ));
     }

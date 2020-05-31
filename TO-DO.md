@@ -1,11 +1,24 @@
 # Ondes synth - to do
 
+ - review all "to-do" flags
+
  - velocity 
- - pitch bend
+    - review all amplitude adjustments
+    - is the pitch scaling right? it sounds about right.
+    - figure out good adjustments for velocity sensitivity.
+        - amount (0-100)
+        - base (0-100) 
+        - min(100, base + (vel * (amt/100)))
+        - consider: the minimum the VS puts out is about 11, and it almost never gets to 128. So maybe find a way to spread out the limited set of values? (so that 11 might map to zero) 
+        
+
  - wave gens 
      - need a level control; 
      - distinguish between it, and the ampOverride set using output-amp. 
-
+    
+ - add a low-pass filter near 20khz to reduce aliasing
+   
+ - pitch bend
  - LFO 
     - pitch mod
     - envelope mod (create an `OpAmp` component)
@@ -17,7 +30,10 @@
             #  should be out: osc1.pwm 
             #  so we can have a separate input for frequency
 ```
-    
+
+ - create a component that simply maps midi key to a value
+    with an option for linear or logarithmic. 
+   
  
  -----------
  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)

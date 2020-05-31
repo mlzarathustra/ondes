@@ -38,5 +38,8 @@
        Patches can be supplied as YAML files in the directory
        ./program; a number are supplied internally as resources.
 
+       -log-main-out - dumps verbose debugging information into
+        'update.log.' See timing.md for more info.
+
        -help or -h gives this help message
 
