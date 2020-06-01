@@ -256,25 +256,35 @@ public abstract class WaveGen extends MonoComponent {
             "'offset' must be an integer.");
         if (intInp != null) offset = intInp;
 
-        String levelScaleErr = "'level-scale' must be between 0 and 10. (floating)";
+        String levelScaleErr =
+            "'level-scale' must be between 0 and 11. (floating) " +
+                "Yes, it goes to 11! \n" +
+                "(but you probably want it much lower than that)";
         fltInp = getFloat(config.get("level-scale"), levelScaleErr);
         if (fltInp != null) {
-            if (fltInp < 0 || fltInp >10) err.println(levelScaleErr);
+            if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
             else levelScale = fltInp;
         }
 
-        String velocityBaseErr = "'velocity-base' must be between " +
-            "0 and 100. The default is 0.";
+        //  It may be desirable to allow a base lower than zero (which
+        //  would necessitate a limit when combining in velocityMultiplier()
+        //  the lowest the QS puts out is about 11.
+        //
+        String velocityBaseErr = "'velocity-base' must be a percentage " +
+            "between 0 and 100. The default is 0.";
         fltInp = getFloat(config.get("velocity-base"), velocityBaseErr);
         if (fltInp != null) {
             if (fltInp < 0 || fltInp >100) err.println(velocityBaseErr);
             else velocityBase = fltInp / 100.0f;
         }
-        String velocityAmountErr = "'velocity-amount' must be between " +
-            "0 and 100. The default is 100.";
+        //  The QS (my test synth) never gets to a velocity of 127
+        //  so the only way to achieve it is by boosting the value here.
+        //  hence, the limit higher than 100%
+        String velocityAmountErr = "'velocity-amount' must be a percentage " +
+            "between 0 and 200. The default is 100.";
         fltInp = getFloat(config.get("velocity-amount"), velocityAmountErr);
         if (fltInp != null) {
-            if (fltInp < 0 || fltInp >100) err.println(velocityAmountErr);
+            if (fltInp < 0 || fltInp >200) err.println(velocityAmountErr);
             else velocityAmount = fltInp / 100.0f;
         }
 
