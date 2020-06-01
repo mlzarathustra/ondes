@@ -145,8 +145,8 @@ public class MlzMidi {
         StringBuilder sb=new StringBuilder(status);
         sb.append(" - ");
         if (s<0xa) {
-            sb.append(midiNumToStr(msg.getMessage()[1]));
-            sb.append(" vel="+msg.getMessage()[2]);
+            sb.append(String.format("%4s ",midiNumToStr(msg.getMessage()[1])));
+            sb.append(String.format(" vel=%3d ",msg.getMessage()[2]));
         }
         else {
             for (int i = 1; i < msg.getLength(); ++i) {
@@ -159,11 +159,13 @@ public class MlzMidi {
 
     // there is no Arrays.stream(byte[])
     //
-    public static void showBytes(MidiMessage msg) {
+    public static String showBytes(MidiMessage msg) {
+        StringBuilder rs=new StringBuilder();
         for (byte b : msg.getMessage()) {
-            out.print(Integer.toHexString(b&0x00ff)+" ");
+            rs.append(Integer.toHexString(b&0x00ff));
+            rs.append(" ");
         }
-        out.println();
+        return rs.toString();
     }
     
 

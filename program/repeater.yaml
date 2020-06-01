@@ -27,7 +27,7 @@ vca-lfo:
 
 vca:
   type: op-amp
-  scale: .001
+  level-scale: .001
   out: main
 
 #  should be out: osc1.pwm

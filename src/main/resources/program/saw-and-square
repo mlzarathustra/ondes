@@ -28,4 +28,4 @@ osc4:
   offset: 7
   detune: 4
   out: main
-  scale: .4
+  level-scale: .4

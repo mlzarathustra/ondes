@@ -3,9 +3,10 @@
 name: noise
 
 noise1:
+  midi: note-on
   type: wave
   shape: noise
-  scale: .5
+  level-scale: .5
   out: vca
 
 vca-lfo:
@@ -18,5 +19,9 @@ vca-lfo:
 
 vca:
   type: op-amp
-  scale: .001
+  level-scale: .001
   out: main
+
+
+
+

@@ -1,5 +1,6 @@
 package ondes.synth.wave;
 
+import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.Instant;
 import ondes.midi.FreqTable;
@@ -13,6 +14,7 @@ import static ondes.midi.MlzMidi.showBytes;
 import static ondes.mlz.PitchScaling.*;
 
 import static java.lang.Math.pow;
+import static java.lang.Math.min;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -22,11 +24,75 @@ import static java.lang.System.out;
  * All wave generators must extend this class.
  */
 public abstract class WaveGen extends MonoComponent {
-    public static boolean VERBOSE = false;
+    public static boolean VERBOSE = true;
 
     protected Instant.PhaseClock phaseClock;
     static final double oneStep = pow(2, 1.0/12);
     static final double oneCent = pow(2, 1.0/1200);
+
+
+    /**
+     * <p>
+     *     Scale the output level of this wave gen
+     *     by pitch.
+     * </p>
+     * <p>
+     *     Note that if we're using ampOverride,
+     *     (invoked by the "output-amp" property)
+     *     scale will be ignored.
+     * </p>
+     */
+    float pitchScale = 1;
+
+
+    /**
+     * <p>
+     *     Scale the output level of this wave gen
+     *     as directed by the "level-scale"
+     *     configuration property.
+     * </p>
+     * <p>
+     *     Note that if we're using ampOverride,
+     *     (invoked by the "output-amp" property)
+     *     scale will be ignored.
+     * </p>
+     */
+    float levelScale = 1;
+
+    /**
+     *  Here is where we preserve the original frequency
+     *  when modulating.
+     */
+    protected double baseFrequency = -1;
+
+    /**
+     *  if positive, overrides MIDI
+     */
+    protected double freqOverride = -1;
+
+    /**
+     * <p>
+     *     Base amplitude. 1024 works well so far. The output is 16 bits wide
+     *     but the intermediate signals travel over integers, which are 32.
+     * </p>
+     * <p>
+     *     This will be multiplied by the pitchScale, levelScale, and
+     *     velocityScale to arrive at the actual amplitude.
+     * </p>
+     */
+    private final int ampBase = 1024;
+
+    /**
+     * <p>
+     *     The actual amplitude. We calculate it when processing the note-ON, so
+     *     we can multiply by pitchScale and velocityScale.
+     * </p>
+     * <p>
+     *     ampOverride will always override all of these.
+     * </p>
+     *
+     */
+    private int amplitude = ampBase;
 
     /**
      * if they specify an amplitude with the "output-amp" configuration key,
@@ -34,37 +100,67 @@ public abstract class WaveGen extends MonoComponent {
      *
      * @see #getAmp()
      * @see #configure(Map, Map)
-    */
+     */
     private int ampOverride = -1;
 
     /**
      * <p>
-     *     scale the output level of this wave gen.
-     *     Note that if we're using ampOverride,
-     *     (invoked by the "output-amp" property)
-     *     scale will be ignored.
+     *     range: 0-1; the scaling when velocity is zero.
+     *     fault: 0.
+     * </p>
+     * <p>
+     *     Given as a percentage, so this will be the number
+     *     in the configuration file / 100.0
+     * </p>
+     * <p>
+     *     @see #velocityMultiplier(int)
      * </p>
      */
-    float scale = 1;
+    float velocityBase = 0;
+    /**
+     * <p>
+     *     range 0-1; the multiplier on the velocity to be
+     *     added to the base. default: 1
+     * </p>
+     * <p>
+     *     The incoming velocity is 0-127, so we divide by 128.0
+     *     to get a number from 0 to 1. (because 128 is a power
+     *     of 2, it should be fast).
+     *
+     *     Then multiply again by velocityAmount (which is
+     *     the percentage given in the config / 100.0
+     * </p>
+     * <p>
+     *     @see #velocityMultiplier(int)
+     * </p>
+     */
+    float velocityAmount = 1;
 
-
-    // should be private.
-    protected double freq = -1; // if positive, overrides MIDI
-    private int amp = 1024;  // assume 16-bits (signed) for now.
-    // it adds up fast for composite waves.
+    /**
+     * @param vel MIDI velocity, 1-128
+     * @return - the corresponding multiplier, from 0 to 1
+     *      based on velocityBase and velocityAmount.
+     */
+    float velocityMultiplier(int vel) {
+        return (float) min(1.0,
+            velocityBase + velocityAmount * ((float)vel)/128.0 );
+    }
 
     protected boolean signed = true;
 
     public int getAmp() {
         if (ampOverride >= 0) return ampOverride;
-        return (int)(scale * amp);
+        return amplitude;
     }
 
     float detune = 0;  // detune in cents
     int offset = 0;    // interval offset in minor seconds
 
-
-    double pitchScaleFactor = 10; // see ondes.mlz.PitchScaling
+    /**
+     * The amount of pitch scaling to do.
+     * @see ondes.mlz.PitchScaling
+     */
+    double pitchScaleFactor = 10;
 
     double freqMultiplier = 1;
     double getFreqMultiplier() {
@@ -77,14 +173,57 @@ public abstract class WaveGen extends MonoComponent {
         return freqMultiplier;
     }
 
-    void setFreq(double freq) {
-        if (this.freq > 0) {
-            freq = this.freq;
-            // noise has no frequency, but should not be scaled at infinity!
-            scale = (float)getScaling(pitchScaleFactor, freq);
-        }
+    /**
+     * <p>
+     *    When modulating the frequency, we don't re-adjust the amplitude
+     *    scaling as we do with a note-ON. Nor do we set touch the 'baseFrequency.'
+     *    We just set the phase clock.
+     * </p>
+     * <p>
+     *     Waves with other phase clocks will need to override (calling this
+     *     one first).
+     * </p>
+     * <p>
+     *     Not to be confused with the "rocker freq." :^)
+     * </p>
+     *
+     * @param freq - the frequency to set the phaseClock to.
+     */
+    void modFreq(double freq) {
+        // todo - review freq logic (for future modulation)
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
     }
+
+    /**
+     * <p>
+     * Set the phase clock frequency. If freqOverride has been set (>0)
+     * we use that frequency rather than the one coming in. Also, we
+     * set the amplitude scaling from this pitch (lower notes need to be
+     * boosted to sound as loud) and set the `baseFrequency`
+     * </p>
+     * @param freq - the desired frequency
+     */
+    void setFreq(double freq) {
+        if (freqOverride > 0) {
+            freq = freqOverride;
+            // noise has no frequency, but should not be scaled at infinity!
+            pitchScale = (float)getScaling(pitchScaleFactor, freq);
+        }
+        phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
+        baseFrequency = freq;
+    }
+
+    @Override
+    public void noteON(MidiMessage msg) {
+        setFreq(FreqTable.getFreq(msg.getMessage()[1]));
+        amplitude = (int)(ampBase * pitchScale * velocityMultiplier(msg.getMessage()[2]) * levelScale);
+        if (VERBOSE) {
+            out.print("WaveGen.noteON(): "+ MlzMidi.toString(msg)+
+                " << ["+ showBytes(msg)+"]");
+            out.println("; amplitude: "+amplitude);
+        }
+    }
+
 
     /**
      * <p>
@@ -124,11 +263,11 @@ public abstract class WaveGen extends MonoComponent {
             "'offset' must be an integer.");
         if (intInp != null) offset = intInp;
 
-        String scaleErr = "'scale' must (floating) be between 0 and 1.";
-        fltInp = getFloat(config.get("scale"), scaleErr);
+        String levelScaleErr = "'level-scale' must be between 0 and 10. (floating)";
+        fltInp = getFloat(config.get("level-scale"), levelScaleErr);
         if (fltInp != null) {
-            if (fltInp < 0 || fltInp >1) err.println(scaleErr);
-            else scale = fltInp;
+            if (fltInp < 0 || fltInp >10) err.println(levelScaleErr);
+            else levelScale = fltInp;
         }
 
         intInp = getInt(config.get("output-amp"),
@@ -137,7 +276,7 @@ public abstract class WaveGen extends MonoComponent {
 
         fltInp = getFloat(config.get("freq"),
             "freq must be a number. can be floating.");
-        if (fltInp != null) freq = fltInp;
+        if (fltInp != null) freqOverride = fltInp;
     }
 
     @Override
@@ -153,12 +292,4 @@ public abstract class WaveGen extends MonoComponent {
         setFreq(0);
     }
 
-    @Override
-    public void noteON(MidiMessage msg) {
-        if (VERBOSE) {
-            out.print("WaveGen.noteON(): ");
-            showBytes(msg);
-        }
-        setFreq(FreqTable.getFreq(msg.getMessage()[1]));
-    }
 }

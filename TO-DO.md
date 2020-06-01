@@ -4,27 +4,35 @@
  
      To that end, configure should be able to interpret dot-notation:    
      ```    
-         out: osc1
-         
-         #  should be out: osc1.pwm 
-         #  so we can have a separate input for frequency
+        lfo1:
+          ...
+          out: osc1.pwm
+            base: 20  # these may only make sense for LFO
+            amount: 90
+        
+        osc1:
+        
+          #  osc1.pwm represents a list of inputs.
+          #  These must be supported by the underlying WG class.
+          #  The main inputs of a WG are for frequency.
+   
+          #  Another possible use case:  
+        
+        midi-key: 
+          type: midi-key # the key number 0-128
+          out: env1.rate 
      ```
  - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings.  
 
  - velocity 
-    - review all amplitude adjustments
+    - review all amplitude adjustments (currentValue() occurrences in the wave directory)
     - is the pitch scaling right? it sounds about right.
     - figure out good adjustments for velocity sensitivity.
         - amount (0-100)
         - base (0-100) 
         - min(100, base + (vel * (amt/100)))
         - consider: the minimum the QS puts out is about 11, and it almost never gets to 128. So maybe find a way to spread out the limited set of values? (so that 11 might map to zero) 
-        
-
- - wave gens 
-     - need a level control; 
-     - distinguish between it, and the ampOverride set using output-amp. 
-    
+         
  - add a low-pass filter near 20khz to reduce aliasing
    
  - pitch bend

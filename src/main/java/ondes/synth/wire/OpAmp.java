@@ -68,8 +68,8 @@ public class OpAmp extends MonoComponent {
         }
 
         Double dblInp;
-        dblInp = getDouble( config.get("scale"),
-            "'scale' must be a number to multiply the output value by.\n" +
+        dblInp = getDouble( config.get("level-scale"),
+            "'level-scale' must be a number to multiply the output value by.\n" +
                 "  '1' is default. Can be floating point.");
         if (dblInp != null) scale = dblInp;
 

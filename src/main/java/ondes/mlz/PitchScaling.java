@@ -37,6 +37,7 @@ public class PitchScaling {
      * </pre>
      */
     public static double getScaling(double div, double freq) {
+        if (div == 0) return 1;
         double val = log(freq / c3) / log(2);
         return (-val / div) + 1;
     }
