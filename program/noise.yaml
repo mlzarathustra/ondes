@@ -24,7 +24,8 @@ vca:
 
 lpf:
   type: filter
-  freq: 440
+  midi: note-on
+#   freq: 440
   out: main
 
 

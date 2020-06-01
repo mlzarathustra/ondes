@@ -1,8 +1,10 @@
 package ondes.synth.filter;
 
+import ondes.midi.FreqTable;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
+import javax.sound.midi.MidiMessage;
 import java.util.Map;
 
 import static java.lang.System.err;
@@ -21,6 +23,10 @@ public class LowPassFilter extends MonoComponent {
         return  (int)(
             (1.0/freq) * synth.getSampleRate()
         );
+    }
+
+    void setFreq(double freq) {
+        this.freq = (float) freq;
     }
 
 
@@ -52,12 +58,11 @@ public class LowPassFilter extends MonoComponent {
             else levelScale = fltInp;
         }
 
-        if (freq == 0) {
-            err.println("You need to specify a freq: setting or the filter" +
-                "won't do anything.");
+        //
+        if (freq == 0 && config.get("midi") == null) {
+            err.println("You need to specify a freq: setting or midi: note-on. " +
+                "Otherwise, the filter won't do anything.");
         }
-
-
     }
 
     int bufLen, bufIdx;
@@ -91,12 +96,11 @@ public class LowPassFilter extends MonoComponent {
         buf[bufIdx] = n;
         bufIdx = (bufIdx+1) % bufLen;
 
-        int rs = (int)
+        return (int)
             (first ?
                 ((float)sum)/((float)bufIdx) :
                 ((float)sum)/((float)bufLen)
         );
-        return rs;
     }
 
 
@@ -109,8 +113,14 @@ public class LowPassFilter extends MonoComponent {
     @Override
     public void resume() {
         reset();
-
     }
+
+    @Override
+    public void noteON(MidiMessage msg) {
+        setFreq(FreqTable.getFreq(msg.getMessage()[1]));
+        reset();
+    }
+
 
     @Override
     public int currentValue() {

@@ -8,7 +8,7 @@ osc1:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: main
+  out: lpf
 
 lfo1:
   freq: 0.2
@@ -25,7 +25,7 @@ osc2:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: main
+  out: lpf
 
 lfo2:
   freq: 0.11
@@ -33,6 +33,11 @@ lfo2:
   shape: sine
   output-amp: 1000
   out: osc2
+
+lpf:
+  type: filter
+  freq: 7000
+  out: main
 
 #  should be out: osc1.pwm
 #  so we can have a separate input for frequency

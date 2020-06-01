@@ -221,7 +221,7 @@ public abstract class WaveGen extends MonoComponent {
             * velocityMultiplier(msg.getMessage()[2])
             * levelScale);
         if (VERBOSE) {
-            out.print("WaveGen.noteON(): "+ MlzMidi.toString(msg)+
+            out.print("WaveGen: "+ MlzMidi.toString(msg)+
                 " << ["+ showBytes(msg)+"]");
             out.println("; amplitude: "+amplitude);
         }
