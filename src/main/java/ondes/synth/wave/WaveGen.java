@@ -106,7 +106,7 @@ public abstract class WaveGen extends MonoComponent {
     /**
      * <p>
      *     range: 0-1; the scaling when velocity is zero.
-     *     fault: 0.
+     *     default: 0. Set using "velocity-base"
      * </p>
      * <p>
      *     Given as a percentage, so this will be the number
@@ -120,7 +120,7 @@ public abstract class WaveGen extends MonoComponent {
     /**
      * <p>
      *     range 0-1; the multiplier on the velocity to be
-     *     added to the base. default: 1
+     *     added to the base. default: 1; set using "velocity-amount"
      * </p>
      * <p>
      *     The incoming velocity is 0-127, so we divide by 128.0
@@ -216,7 +216,10 @@ public abstract class WaveGen extends MonoComponent {
     @Override
     public void noteON(MidiMessage msg) {
         setFreq(FreqTable.getFreq(msg.getMessage()[1]));
-        amplitude = (int)(ampBase * pitchScale * velocityMultiplier(msg.getMessage()[2]) * levelScale);
+        amplitude = (int)(ampBase
+            * pitchScale
+            * velocityMultiplier(msg.getMessage()[2])
+            * levelScale);
         if (VERBOSE) {
             out.print("WaveGen.noteON(): "+ MlzMidi.toString(msg)+
                 " << ["+ showBytes(msg)+"]");
@@ -268,6 +271,21 @@ public abstract class WaveGen extends MonoComponent {
         if (fltInp != null) {
             if (fltInp < 0 || fltInp >10) err.println(levelScaleErr);
             else levelScale = fltInp;
+        }
+
+        String velocityBaseErr = "'velocity-base' must be between " +
+            "0 and 100. The default is 0.";
+        fltInp = getFloat(config.get("velocity-base"), velocityBaseErr);
+        if (fltInp != null) {
+            if (fltInp < 0 || fltInp >100) err.println(velocityBaseErr);
+            else velocityBase = fltInp / 100.0f;
+        }
+        String velocityAmountErr = "'velocity-amount' must be between " +
+            "0 and 100. The default is 100.";
+        fltInp = getFloat(config.get("velocity-amount"), velocityAmountErr);
+        if (fltInp != null) {
+            if (fltInp < 0 || fltInp >100) err.println(velocityAmountErr);
+            else velocityAmount = fltInp / 100.0f;
         }
 
         intInp = getInt(config.get("output-amp"),
