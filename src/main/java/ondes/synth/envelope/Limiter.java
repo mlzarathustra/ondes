@@ -31,6 +31,11 @@ public class Limiter extends MonoComponent {
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
+        //  if we're going to use this other than for the main mix,
+        //  call super.configure() to set the outputs.
+        //
+        //super.configure(config,components);
+
         try {
             maxIn = hexOrInt( config.get("max-in").toString() );
             maxOut = hexOrInt( config.get("max-out").toString() );

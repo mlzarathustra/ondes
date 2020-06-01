@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.System.err;
+import static ondes.mlz.Util.getList;
+
 @SuppressWarnings("rawtypes")
 public abstract class MonoComponent implements ConfigHelper {
 
@@ -51,7 +54,25 @@ public abstract class MonoComponent implements ConfigHelper {
 
     protected OndesSynth synth;
 
-    public abstract void configure(Map config, Map components);
+    /**
+     * Set this component's outputs.
+     *
+     * @param config - the configuration map from YAML
+     * @param components - a map of all the components
+     *                   in this voice, by name.
+     */
+    public void configure(Map config, Map components) {
+        Object compOut = config.get("out");
+        if (compOut == null) {
+            err.println("Missing out: key in " + this.getClass());
+            err.println("WaveGen will not do much without output!");
+            return;
+        }
+        List compOutList = getList(compOut);
+        for (Object oneOut : compOutList) {
+            setOutput((MonoComponent) components.get(oneOut));
+        }
+    }
 
     /**
      * disconnect phase clocks.

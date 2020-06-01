@@ -38,11 +38,14 @@ public class Junction extends MonoComponent {
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-        Object scaleStr = config.get("scale");
+        super.configure(config, components); // set outputs
+
+        // TODO - use config helper instead
+        Object scaleStr = config.get("level-scale");
         if (scaleStr != null) {
             try { this.scale = Double.parseDouble(scaleStr.toString()); }
             catch (Exception ex) {
-                err.println("'scale' must be a number to mutiply the output value by.\n" +
+                err.println("'level-scale' must be a number to multiply the output value by.\n" +
                     "  '1' is default. Can be floating point.");
             }
         }

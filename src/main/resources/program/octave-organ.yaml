@@ -12,7 +12,7 @@ osc1:
     - 8 8
     - 16 16
   velocity-base: 30
-  velocity-amount: 70
+  velocity-amount: 80
   out: main
 
 osc2:
@@ -27,5 +27,5 @@ osc2:
     - 8 8
     - 16 16
   velocity-base: 30
-  velocity-amount: 70
+  velocity-amount: 80
   out: main

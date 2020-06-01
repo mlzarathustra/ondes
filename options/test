@@ -1,3 +1,8 @@
-run -in  828 -out "main out" -ch1 octave -ch2 "four sour" \
-    -ch3 "no fun" -ch4 strings -ch5 bassoon -ch6 fourths
+run -in  828 -out "speak" -ch1 octave -ch2 "four sour" \
+    -ch3 "no fun" -ch4 strings -ch5 bassoon -ch6 fourths  \
+    -ch7 pwm -ch8 noise 
 
+exit
+run -in  828 -out "main out" -ch1 octave -ch2 "four sour" \
+    -ch3 "no fun" -ch4 strings -ch5 bassoon -ch6 fourths  \
+    -ch7 pwm -ch8 noise 

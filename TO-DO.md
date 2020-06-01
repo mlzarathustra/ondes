@@ -24,14 +24,15 @@
      ```
  - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings.  
 
- - velocity 
-    - review all amplitude adjustments (currentValue() occurrences in the wave directory)
-    - is the pitch scaling right? it sounds about right.
-    - figure out good adjustments for velocity sensitivity.
-        - amount (0-100)
-        - base (0-100) 
-        - min(100, base + (vel * (amt/100)))
-        - consider: the minimum the QS puts out is about 11, and it almost never gets to 128. So maybe find a way to spread out the limited set of values? (so that 11 might map to zero) 
+ - add velocity scaling for **op-amp**
+ 
+ - add an option **pitch-scale**: amount
+ 
+ - try modulating the duty cycle of a sawtooth wave.
+ 
+ - amplitude gets cast to int. Should it? 
+ 
+ - skip phase clock for noise? NOTE: without MIDI note-ON, it still plays, but does not process velocity.
          
  - add a low-pass filter near 20khz to reduce aliasing
    

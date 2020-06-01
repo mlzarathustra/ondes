@@ -150,6 +150,7 @@ class Env extends MonoComponent {
 
 
     public void configure(Map config, Map components) {
+        super.configure(config, components);
 
         // TODO - implement
 

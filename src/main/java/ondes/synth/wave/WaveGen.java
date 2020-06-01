@@ -240,17 +240,7 @@ public abstract class WaveGen extends MonoComponent {
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-
-        Object compOut = config.get("out");
-        if (compOut == null) {
-            err.println("Missing out: key in "+this.getClass());
-            err.println("WaveGen will not do much without output!");
-            return;
-        }
-        List compOutList = getList(compOut);
-        for (Object oneOut : compOutList) {
-            setOutput((MonoComponent) components.get(oneOut));
-        }
+        super.configure(config, components);
 
         //  Do we give negative output? Doesn't work so well for LFO's.
         Object blInp = config.get("signed");

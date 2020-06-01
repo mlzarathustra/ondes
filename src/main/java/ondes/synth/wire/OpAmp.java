@@ -56,16 +56,7 @@ public class OpAmp extends MonoComponent {
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
-        Object compOut = config.get("out");
-        if (compOut == null) {
-            err.println("Missing out: key in "+this.getClass());
-            err.println("OpAmp will not do much without output!");
-            return;
-        }
-        List compOutList = getList(compOut);
-        for (Object oneOut : compOutList) {
-            setOutput((MonoComponent) components.get(oneOut));
-        }
+        super.configure(config, components);
 
         Double dblInp;
         dblInp = getDouble( config.get("level-scale"),
