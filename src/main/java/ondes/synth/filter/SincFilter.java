@@ -12,8 +12,11 @@ import static java.lang.System.out;
 
 /**
  *  Output the running average over an array of size arraySize().
+ *  It results in a 'sinc' filter.
+ *
+ *  https://www.dsprelated.com/freebooks/sasp/Running_Sum_Lowpass_Filter.html
  */
-public class LowPassFilter extends MonoComponent {
+public class SincFilter extends MonoComponent {
 
     float freq = 0;
     float levelScale = 1;
@@ -97,8 +100,8 @@ public class LowPassFilter extends MonoComponent {
         bufIdx = (bufIdx+1) % bufLen;
 
         return (int)
-            (first ?
-                ((float)sum)/((float)bufIdx) :
+            (first ? 0 : // it makes noise at the beginning otherwise
+                //((float)sum)/((float)bufIdx) :
                 ((float)sum)/((float)bufLen)
         );
     }
@@ -121,7 +124,19 @@ public class LowPassFilter extends MonoComponent {
         reset();
     }
 
+    //  the simplest filter: y[n] = x[n] + x[n-1]
 
+    int xn_1 = 0;
+
+//    @Override
+//    public int currentValue() {
+//        int xn=0;
+//        for (WiredIntSupplier input : inputs) xn += input.getAsInt();
+//        int rs = xn+xn_1;
+//        xn_1 = xn;
+//        return rs;
+//    }
+    
     @Override
     public int currentValue() {
         // a manual loop is slightly faster than the lambda.

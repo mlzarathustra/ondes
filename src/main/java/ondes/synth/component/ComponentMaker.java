@@ -3,7 +3,7 @@ package ondes.synth.component;
 import ondes.synth.OndesSynth;
 import ondes.synth.envelope.EnvMaker;
 import ondes.synth.envelope.Limiter;
-import ondes.synth.filter.LowPassFilter;
+import ondes.synth.filter.SincFilter;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.OpAmp;
@@ -62,7 +62,7 @@ public class ComponentMaker {
 
             case "filter":
                 // we will probably want a FilterMaker later on.
-                rs = new LowPassFilter();
+                rs = new SincFilter();
                 break;
 
             default:
