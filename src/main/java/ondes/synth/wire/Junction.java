@@ -20,8 +20,8 @@ import static java.lang.System.err;
  */
 public class Junction extends MonoComponent {
 
-    private double scale = 1;
-    void setScale(double v) { scale = v; }
+    private double levelScale = 1;
+    void setLevelScale(double v) { levelScale = v; }
 
     public Junction() { super(); }
 
@@ -30,7 +30,7 @@ public class Junction extends MonoComponent {
         // a manual loop is slightly faster than the lambda.
         int rs=0;
         for (WiredIntSupplier input : inputs) rs += input.getAsInt();
-        return (int)(scale * rs);
+        return (int)(levelScale * rs);
     }
 
     // // // //
@@ -40,14 +40,15 @@ public class Junction extends MonoComponent {
     public void configure(Map config, Map components) {
         super.configure(config, components); // set outputs
 
-        // TODO - use config helper instead
-        Object scaleStr = config.get("level-scale");
-        if (scaleStr != null) {
-            try { this.scale = Double.parseDouble(scaleStr.toString()); }
-            catch (Exception ex) {
-                err.println("'level-scale' must be a number to multiply the output value by.\n" +
-                    "  '1' is default. Can be floating point.");
-            }
+        Float fltInp;
+        String levelScaleErr =
+            "'level-scale' must be between 0 and 11. (floating) " +
+                "Yes, it goes to 11! \n" +
+                "(but you probably want it much lower than that)";
+        fltInp = getFloat(config.get("level-scale"), levelScaleErr);
+        if (fltInp != null) {
+            if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
+            else levelScale = fltInp;
         }
     }
 

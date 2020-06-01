@@ -6,7 +6,7 @@ noise1:
   midi: note-on
   type: wave
   shape: noise
-  level-scale: .5
+  level-scale: 1
   out: vca
 
 vca-lfo:
@@ -20,8 +20,12 @@ vca-lfo:
 vca:
   type: op-amp
   level-scale: .001
-  out: main
+  out: lpf
 
+lpf:
+  type: filter
+  freq: 440
+  out: main
 
 
 

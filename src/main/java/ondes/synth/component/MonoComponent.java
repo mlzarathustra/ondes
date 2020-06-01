@@ -70,6 +70,10 @@ public abstract class MonoComponent implements ConfigHelper {
         }
         List compOutList = getList(compOut);
         for (Object oneOut : compOutList) {
+
+            //  TODO - here it needs to be smart about the dot notation
+            //           for out: osc1.pwm and so on
+
             setOutput((MonoComponent) components.get(oneOut));
         }
     }
