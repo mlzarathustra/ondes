@@ -6,6 +6,7 @@ import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,37 @@ public abstract class MonoComponent implements ConfigHelper {
     public Voice getVoice() { return voice; }
     public void setVoice(Voice v) { voice = v; }
 
+    /**
+     * <p>
+     *     We "set our output" to comp by adding it
+     *     to comp's list of inputs.
+     * </p>
+     * @param comp - the component whose input list
+     *             will receive our output.
+     */
     public void setOutput(MonoComponent comp) {
         comp.addInput(this.getMainOutput());
         outputs.add(comp); // so we can remove it later
     }
+
+    /**
+     * <p>
+     *     For the '.' notation. e.g. "osc1.pwm"
+     *     would create an input in osc1 labeled pwm.
+     *     Or more precisely, add our output to
+     *     an input list with the key of "pwm"
+     * </p>
+     * <p>
+     *     In that case, "pwm" would be the "select."
+     * </p>
+     *
+     * @param comp - the component whose input list
+     *             will receive our output.
+     */
+    public void setOutput(MonoComponent comp, String select) {
+        comp.addInput(this.getMainOutput(), select);
+    }
+
 
     /**
      * "mainOutput" is the IntSupplier that a target component
@@ -50,6 +78,11 @@ public abstract class MonoComponent implements ConfigHelper {
      * Getting the output value is basically a depth-first walk.
      */
     public List<WiredIntSupplier> inputs = new ArrayList<>();
+
+    public HashMap<String, List<WiredIntSupplier>> namedInputs
+        = new HashMap<>();
+
+
     public List<MonoComponent> outputs = new ArrayList<>(); // for release
 
     protected OndesSynth synth;
@@ -74,7 +107,13 @@ public abstract class MonoComponent implements ConfigHelper {
             //  TODO - here it needs to be smart about the dot notation
             //           for out: osc1.pwm and so on
 
-            setOutput((MonoComponent) components.get(oneOut));
+            String label = oneOut.toString();
+            if (label.contains(".")) {
+                String outComp = label.substring(0,label.indexOf("."));
+                String outSelect = label.substring(label.indexOf(".")+1);
+                setOutput((MonoComponent) components.get(outComp), outSelect);
+            }
+            else setOutput((MonoComponent) components.get(oneOut));
         }
     }
 
@@ -135,6 +174,30 @@ public abstract class MonoComponent implements ConfigHelper {
      * @param input - the input to add.
      */
     public void addInput(WiredIntSupplier input) {
+        inputs.add(input);
+    }
+
+    /**
+     * <p>
+     *     Add a named input. For example, the main input of a WaveGen
+     *     will be to modulate frequency, so it has an input named "pwm"
+     *     to modulate pulse width.
+     * </p>
+     * <p>
+     *     By default, we just add whatever inputs we are requested to.
+     *     If a component wants to get fussy about rejecting them,
+     *     it can override this method.
+     * </p>
+
+     * @param input - the input to add.
+     * @param select - the name of the input list to keep it in
+     */
+    public void addInput(WiredIntSupplier input, String select) {
+        List<WiredIntSupplier> inputs =
+            namedInputs.computeIfAbsent(
+                select,
+                k->new ArrayList<>());
+
         inputs.add(input);
     }
 
