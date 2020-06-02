@@ -18,7 +18,7 @@ import static java.lang.System.out;
  *
  *  https://www.dsprelated.com/freebooks/sasp/Running_Sum_Lowpass_Filter.html
  */
-public class SincFilter extends Filter {
+public class SweepingSincFilter extends Filter {
 
     float freq = 0;
     float levelScale = 1;
@@ -122,25 +122,10 @@ public class SincFilter extends Filter {
 
     @Override
     public void noteON(MidiMessage msg) {
+        out.println("sweeping sinc filter: note ON");
         setFreq(FreqTable.getFreq(msg.getMessage()[1]));
         reset();
     }
-
-    // the simplest filter: y[n] = x[n] + x[n-1]
-    //
-    // I saw somewhere that it implements a cutoff up to the
-    // sampling frequency.
-
-    int xn_1 = 0;
-
-//    @Override
-//    public int currentValue() {
-//        int xn=0;
-//        for (WiredIntSupplier input : inputs) xn += input.getAsInt();
-//        int rs = xn+xn_1;
-//        xn_1 = xn;
-//        return rs;
-//    }
 
     @Override
     public int currentValue() {

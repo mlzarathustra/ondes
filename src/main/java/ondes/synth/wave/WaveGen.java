@@ -144,6 +144,7 @@ public abstract class WaveGen extends MonoComponent {
     float velocityMultiplier(int vel) {
         return (float) min(1.0,
             velocityBase + velocityAmount * ((float)vel)/128.0 );
+
     }
 
     protected boolean signed = true;

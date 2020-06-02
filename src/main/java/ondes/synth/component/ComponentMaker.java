@@ -3,6 +3,7 @@ package ondes.synth.component;
 import ondes.synth.OndesSynth;
 import ondes.synth.envelope.EnvMaker;
 import ondes.synth.envelope.Limiter;
+import ondes.synth.filter.FilterMaker;
 import ondes.synth.filter.SincFilter;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Junction;
@@ -61,8 +62,7 @@ public class ComponentMaker {
                 break;
 
             case "filter":
-                // we will probably want a FilterMaker later on.
-                rs = new SincFilter();
+                rs = FilterMaker.getFilter((String)specs.get("shape"));
                 break;
 
             default:

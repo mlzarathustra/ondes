@@ -19,14 +19,13 @@ import static ondes.mlz.Util.keyStrip;
  *
  */
 public class WaveMaker {
-    //  Manage WaveGen subclasses (the concrete wave generators)
-    static HashMap<String,Class<? extends WaveGen>> concreteClasses=new HashMap<>();
+    static HashMap<String,Class<? extends WaveGen>> waveGenClasses =new HashMap<>();
     private static void register(String key, Class<? extends WaveGen> c) {
-        concreteClasses.put(keyStrip(key), c);
+        waveGenClasses.put(keyStrip(key), c);
     }
 
     public static List<String> getKeys() {
-        return concreteClasses.keySet()
+        return waveGenClasses.keySet()
             .stream()
             .sorted()
             .collect(toList());
@@ -46,7 +45,7 @@ public class WaveMaker {
      * @return a wave generator as named by key
      */
     public static WaveGen getWaveGen(String shape) {
-        Class<? extends WaveGen> wgClass = concreteClasses.get(keyStrip(shape));
+        Class<? extends WaveGen> wgClass = waveGenClasses.get(keyStrip(shape));
         try {
             return wgClass.getDeclaredConstructor().newInstance();
         }
@@ -68,8 +67,6 @@ public class WaveMaker {
         register("ramp-down", RampDownWaveGen.class);
 
         register("noise", NoiseWaveGen.class);
-
-
     }
 
 }

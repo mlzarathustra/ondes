@@ -1,0 +1,20 @@
+
+
+name: filter-test
+
+osc1:
+  midi: note-on
+  type: wave
+  velocity-base: 100
+  shape: sine
+  level-scale: 2
+  out: main
+
+lpf:
+  type: filter
+  shape: sweep
+  freq: 440
+  out: main
+
+
+

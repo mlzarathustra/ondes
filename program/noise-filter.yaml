@@ -1,6 +1,6 @@
 
 
-name: noise
+name: noise-filter
 
 noise1:
   midi: note-on
@@ -20,9 +20,13 @@ vca-lfo:
 vca:
   type: op-amp
   level-scale: .005
+  out: lpf
+
+lpf:
+  type: filter
+  midi: note-on
+#   freq: 440
   out: main
-
-
 
 
 
