@@ -15,7 +15,7 @@ lfo1:
   type: wave
   shape: saw
   output-amp: 1000
-  out: osc1
+  out: osc1.pwm
 
 vca-lfo:
   type: wave
