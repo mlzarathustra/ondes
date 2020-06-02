@@ -15,7 +15,7 @@ lfo1:
   type: wave
   shape: saw
   output-amp: 1000
-  out: osc1
+  out: osc1.pwm
 
 osc2:
   midi: note-on
@@ -32,7 +32,7 @@ lfo2:
   type: wave
   shape: sine
   output-amp: 1000
-  out: osc2
+  out: osc2.pwm
 
 lpf:
   type: filter

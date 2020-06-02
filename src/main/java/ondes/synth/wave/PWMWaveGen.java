@@ -2,6 +2,7 @@ package ondes.synth.wave;
 
 import ondes.synth.wire.WiredIntSupplier;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
@@ -47,8 +48,13 @@ class PwmWaveGen extends WaveGen {
     public int currentValue() {
         float inpSum=0;
         // todo - PWM should have dedicated input: main is for freq
-        for (WiredIntSupplier input : inputs) {
-            inpSum += input.getAsInt();
+
+        List<WiredIntSupplier> pwmInputs = namedInputs.get("pwm");
+        if (pwmInputs != null) {
+
+            for (WiredIntSupplier input : pwmInputs) {
+                inpSum += input.getAsInt();
+            }
         }
         float mod = inpSum * inputAmp;
 
