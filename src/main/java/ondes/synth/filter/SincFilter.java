@@ -13,7 +13,7 @@ import static java.lang.System.out;
 /**
  *  Output the running average over an array of size arraySize().
  *  It results in a 'sinc' filter. It's low pass up to the frequency
- *  specified, then has a series of nodes with zeros and the harmonics
+ *  specified, then has a series of nodes with zeros at the harmonics
  *  of the frequency.
  *
  *  https://www.dsprelated.com/freebooks/sasp/Running_Sum_Lowpass_Filter.html

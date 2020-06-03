@@ -1,0 +1,50 @@
+
+name: two pwm filter
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: lpf
+
+lfo1:
+  freq: 0.2
+  type: wave
+  shape: saw
+  output-amp: 1000
+  out: osc1.pwm
+
+osc2:
+  midi: note-on
+  detune: 8
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: main
+
+lfo2:
+  freq: 0.11
+  type: wave
+  shape: sine
+  output-amp: 1000
+  out: osc2.pwm
+
+lpf:
+  type: filter
+  freq: 7000
+  out: main
+
+#  should be out: osc1.pwm
+#  so we can have a separate input for frequency
+
+
+
+
+
+
+

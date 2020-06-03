@@ -1,0 +1,64 @@
+
+name: pwm-sweep
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: lpf
+
+lfo1:
+  freq: 0.2
+  type: wave
+  shape: saw
+  output-amp: 1000
+  out: osc1.pwm
+
+osc2:
+  midi: note-on
+  detune: 8
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: lpf
+
+lfo2:
+  freq: 0.11
+  type: wave
+  shape: sine
+  output-amp: 1000
+  out: osc2.pwm
+
+lpf-lfo:
+  type: wave
+  signed: true
+  freq: .07
+  shape: saw
+  output-amp: 1000
+  out: lpf.sweep
+
+
+lpf:
+  type: filter
+  shape: sweep-sinc
+  #midi: note-on
+  freq: 1480 # F#5 about
+  sweep-width: 24 # semitones
+  input-amp: 1000
+  out: main
+
+
+#  should be out: osc1.pwm
+#  so we can have a separate input for frequency
+
+
+
+
+
+
+

@@ -14,7 +14,7 @@ import static java.lang.Math.*;
 /**
  *  Output the running average over an array of size arraySize().
  *  It results in a 'sinc' filter. It's low pass up to the frequency
- *  specified, then has a series of nodes with zeros and the harmonics
+ *  specified, then has a series of nodes with zeros at the harmonics
  *  of the frequency.
  *
  *  https://www.dsprelated.com/freebooks/sasp/Running_Sum_Lowpass_Filter.html
@@ -80,7 +80,6 @@ public class SweepingSincFilter extends Filter {
 
 
     /**
-     *
      * @param freq the base frequency
      *
      * @return - the maximum array size required to sweep this frequency
@@ -115,14 +114,12 @@ public class SweepingSincFilter extends Filter {
 
     }
 
-    // todo - figure out how to manage buf for varying frequencies
-    //        and avoid re-allocation.
     void reset() {
         if (freq > 0) {
             buf = new int[arraySize(freq)];
             bufLen = bufLen(freq);
 
-            out.println("buf.length="+buf.length+"; bufLen="+bufLen);
+            //out.println("buf.length="+buf.length+"; bufLen="+bufLen);
 
             bufIdx = 0;
             sum = 0;
@@ -146,7 +143,6 @@ public class SweepingSincFilter extends Filter {
 
         return (int)
             (first ? 0 : // it makes noise at the beginning otherwise
-                //((float)sum)/((float)bufIdx) :
                 ((float)sum)/((float)bufLen)
         );
     }
@@ -165,7 +161,7 @@ public class SweepingSincFilter extends Filter {
 
     @Override
     public void noteON(MidiMessage msg) {
-        out.println("sweeping sinc filter: note ON");
+        //out.println("sweeping sinc filter: note ON");
         setFreq(FreqTable.getFreq(msg.getMessage()[1]));
         reset();
     }
@@ -176,36 +172,34 @@ public class SweepingSincFilter extends Filter {
         sweepAmt = min(abs(sweepAmt),inputAmp) * signum(sweepAmt);
 
         if (sweepAmt != lastSweepAmt) {
-            //out.println("sweeping sinc filter.modFreq(" + sweepAmt + ")");
             lastSweepAmt = sweepAmt;
             float sweptFreq = getSweptFreq(sweepAmt);
 
 
-            //bufLen = bufLen(sweptFreq);
+            int oldBufLen = bufLen;
+            bufLen = bufLen(sweptFreq);
 
+            if (bufLen > bufIdx) {
+                System.arraycopy(
+                    buf, oldBufLen - (bufLen - bufIdx),
+                    buf, bufIdx,
+                    bufLen - bufIdx);
+            }
+            else {
+                System.arraycopy(
+                    buf, bufLen,
+                    buf, 0,
+                    bufIdx-bufLen
+                );
+            }
 
+            bufIdx = bufIdx % bufLen;
 
+            // It doesn't seem to matter that we're not keeping the integrity
+            // of the buffer (i.e. discarding the oldest data rather than copying
+            // the newer data to the front if the new bufLen < bufIdx
+            // (i.e. copy from buf[bufIdx..oldBufLen] to buf[0..*])
         }
-
-
-        // todo - implement
-
-        /*
-                Set frequency.
-
-                And update bufIdx and buf elements
-                to adjust gracefully.
-
-                shrinking:
-                    1. bufIdx <= new size
-                    2. bufIdx > new size
-                expanding:
-                    add to the denominator as we
-                    grow into the new range.
-         */
-
-
-
     }
 
 
@@ -221,14 +215,10 @@ public class SweepingSincFilter extends Filter {
         }
         modFreq(sweepAmt);
 
-        // a manual loop is slightly faster than the lambda.
         int inputSum=0;
         for (WiredIntSupplier input : inputs) inputSum += input.getAsInt();
-        int nextAverage = nextAverage((int)(levelScale * inputSum));
-//        out.println(" SweepingSincFilter inputSum: "+
-//            String.format("%5d",inputSum) +
-//            "; nextAverage="+nextAverage);
-        return nextAverage;
+
+        return nextAverage((int)(levelScale * inputSum));
     }
 
 }
