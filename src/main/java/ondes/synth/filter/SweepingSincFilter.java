@@ -180,10 +180,10 @@ public class SweepingSincFilter extends Filter {
             bufLen = bufLen(sweptFreq);
 
             if (bufLen > bufIdx) {
-                System.arraycopy(
-                    buf, oldBufLen - (bufLen - bufIdx),
-                    buf, bufIdx,
-                    bufLen - bufIdx);
+//                System.arraycopy(
+//                    buf, oldBufLen - (bufLen - bufIdx),
+//                    buf, bufIdx,
+//                    bufLen - bufIdx);
             }
             else {
                 System.arraycopy(
@@ -194,11 +194,6 @@ public class SweepingSincFilter extends Filter {
             }
 
             bufIdx = bufIdx % bufLen;
-
-            // It doesn't seem to matter that we're not keeping the integrity
-            // of the buffer (i.e. discarding the oldest data rather than copying
-            // the newer data to the front if the new bufLen < bufIdx
-            // (i.e. copy from buf[bufIdx..oldBufLen] to buf[0..*])
         }
     }
 
