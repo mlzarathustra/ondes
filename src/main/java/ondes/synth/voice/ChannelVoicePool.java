@@ -52,6 +52,18 @@ public class ChannelVoicePool {
         }
     }
 
+    /**
+     * retrieve one without starting it (so we can get the name)
+     * @return a voice from this channel.
+     */
+    public Voice peekVoice() {
+        Voice voice;
+        if (available.size() > 0) voice = available.peek();
+        else voice = VoiceMaker.getVoice(progName,synth);
+
+        return voice;
+    }
+
     int count=0;
     public Voice getVoice() {
         Voice voice;

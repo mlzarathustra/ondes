@@ -143,6 +143,7 @@ public class MlzMidi {
             case 0xf: status = "System"; break;
         }
         StringBuilder sb=new StringBuilder(status);
+        sb.append(String.format("%4s","["+(1+(msg.getStatus()&0xf)+"]")));
         sb.append(" - ");
         if (s<0xa) {
             sb.append(String.format("%4s ",midiNumToStr(msg.getMessage()[1])));

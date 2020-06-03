@@ -88,6 +88,10 @@ public class OndesSynth extends Thread implements EndListener {
             if (progNames[chan] != null) {
                 channelVoicePool[chan]=
                     new ChannelVoicePool(progNames[chan],this,10);
+
+                out.println(String.format("Channel %4s: ", "["+(1+chan)+"]")+
+                    channelVoicePool[chan].peekVoice()
+                        .getVoiceSpec().get("name"));
             }
         }
     }

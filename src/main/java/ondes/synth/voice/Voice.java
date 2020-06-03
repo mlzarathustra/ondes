@@ -15,6 +15,7 @@ import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked")
 public class Voice {
+    private Map voiceSpec;
     private OndesSynth synth;
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
@@ -24,6 +25,8 @@ public class Voice {
     public WiredIntSupplierMaker getWiredIntSupplierMaker() {
         return wiredIntSupplierMaker;
     }
+
+    public Map getVoiceSpec() { return voiceSpec; }
 
     /**
      * Components connect to our junction rather than the main mix
@@ -91,6 +94,7 @@ public class Voice {
     @SuppressWarnings("unchecked,rawtypes")
     Voice(Map voiceSpec, OndesSynth synth) {
         this.synth = synth;
+        this.voiceSpec = voiceSpec;
 
         // step 1 : construct components
         for (Object key : voiceSpec.keySet()) {
