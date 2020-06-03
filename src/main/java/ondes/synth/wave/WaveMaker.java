@@ -1,5 +1,8 @@
 package ondes.synth.wave;
 
+import ondes.synth.noise.NoiseWaveGen;
+import ondes.synth.noise.PinkNoiseGen;
+
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -67,6 +70,7 @@ public class WaveMaker {
         register("ramp-down", RampDownWaveGen.class);
 
         register("noise", NoiseWaveGen.class);
+        register("pink", PinkNoiseGen.class);
     }
 
 }

@@ -103,17 +103,21 @@ public abstract class MonoComponent implements ConfigHelper {
         }
         List compOutList = getList(compOut);
         for (Object oneOut : compOutList) {
-
-            //  TODO - here it needs to be smart about the dot notation
-            //           for out: osc1.pwm and so on
-
             String label = oneOut.toString();
             if (label.contains(".")) {
                 String outComp = label.substring(0,label.indexOf("."));
                 String outSelect = label.substring(label.indexOf(".")+1);
                 setOutput((MonoComponent) components.get(outComp), outSelect);
             }
-            else setOutput((MonoComponent) components.get(oneOut));
+            else {
+                MonoComponent comp = (MonoComponent) components.get(oneOut);
+                if (comp == null) {
+                    err.println("ERROR! Attempting to connect to non-existent " +
+                        "output '"+oneOut+"'");
+                    return;
+                }
+                setOutput(comp);
+            }
         }
     }
 

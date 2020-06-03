@@ -37,7 +37,7 @@ import static ondes.mlz.Util.getList;
 public class OpAmp extends MonoComponent {
 
     private double scale = 1;
-    private float inputAmp;
+    private float inputAmp, inputAmpInv;
     void setScale(double v) { scale = v; }
 
     public OpAmp() { super(); }
@@ -64,10 +64,15 @@ public class OpAmp extends MonoComponent {
                 "  '1' is default. Can be floating point.");
         if (dblInp != null) scale = dblInp;
 
+        // TODO - currently unused - remove?
+        //
         dblInp= getDouble(config.get("input-amp"),
             "'input-amp' must be a number, typically " +
                 "the same as the output-amp of the sender.");
-        if (dblInp != null) inputAmp = (float)(1.0 / dblInp);  // is this needed? just use scale.
+        if (dblInp != null) {
+            inputAmp =  dblInp.floatValue();
+            if (inputAmp != 0) inputAmpInv = 1.0f/inputAmp;
+        }
     }
 
     @Override

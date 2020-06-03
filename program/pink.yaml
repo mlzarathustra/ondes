@@ -1,9 +1,9 @@
 
-name: noise
+name: pink
 
 noise1:
   midi: note-on
   type: wave
-  shape: pink
+  shape: noise
   level-scale: 1
   out: main

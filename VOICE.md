@@ -69,7 +69,7 @@ What a component will do is defined by a series of properties listed below the n
   
   - **input-amp** - The expected maximum amplitude of the input. For a single source, it should be the same as the **output-amp** setting on the source. For multiple sources, you'll have to do some math. The sources are added together.
   
-  - **signed** - When `false` tells the WaveGen to output only values above zero. For an LFO, that's probably what you want. For audible waves, set **signed**:  `true` or you will limit the amplitude of the wave to half. Use the **freq** property to set the frequency. 
+  - **signed** - When `false` tells the WaveGen to output only values above zero. When modulating amplitude, that's probably what you want. For audible waves or to modulate frequency, set **signed**:  `true` For an audio signal, that will double the amount of headroom, because you'll be using the amplitude available both above and below zero, instead of only above. Use the **freq** property to set the frequency. 
   
   - **freq** - mostly for LFO's. Overrides the MIDI key frequency, whether or not the WaveGen receives note-on messages. For an LFO, you also want to say `signed: false`  
     

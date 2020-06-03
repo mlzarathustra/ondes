@@ -150,6 +150,7 @@ public abstract class WaveGen extends MonoComponent {
     protected boolean signed = true;
 
     public int getAmp() {
+        //out.println("getAmp(): ampOverride is "+ampOverride);
         if (ampOverride >= 0) return ampOverride;
         return amplitude;
     }
@@ -264,7 +265,8 @@ public abstract class WaveGen extends MonoComponent {
         fltInp = getFloat(config.get("level-scale"), levelScaleErr);
         if (fltInp != null) {
             if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
-            else levelScale = fltInp;
+            else
+                levelScale = fltInp;
         }
 
         //  It may be desirable to allow a base lower than zero (which

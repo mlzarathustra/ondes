@@ -1,14 +1,15 @@
 package ondes.synth.filter;
 
 import ondes.midi.FreqTable;
-import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
+import static java.lang.Math.*;
 
 /**
  *  Output the running average over an array of size arraySize().
@@ -22,18 +23,14 @@ public class SweepingSincFilter extends Filter {
 
     float freq = 0;
     float levelScale = 1;
+    float inputAmp = 0, inputAmpInv = 0;
 
-    int arraySize() {
-        if (freq == 0) return 0;
-        return  (int)(
-            (1.0/freq) * synth.getSampleRate()
-        );
-    }
+    float sweepWidth; // in semitones
 
-    void setFreq(double freq) {
-        this.freq = (float) freq;
-    }
-
+    int bufLen, bufIdx;
+    int [] buf;
+    boolean first;
+    long sum;
 
     /**
      * <p>
@@ -53,6 +50,14 @@ public class SweepingSincFilter extends Filter {
             "'freq' must be a number. can be floating.");
         if (fltInp != null) freq = (float) fltInp;
 
+        Double dblInp= getDouble(config.get("input-amp"),
+            "'input-amp' must be a number, typically " +
+                "the same as the output-amp of the sender.");
+        if (dblInp != null) {
+            inputAmp = dblInp.floatValue();
+            if (inputAmp != 0) inputAmpInv = 1.0f / inputAmp;
+        }
+
         String levelScaleErr =
             "'level-scale' must be between 0 and 11. (floating) " +
                 "Yes, it goes to 11! \n" +
@@ -63,24 +68,62 @@ public class SweepingSincFilter extends Filter {
             else levelScale = fltInp;
         }
 
-        //
+        String sweepWidthErr = "Sweep width must be a number. (semitones)";
+        fltInp = getFloat(config.get("sweep-width"), sweepWidthErr);
+        if (fltInp != null) { sweepWidth = fltInp; }
+       //
         if (freq == 0 && config.get("midi") == null) {
             err.println("You need to specify a freq: setting or midi: note-on. " +
                 "Otherwise, the filter won't do anything.");
         }
     }
 
-    int bufLen, bufIdx;
-    int [] buf;
-    boolean first;
-    long sum;
+
+    /**
+     *
+     * @param freq the base frequency
+     *
+     * @return - the maximum array size required to sweep this frequency
+     * as low as possible (i.e. to hold the longest wavelength)
+     * We won't use the whole array for the higher frequencies.
+     * Pad by 1 to be safe from arithmetic inaccuracies.
+     */
+    int arraySize(float freq) {
+        if (freq == 0) return 0;
+        float sweptFreq =
+            getSweptFreq(-inputAmp);
+
+        return  (int)(1.0 + bufLen(sweptFreq));
+    }
+
+    int bufLen(float freq) {
+        return (int) (
+            (1.0/freq) * synth.getSampleRate()
+        );
+    }
+
+    void setFreq(double freq) {
+        this.freq = (float) freq;
+    }
+
+    float getSweptFreq(float sweepAmt) {
+        return (float) (
+            freq *
+            pow(2, (((inputAmpInv * sweepAmt)*sweepWidth)/12.0))
+        );
+
+
+    }
 
     // todo - figure out how to manage buf for varying frequencies
     //        and avoid re-allocation.
     void reset() {
         if (freq > 0) {
-            bufLen = arraySize();
-            buf = new int[arraySize()];
+            buf = new int[arraySize(freq)];
+            bufLen = bufLen(freq);
+
+            out.println("buf.length="+buf.length+"; bufLen="+bufLen);
+
             bufIdx = 0;
             sum = 0;
             first = true;
@@ -127,12 +170,65 @@ public class SweepingSincFilter extends Filter {
         reset();
     }
 
+    float lastSweepAmt =0;
+    private void modFreq(float sweepAmt) {
+        // limit to inputAmp (signed) max
+        sweepAmt = min(abs(sweepAmt),inputAmp) * signum(sweepAmt);
+
+        if (sweepAmt != lastSweepAmt) {
+            //out.println("sweeping sinc filter.modFreq(" + sweepAmt + ")");
+            lastSweepAmt = sweepAmt;
+            float sweptFreq = getSweptFreq(sweepAmt);
+
+
+            //bufLen = bufLen(sweptFreq);
+
+
+
+        }
+
+
+        // todo - implement
+
+        /*
+                Set frequency.
+
+                And update bufIdx and buf elements
+                to adjust gracefully.
+
+                shrinking:
+                    1. bufIdx <= new size
+                    2. bufIdx > new size
+                expanding:
+                    add to the denominator as we
+                    grow into the new range.
+         */
+
+
+
+    }
+
+
+
     @Override
     public int currentValue() {
+        float sweepAmt=0;
+        List<WiredIntSupplier> sweepInputs = namedInputs.get("sweep");
+        if (sweepInputs != null) {
+            for (WiredIntSupplier input : sweepInputs) {
+                sweepAmt += input.getAsInt();
+            }
+        }
+        modFreq(sweepAmt);
+
         // a manual loop is slightly faster than the lambda.
-        int rs=0;
-        for (WiredIntSupplier input : inputs) rs += input.getAsInt();
-        return nextAverage((int)(levelScale * rs));
+        int inputSum=0;
+        for (WiredIntSupplier input : inputs) inputSum += input.getAsInt();
+        int nextAverage = nextAverage((int)(levelScale * inputSum));
+//        out.println(" SweepingSincFilter inputSum: "+
+//            String.format("%5d",inputSum) +
+//            "; nextAverage="+nextAverage);
+        return nextAverage;
     }
 
 }

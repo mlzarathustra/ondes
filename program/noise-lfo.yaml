@@ -1,0 +1,30 @@
+
+
+name: noise-lfo
+
+noise1:
+  midi: note-on
+  type: wave
+  shape: noise
+  level-scale: 1
+  out: vca
+
+vca-lfo:
+  type: wave
+  signed: false
+  freq: .2
+  shape: saw
+  output-amp: 1000
+  out: vca
+
+vca:
+  type: op-amp
+  # lfo out is an int -1000 < out < 1000
+  # so it needs to be divided by 1000
+  level-scale: .001
+  out: main
+
+
+
+
+

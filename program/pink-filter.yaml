@@ -1,0 +1,32 @@
+
+
+name: pink-filter
+
+noise1:
+  midi: note-on
+  type: wave
+  shape: pink
+  level-scale: 1
+  out: vca
+
+vca-lfo:
+  type: wave
+  signed: false
+  freq: .2
+  shape: saw
+  output-amp: 1000
+  out: vca
+
+vca:
+  type: op-amp
+  level-scale: .005
+  out: lpf
+
+lpf:
+  type: filter
+  midi: note-on
+#   freq: 440
+  out: main
+
+
+

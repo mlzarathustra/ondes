@@ -15,7 +15,7 @@ import static java.lang.System.out;
 class PwmWaveGen extends WaveGen {
 
     private double dutyCycle = 0.5;
-    private float inputAmp = 0;
+    private float inputAmp = 0, inputAmpInv = 0;
     private float modPercent = 0, modMultiplier;
 
     private double lfoPhase = 0;
@@ -29,7 +29,10 @@ class PwmWaveGen extends WaveGen {
         Double dblInp= getDouble(config.get("input-amp"),
             "'input-amp' must be a number, typically " +
                 "the same as the output-amp of the sender.");
-        if (dblInp != null) inputAmp = (float)(1.0 / dblInp);
+        if (dblInp != null) {
+            inputAmp =  dblInp.floatValue();
+            if (inputAmp != 0) inputAmpInv = 1.0f/inputAmp;
+        }
 
         String modPctErr = "mod-percent must be a number from 0 to 100.";
         dblInp = getDouble(config.get("mod-percent"), modPctErr);
@@ -47,16 +50,13 @@ class PwmWaveGen extends WaveGen {
     @Override
     public int currentValue() {
         float inpSum=0;
-        // todo - PWM should have dedicated input: main is for freq
-
         List<WiredIntSupplier> pwmInputs = namedInputs.get("pwm");
         if (pwmInputs != null) {
-
             for (WiredIntSupplier input : pwmInputs) {
                 inpSum += input.getAsInt();
             }
         }
-        float mod = inpSum * inputAmp;
+        float mod = inpSum * inputAmpInv;
 
         double modDutyCycle = dutyCycle + (modPercent/200.0) * mod;
 

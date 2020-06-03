@@ -6,28 +6,26 @@ noise1:
   midi: note-on
   type: wave
   shape: noise
-  level-scale: 1
-  out: vca
+  level-scale: 10
+  out: lpf
 
 vca-lfo:
   type: wave
-  signed: false
+  signed: true
   freq: .2
   shape: saw
   output-amp: 1000
-  out: vca
-
-vca:
-  type: op-amp
-  level-scale: .005
-  out: lpf
+  out: lpf.sweep
 
 lpf:
   type: filter
   shape: sweep-sinc
-  midi: note-on
-  #freq: 440
+  freq: 1760
+  sweep-width: 12 # semitones
+  input-amp: 1000
   out: main
 
-
-
+#vca:
+#  type: op-amp
+#  level-scale: .005
+#  out: lpf

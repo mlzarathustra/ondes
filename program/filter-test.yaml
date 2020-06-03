@@ -8,11 +8,11 @@ osc1:
   velocity-base: 100
   shape: sine
   level-scale: 2
-  out: main
+  out: lpf
 
 lpf:
   type: filter
-  shape: sweep
+  shape: sinc
   freq: 440
   out: main
 
