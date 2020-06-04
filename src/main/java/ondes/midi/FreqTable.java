@@ -17,6 +17,10 @@ import static ondes.midi.MlzMidi.midiNumToStr;
  *    The math isn't too hairy, otherwise it would be the
  *    Furry Freq Brothers. :^)
  * </p>
+ * <p>
+ *     The basic formula: frequency = 440 * 2^((pitch - 69)/12)
+ *     (using ^ to mean "to the power of")
+ * </p>
  *
  */
 public class FreqTable {

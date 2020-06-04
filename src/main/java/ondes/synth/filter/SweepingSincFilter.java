@@ -179,11 +179,13 @@ public class SweepingSincFilter extends Filter {
             int oldBufLen = bufLen;
             bufLen = bufLen(sweptFreq);
 
+            // the rule is: always discard the oldest data
+            //
             if (bufLen > bufIdx) {
-//                System.arraycopy(
-//                    buf, oldBufLen - (bufLen - bufIdx),
-//                    buf, bufIdx,
-//                    bufLen - bufIdx);
+                System.arraycopy(
+                    buf, oldBufLen - (bufLen - bufIdx),
+                    buf, bufIdx,
+                    bufLen - bufIdx);
             }
             else {
                 System.arraycopy(
