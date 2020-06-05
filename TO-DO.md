@@ -1,6 +1,8 @@
 # Ondes synth - to do
   
  - pitch bend
+ 
+ - try out the Nyquist multiplier for velocity in WaveGen.velocityMultiplier
 
  - PWM input should be separate from main input, which would be for frequency modulation.
  

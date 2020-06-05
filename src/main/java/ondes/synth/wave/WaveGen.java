@@ -137,6 +137,13 @@ public abstract class WaveGen extends MonoComponent {
     float velocityAmount = 1;
 
     /**
+     * <p>
+     *     Nyquist uses a "rule" for velocity
+     *     "that maps -60 dB to 1 and 0 dB to 127"
+     *     If 6dB is twice as loud, and if we also interpret amplitude
+     *     as volume, that would mean ampl = 2^(vel / 12.7)
+     * </p>
+     *
      * @param vel MIDI velocity, 1-128
      * @return - the corresponding multiplier, from 0 to 1
      *      based on velocityBase and velocityAmount.
@@ -216,12 +223,6 @@ public abstract class WaveGen extends MonoComponent {
     }
 
     /**
-     * <p>
-     *     Nyquist uses a "rule" for velocity
-     *     "that maps -60 dB to 1 and 0 dB to 127"
-     *     If 6dB is twice as loud, and if we also interpret amplitude
-     *     as volume, that would mean ampl = 2^(vel / 12.7) 
-     * </p>
      * @param msg - a Note-ON message for this channel
      */
     @Override
