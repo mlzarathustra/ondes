@@ -6,5 +6,13 @@ run  -in 828 -out 'main o'  \
     -ch3 noise-iir-15k \
     -ch4 noise-iir-20k \
     -ch5 pwm-iir  \
-    -ch6 pwm
+    -ch6 pwm \
+    -ch7 sine-iir-440 \
+    -ch8 sine-iir-10k \
+    -ch9 ramp-up-iir-10k \
+    -ch10 ramp-up \
+
+
+
+
 

@@ -1,18 +1,16 @@
 
+name: ramp-up-iir-2k
 
-name: noise-iir-15k
-
-noise1:
+osc1:
   midi: note-on
   type: wave
-  shape: noise
-  level-scale: 1
+  shape: ramp-up
   out: lpf
 
 lpf:
   type: filter
   shape: iir
-  key: lp_6_15k
+  key: lp_6_2k
   level-scale: 1
   out: main
 

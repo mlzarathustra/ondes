@@ -13,7 +13,7 @@ lpf:
   type: filter
   shape: iir
   key: lp_6_20k
-  level-scale: .003
+  level-scale: 1
   out: main
 
 

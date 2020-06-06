@@ -16,9 +16,9 @@ public class IIRFilter extends Filter {
     //  to determine level-scale
     boolean DB = false;
 
-    float[] a,b;
+    double[] a,b;
 
-    float [] x,y;
+    double [] x,y;
     // pointers into circular buffers x,y
     int x0 = 0, y0 = 0;
 
@@ -33,8 +33,8 @@ public class IIRFilter extends Filter {
         }
         a=spec.a;
         b=spec.b;
-        x=new float[a.length];
-        y=new float[b.length];
+        x=new double[a.length];
+        y=new double[b.length];
 
         if (DB) {
             out.println(" IIR : a="+Arrays.toString(a));
@@ -43,10 +43,10 @@ public class IIRFilter extends Filter {
     }
 
     void setNoFilter() {
-        a = new float[] { 1 };
-        b = new float[] { 1 };
-        x = new float[1];
-        y = new float[1];
+        a = new double[] { 1 };
+        b = new double[] { 1 };
+        x = new double[1];
+        y = new double[1];
     }
 
     @Override
@@ -54,7 +54,7 @@ public class IIRFilter extends Filter {
         int X_n = 0;
         for (WiredIntSupplier in : inputs) X_n += in.getAsInt();
 
-        float Sigma = 0;
+        double Sigma = 0;
 
         x[x0] = X_n;
         for (int i=0; i<b.length; ++i) {
@@ -62,17 +62,17 @@ public class IIRFilter extends Filter {
         }
         x0 = (x0 + 1) % x.length;
 
-        y[y0] = Sigma;
         for (int i=1; i<a.length; ++i) {
             Sigma -= a[i] * y[(y.length + y0 - i) % y.length];
         }
+        y[y0] = Sigma;
         y0 = (y0 + 1) % y.length;
 
         if (DB) {
             // this can be useful to look at. Sigma varies widely in range.
             out.println("Sigma * levelScale=" + Sigma * levelScale);
+            out.println("Sigma = "+Sigma+"; levelScale = "+levelScale);
         }
-
         return (int)( Sigma * levelScale );
     }
 
