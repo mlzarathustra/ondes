@@ -1,11 +1,8 @@
 package ondes.synth.filter.iir;
 
 import java.util.*;
-import static java.util.stream.Collectors.*;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import static java.lang.System.out;
@@ -13,11 +10,14 @@ import static java.lang.System.out;
 /**
  * <p>
  *     Convert the Wn parameter from MatLab's butterworth
- *     function into frequencies
+ *     function into frequencies. Wn = fc/(fs/2) where fc
+ *     is the cutoff frequency and fs is sample rate.
  * </p>
  * <p>
- *     For now, just display.
- *     This could get more official.
+ *     It's some multiple of the angular frequency and pi,
+ * </p>
+ * <p>
+ *     For now, just display. This could get more official.
  * </p>
  */
 

@@ -50,6 +50,7 @@ public class IIRSpecLib {
     /**
      * See notes/IIRCoefficients.groovy for the script that generated the below.
      * It includes the matlab calls that calculated the data.
+     * For more, see https://www.mathworks.com/help/signal/ref/butter.html
      */
     public static final double[][][] specValues = {
         {
@@ -71,4 +72,7 @@ public class IIRSpecLib {
             specMap.put(specKeys[i], new IIRSpec(specKeys[i], specValues[i]));
         }
     }
+    public static IIRSpec get(String key) { return specMap.get(key); }
+
+
 }
