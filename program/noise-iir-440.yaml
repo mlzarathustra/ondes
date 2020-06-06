@@ -1,6 +1,4 @@
 
-#   NOTE the level scale on this lpf!
-#
 
 name: noise-iir-440
 
@@ -18,5 +16,7 @@ lpf:
   level-scale: 20_000_000
   out: main
 
+#   NOTE the level scale on this lpf!
+#
 
 
