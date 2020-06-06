@@ -1,5 +1,6 @@
 package ondes.synth.filter;
 
+import ondes.synth.filter.iir.IIRFilter;
 import ondes.synth.wave.WaveGen;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.Junction;
@@ -46,6 +47,7 @@ public class FilterMaker {
     static {
         register("sinc", SincFilter.class);
         register("sweep-sinc", SweepingSincFilter.class);
+        register("iir", IIRFilter.class);
     }
 
 }

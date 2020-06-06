@@ -1,0 +1,20 @@
+
+
+name: noise-iir-10k
+
+noise1:
+  midi: note-on
+  type: wave
+  shape: noise
+  level-scale: 1
+  out: lpf
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_6_10k
+  level-scale: 2
+  out: main
+
+
+

@@ -87,6 +87,11 @@ public abstract class MonoComponent implements ConfigHelper {
 
     protected OndesSynth synth;
 
+           // /// // /// // ///     // /// // /// // /// //
+       // *** // *** // *** // *** // *** //     ** /// ** //
+    /// ** /// ** /// ** /// ** /// ** /// ** ///
+
+
     /**
      * Set this component's outputs.
      *
@@ -120,6 +125,8 @@ public abstract class MonoComponent implements ConfigHelper {
             }
         }
     }
+
+
 
     /**
      * disconnect phase clocks.

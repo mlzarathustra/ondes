@@ -1,0 +1,22 @@
+
+#   NOTE the level scale on this lpf!
+#
+
+name: noise-iir-440
+
+noise1:
+  midi: note-on
+  type: wave
+  shape: noise
+  level-scale: 1
+  out: lpf
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_6_440
+  level-scale: 20_000_000
+  out: main
+
+
+

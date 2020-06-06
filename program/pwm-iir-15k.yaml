@@ -1,0 +1,29 @@
+
+
+name: pwm-iir-15k
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: lpf
+
+lfo1:
+  freq: 0.1
+  type: wave
+  shape: saw
+  output-amp: 1000
+  out: osc1.pwm
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_6_15k
+  level-scale: .05
+  out: main
+
+
+
