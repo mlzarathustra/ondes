@@ -19,9 +19,6 @@ import static java.lang.System.out;
  *     For now, just display.
  *     This could get more official.
  * </p>
- *
- *
- *
  */
 
 public class SampleRateConversion {

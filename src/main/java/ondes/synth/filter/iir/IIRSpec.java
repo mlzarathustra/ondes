@@ -6,8 +6,9 @@ public class IIRSpec {
     IIRSpec(String key, double[][]ab) {
         this.key = key;
 
-        // convince java to cast a double array
-        // as a float array
+        // cast the double array as a float array, because otherwise
+        // you have to put the silly 'f' after every number.
+        //
         a=new float[ab[0].length];
         b=new float[ab[1].length];
         for (int i=0; i<a.length; ++i) {
