@@ -7,7 +7,7 @@ osc1:
   type: wave
   shape: sine
   #level-scale: 1
-  output-amp: 4000
+  level-override: 4000
   out: lpf
 
 lpf:

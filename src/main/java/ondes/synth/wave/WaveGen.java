@@ -38,7 +38,7 @@ public abstract class WaveGen extends MonoComponent {
      * </p>
      * <p>
      *     Note that if we're using ampOverride,
-     *     (invoked by the "output-amp" property)
+     *     (invoked by the "level-override" property)
      *     scale will be ignored.
      * </p>
      */
@@ -53,7 +53,7 @@ public abstract class WaveGen extends MonoComponent {
      * </p>
      * <p>
      *     Note that if we're using ampOverride,
-     *     (invoked by the "output-amp" property)
+     *     (invoked by the "level-override" property)
      *     scale will be ignored.
      * </p>
      */
@@ -95,7 +95,7 @@ public abstract class WaveGen extends MonoComponent {
     private int amplitude = ampBase;
 
     /**
-     * if they specify an amplitude with the "output-amp" configuration key,
+     * if they specify an amplitude with the "level-override" configuration key,
      * it overrides the calculation.
      *
      * @see #getAmp()
@@ -301,8 +301,8 @@ public abstract class WaveGen extends MonoComponent {
             else velocityAmount = fltInp / 100.0f;
         }
 
-        intInp = getInt(config.get("output-amp"),
-            "'output-amp' must be an integer.");
+        intInp = getInt(config.get("level-override"),
+            "'level-override' must be an integer.");
         if (intInp != null)  ampOverride = intInp;
 
         fltInp = getFloat(config.get("freq"),

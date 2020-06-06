@@ -14,7 +14,7 @@ lfo1:
   freq: 0.2
   type: wave
   shape: saw
-  output-amp: 1000
+  level-override: 1000
   out: osc1.pwm
 
 osc2:
@@ -31,7 +31,7 @@ lfo2:
   freq: 0.11
   type: wave
   shape: sine
-  output-amp: 1000
+  level-override: 1000
   out: osc2.pwm
 
 lpf-lfo:
@@ -39,7 +39,7 @@ lpf-lfo:
   signed: true
   freq: .07
   shape: saw
-  output-amp: 1000
+  level-override: 1000
   out: lpf.sweep
 
 

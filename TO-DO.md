@@ -1,36 +1,12 @@
 # Ondes synth - to do
+
+ - if output component is followed by a number, use it to scale output.
   
  - pitch bend
  
  - try out the Nyquist multiplier for velocity in WaveGen.velocityMultiplier
-
- - PWM input should be separate from main input, which would be for frequency modulation.
- 
-     To that end, configure should be able to interpret dot-notation. To begin, see `MonoComponent.configure()` for the TO-DO item. Supporting components will need to provide a function:
-     ```
-            addInput(WiredIntSupplier input, String inputLabel)
-     ```
-     Here's how the config could look:
-         
-     ```    
-        lfo1:
-          ...
-          out: osc1.pwm
-            base: 20  # these may only make sense for LFO
-            amount: 90
-        
-        osc1:
-        
-          #  osc1.pwm represents a list of inputs.
-          #  These must be supported by the underlying WG class.
-          #  The main inputs of a WG are for frequency.
    
-          #  Another possible use case:  
-        
-        midi-key: 
-          type: midi-key # the key number 0-128
-          out: env1.rate 
-     ```
+
  - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings.
 
  - LFO pitch mod (i.e. FM)
@@ -61,6 +37,14 @@
 
  - Taper off to avoid clicks at the end of sine waves.
  - Sustain pedal
+
+     ```    
+          #  A possible use case:  
+        
+        midi-key: 
+          type: midi-key # the key number 0-128
+          out: env1.rate 
+     ```
  
  ------
  

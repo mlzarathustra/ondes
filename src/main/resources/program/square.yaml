@@ -8,8 +8,6 @@ osc1:
   out: main
 
 
-  # n.b. in: and out: could be lists.
-
 
 
 

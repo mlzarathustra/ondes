@@ -65,9 +65,9 @@ What a component will do is defined by a series of properties listed below the n
   - **out** - where this component&rsquo;s output is sent to. Here it's going directly to the main out, but it could equally go to a DCA (digitally controlled amplifier) modulated with an envelope generator.
  
  ## other properties 
-  - **output-amp** - Sets the output amplitude, overriding other considerations. For sound WaveGens, we scale amplitude (or actually, peak deviation) according to pitch, so that that low frequencies won't get lost, and note-velocity if specified. However, for an LFO we need to control the output level very precisely. It's meant to be paired with the **input-amp** setting on the destination, i.e. both should be the same.
+  - **level-override** - Sets the output amplitude, overriding other considerations. For sound WaveGens, we scale amplitude (or actually, peak deviation) according to pitch, so that that low frequencies won't get lost, and note-velocity if specified. However, for an LFO we need to control the output level very precisely. It's meant to be paired with the **input-amp** setting on the destination, i.e. both should be the same.
   
-  - **input-amp** - The expected maximum amplitude of the input. For a single source, it should be the same as the **output-amp** setting on the source. For multiple sources, you'll have to do some math. The sources are added together.
+  - **input-amp** - The expected maximum amplitude of the input. For a single source, it should be the same as the **level-override** setting on the source. For multiple sources, you'll have to do some math. The sources are added together.
   
   - **signed** - When `false` tells the WaveGen to output only values above zero. When modulating amplitude, that's probably what you want. For audible waves or to modulate frequency, set **signed**:  `true` For an audio signal, that will double the amount of headroom, because you'll be using the amplitude available both above and below zero, instead of only above. Use the **freq** property to set the frequency. 
   

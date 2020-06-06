@@ -14,7 +14,7 @@ lpf-lfo:
   signed: true
   freq: .1
   shape: saw
-  output-amp: 1000
+  level-override: 1000
   out: lpf.sweep
 
 

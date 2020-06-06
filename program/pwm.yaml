@@ -14,7 +14,7 @@ lfo1:
   freq: 0.2
   type: wave
   shape: saw
-  output-amp: 1000
+  level-override: 1000
   out: osc1.pwm
 
 #  should be out: osc1.pwm

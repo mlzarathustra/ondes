@@ -11,9 +11,8 @@ import static java.lang.System.out;
 
 public class IIRFilter extends Filter {
 
-    //  will interfere with sound, but the levels vary
-    //  so widely it's easiest to just look at them
-    //  to determine level-scale
+    //  will interfere with sound, but can be
+    //  useful to observe instability
     boolean DB = false;
 
     double[] a,b;
@@ -69,7 +68,6 @@ public class IIRFilter extends Filter {
         y0 = (y0 + 1) % y.length;
 
         if (DB) {
-            // this can be useful to look at. Sigma varies widely in range.
             out.println("Sigma * levelScale=" + Sigma * levelScale);
             out.println("Sigma = "+Sigma+"; levelScale = "+levelScale);
         }
@@ -95,12 +93,10 @@ public class IIRFilter extends Filter {
                 "(but you probably want it much lower than that)";
         fltInp = getFloat(config.get("level-scale"), levelScaleErr);
         if (fltInp != null) {
-//            if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
-            //else
-                levelScale = fltInp;
+            if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
+            else levelScale = fltInp;
         }
     }
-
 
     @Override
     public void pause() {

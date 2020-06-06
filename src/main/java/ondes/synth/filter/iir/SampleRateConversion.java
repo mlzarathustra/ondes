@@ -17,7 +17,8 @@ import static java.lang.System.out;
  *     It's some multiple of the angular frequency and pi,
  * </p>
  * <p>
- *     For now, just display. This could get more official.
+ *     For now, just display. This could get more official,
+ *     for when we want to change sample rates.
  * </p>
  */
 

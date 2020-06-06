@@ -14,7 +14,7 @@ vca-lfo:
   signed: false
   freq: .2
   shape: saw
-  output-amp: 1000
+  level-override: 1000
   out: vca
 
 vca:

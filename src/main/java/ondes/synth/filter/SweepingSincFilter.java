@@ -52,7 +52,7 @@ public class SweepingSincFilter extends Filter {
 
         Double dblInp= getDouble(config.get("input-amp"),
             "'input-amp' must be a number, typically " +
-                "the same as the output-amp of the sender.");
+                "the same as the level-override of the sender.");
         if (dblInp != null) {
             inputAmp = dblInp.floatValue();
             if (inputAmp != 0) inputAmpInv = 1.0f / inputAmp;

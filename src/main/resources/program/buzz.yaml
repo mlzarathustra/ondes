@@ -12,3 +12,7 @@ osc1:
     - 8.27 1
     - 16 16
   out: main
+
+# the fractional harmonics get folded
+# since there's only one phase clock
+# so it sounds kind of buzzy.

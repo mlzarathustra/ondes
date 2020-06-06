@@ -1,8 +1,8 @@
 
-# sounds more like strings than
-# organ or bell!
 
-name: strings
+# This could be a good electric piano base.
+
+name: bell-organ
 
 osc1:
   midi: note-on
