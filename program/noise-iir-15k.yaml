@@ -1,6 +1,6 @@
 
 
-name: noise-iir-10k
+name: noise-iir-15k
 
 noise1:
   midi: note-on
@@ -12,8 +12,8 @@ noise1:
 lpf:
   type: filter
   shape: iir
-  key: lp_6_10k
-  level-scale: 4
+  key: lp_6_15k
+  level-scale: .06
   out: main
 
 

@@ -11,6 +11,11 @@ import static java.lang.System.out;
 
 public class IIRFilter extends Filter {
 
+    //  will interfere with sound, but the levels vary
+    //  so widely it's easiest to just look at them
+    //  to determine level-scale
+    boolean DB = false;
+
     float[] a,b;
 
     float [] x,y;
@@ -31,9 +36,10 @@ public class IIRFilter extends Filter {
         x=new float[a.length];
         y=new float[b.length];
 
-        out.println(" IIR : a="+Arrays.toString(a));
-        out.println("       b="+Arrays.toString(b));
-
+        if (DB) {
+            out.println(" IIR : a="+Arrays.toString(a));
+            out.println("       b="+Arrays.toString(b));
+        }
     }
 
     void setNoFilter() {
@@ -48,7 +54,6 @@ public class IIRFilter extends Filter {
         int X_n = 0;
         for (WiredIntSupplier in : inputs) X_n += in.getAsInt();
 
-        //out.println("X_n: "+X_n);
         float Sigma = 0;
 
         x[x0] = X_n;
@@ -63,7 +68,10 @@ public class IIRFilter extends Filter {
         }
         y0 = (y0 + 1) % y.length;
 
-        //out.println("Sigma * levelScale="+Sigma * levelScale);
+        if (DB) {
+            // this can be useful to look at. Sigma varies widely in range.
+            out.println("Sigma * levelScale=" + Sigma * levelScale);
+        }
 
         return (int)( Sigma * levelScale );
     }
