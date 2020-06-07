@@ -202,7 +202,7 @@ public class SweepingSincFilter extends Filter {
             }
         }
         else {
-            Arrays.fill(buf,bufLen,buf.length,0);
+            Arrays.fill(buf,bufLen,buf.length,nextAverage(buf[0]));
         }
     }
 
