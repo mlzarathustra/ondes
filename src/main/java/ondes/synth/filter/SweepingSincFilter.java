@@ -206,8 +206,6 @@ public class SweepingSincFilter extends Filter {
         }
     }
 
-
-
     @Override
     public int currentValue() {
         float sweepAmt=0;

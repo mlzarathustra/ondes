@@ -5,24 +5,23 @@
 
 
 ## synthesizer
-The plan is for this to become a fully modular synthesizer that will play through your computer's output device as triggered by a MIDI input device (typically an electronic keyboard, though any should work). 
+The concept is a fully modular synthesizer that will play through your computer's output device as triggered by a MIDI input device, for example an electronic keyboard. 
 
-Programs (patches) are represented in YAML files so that you will be able to either use presets or roll your own. 
+Programs (patches) are represented by YAML files. There are numerous examples included, but with YAML, it is easy to create new ones.
 
 It currently works on my system by using the `run` script in the main directory like this:
 
         run -in 828 -out "main out" -ch1 octave -ch2 10
 
-Please note that you will need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `run` with no arguments for command line help.
+You may need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `run` with no arguments for command line help.
 
 (This is all assuming you ran Gradle to build the jar file. See below)
 
-Given the state of computer sound responding to MIDI (sluggish) this app is not suitable for live performance of anything requiring timing. However, it should still be useful for exploring sound creation, and for producing sound in cases where timing is not critical.  Please see "audio buffer size" below for more on why computer sound responds sluggishly to MIDI.  
+Given the state of computer sound responding to MIDI (sluggish) this app is generally not suitable for live performance of anything requiring timing. However, it should still be useful in cases where timing is not critical.  Please see "audio buffer size" below for more on the latency responding to MIDI.  
 
-Features are still a bit thin - so far it only does wave combining.
+Yet to be created are the Envelope generation and friends (e.g. multidimensional panning envelopes). At present, the Wave Generators and some basic IIR filtering are fairly solid within the framework.
 
-See [the to-do file](TO-DO.md) for more. A couple of items high on the list should improve efficiency (e.g. pre-building voices, harmonic waves) which should help when creating complex patches.  
-
+See [the to-do file](TO-DO.md) for more on what is in the pipeline.  
 
 ## requirements 
 
@@ -32,13 +31,13 @@ See [the to-do file](TO-DO.md) for more. A couple of items high on the list shou
  - an audio output system (e.g. speakers)
 
  
-There is no official packaging, so simply download or clone the project and run `gradle uberJar` to set up the jar for the shell scripts to run. (didn't I tell you it was under construction?) 
+There is no official packaging, so simply download or clone the project and run `gradle uberJar` or use the `b` bash script to set up the jar for the shell scripts to run.  
 
 
 ## tools
-Included are some tools to show you what JavaSound thinks your system looks like. (after you build the uberJar using `gradle uberJar`)
+Included are some tools to show you what JavaSound thinks your system looks like. (after you build the uberJar using `gradle uberJar` or the `b` bash script)
 
-If you're in a bash shell (including cygwin) you can use the below commands to run the tools. If not, you can look at those files to figure out how to run the java class. 
+If you're in a bash shell (including [cygwin](http://cygwin.org/)) you can use the below commands to run the tools. If not, you can look at those files to figure out how to run the java class. 
 
 `midiInfo` - shows MIDI devices and their transmitters and receivers.
 
@@ -47,16 +46,26 @@ If you're in a bash shell (including cygwin) you can use the below commands to r
 `audioInfo` - shows Audio devices and their "source" and "target" lines.
 
 ---
+### bank scripts
+There are a series of bash scripts (in the `scripts` directory) that tell the app to load different sounds into the 16 channel voices and wait for MIDI input. You will probably need to adjust the -in and -out parameters for your own system.
+
+---
+## programming patches
+
+Next you'll probably want to check out the files in the `doc` directory, starting with [Voice.md](doc/Voice.md)
+
+
+---
 ## audio buffer size
 
-Here we explain why the keyboard is so sluggish to respond. It's inherent in using a computer for sound via the regular sound system.
+Why the keyboard is so sluggish to respond: it's inherent in the design of computer sound, which is geared for playback of already-existing signals, e.g. a CD. In such applications, a delay is unimportant, so long as everything is delayed by the same amount. However, when the system has to respond to timed input, it can do nothing until the current buffer is emptied. Hence the delay. 
 
 You can set the buffer size with the following argument to the ondes.App class:
   -buffer-size <size>
   
-If you get nothing but clicks or sound with breaks in it, the audio buffer needs to be bigger. Default is 1024, which should work with most systems.
+If you get nothing but clicks or sound with breaks in it, the audio buffer needs to be bigger. Default is 2048, which should work with most systems.
 
-A limitation of computer-based sound is that the signal needs to be sent in big chunks, namely the buffer. If the buffer is too small, the audio system can't send the bytes fast enough and you get clicks or breaks as described above.
+For computer-based sound, the signal needs to be sent in big chunks, namely the buffer. If the buffer is too small, the audio system can't send the bytes fast enough and you get clicks or breaks as described above.
 
 The problem with making the buffer bigger is that whenever you trigger a note, the system needs to wait for the current buffer to be processed before anything new can emerge. Since a buffer of about 2048 samples seems to be generally required, that means a delay of up to 2048/44100 seconds before the note begins to sound. How long that delay is will depend on where it happens to be in filling the buffer when you hit the note. 
 

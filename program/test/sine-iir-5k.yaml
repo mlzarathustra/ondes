@@ -17,6 +17,5 @@ lpf:
   level-scale: 1
   out: main
 
-#   NOTE the level scale on this lpf!
-#
+
 
