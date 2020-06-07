@@ -1,8 +1,11 @@
 package ondes.synth.voice;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 import ondes.synth.OndesSynth;
@@ -42,12 +45,17 @@ import static ondes.mlz.YamlLoader.*;
 public class VoiceMaker {
 
     static boolean DB=false;
+    static int depth = 1;
 
-    static final List<Map> programs=new ArrayList<>();
-
-    static {
-        loadPrograms();
+    public static void setRecurseSubdirs(boolean b) {
+        depth = b ? Integer.MAX_VALUE : 1;
     }
+
+    static List<Map> programs=new ArrayList<>();
+
+//    static {
+//        loadPrograms();
+//    }
 
     private static void addLabeledProg(Map prog, String fn) {
         if (prog == null) return; // file read error, reported elsewhere
@@ -65,14 +73,17 @@ public class VoiceMaker {
         else programs.add(prog);
 
     }
-    private static void loadPrograms() {
+    public static void loadPrograms() {
+
+        programs = new ArrayList<>();
 
         //  First load the .yaml files from the filesystem,
         //  (in the ./program/ directory) so those will supersede
         //  any with similar names internally
         //
         try {
-            Files.walk(Path.of("program")).forEach( path -> {
+            out.println("depth is "+depth);
+            Files.walk(Path.of("program"),depth).forEach( path -> {
                 Map prog = loadFile(path);
                 if (prog == null) return;
                 addLabeledProg(prog, path.toString());

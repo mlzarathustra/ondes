@@ -12,11 +12,9 @@ noise1:
 lpf:
   type: filter
   shape: iir
-  key: lp_6_440
-  level-scale: 1e-11
+  key: lp_4_440
+  level-scale: 1
   out: main
 
-#   NOTE the level scale on this lpf!
-#
 
 

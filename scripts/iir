@@ -1,6 +1,6 @@
 #!/bin/bash
 
-run  -in 828 -out 'main o'  \
+run  -in 828 -out 'main o' -all-patches \
     -ch1 noise-iir-440 \
     -ch2 noise-iir-10k \
     -ch3 noise-iir-15k \

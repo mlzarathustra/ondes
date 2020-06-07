@@ -130,6 +130,7 @@ public class App {
                 case "-show-programs":
                 case "-list-patches":
                 case "-list-programs":
+                    VoiceMaker.loadPrograms();
                     showPrograms(); // exits
 
                 case "-help": case "-h": case "?": case "-?":
@@ -139,6 +140,10 @@ public class App {
                 continue;
 
                 case "-hold": hold=true; continue;
+                case "-all-patches":
+                    out.println("list all patches");
+                    VoiceMaker.setRecurseSubdirs(true);
+                    continue;
             }
 
             // options with following args - if we get here
@@ -159,9 +164,10 @@ public class App {
 
                 case "-show-patch":
                 case "-show-program":
+                    VoiceMaker.loadPrograms();
                     showProgram(args[++i]);
+
                 case "-buffer-size":
-                    out.println("buffer size <<");
                     bufferSize = Integer.parseInt(args[++i]);
                     continue;
 
@@ -177,6 +183,8 @@ public class App {
             }
             else usage();
         }
+
+        VoiceMaker.loadPrograms();
 
         //  Connect MIDI input and Audio output
         //

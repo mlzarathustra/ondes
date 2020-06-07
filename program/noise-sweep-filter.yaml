@@ -12,7 +12,7 @@ noise1:
 lpf-lfo:
   type: wave
   signed: true
-  freq: .1
+  freq: .05
   shape: saw
   level-override: 1000
   out: lpf.sweep

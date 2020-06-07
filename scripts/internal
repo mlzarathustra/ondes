@@ -11,5 +11,5 @@ run -in 828 -out 'main o' \
 -ch8  saw \
 -ch9  sine \
 -ch10  square \
--ch11  strings \
+-ch11  bell-organ \
 

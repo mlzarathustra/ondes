@@ -4,6 +4,7 @@ import ondes.midi.FreqTable;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -179,23 +180,29 @@ public class SweepingSincFilter extends Filter {
             int oldBufLen = bufLen;
             bufLen = bufLen(sweptFreq);
 
-            // the rule is: always discard the oldest data
-            //
-            if (bufLen > bufIdx) {
-                System.arraycopy(
-                    buf, oldBufLen - (bufLen - bufIdx),
-                    buf, bufIdx,
-                    bufLen - bufIdx);
-            }
-            else {
-                System.arraycopy(
-                    buf, bufLen,
-                    buf, 0,
-                    bufIdx-bufLen
-                );
-            }
+            if (bufLen < oldBufLen) {
 
-            bufIdx = bufIdx % bufLen;
+                // buffer is shrinking
+                // the rule is: always discard the oldest data
+
+                if (bufLen > bufIdx) {
+                    System.arraycopy(
+                        buf, oldBufLen - (bufLen - bufIdx),
+                        buf, bufIdx,
+                        bufLen - bufIdx);
+                } else {
+                    System.arraycopy(
+                        buf, bufLen,
+                        buf, 0,
+                        bufIdx - bufLen
+                    );
+                }
+
+                bufIdx = bufIdx % bufLen;
+            }
+        }
+        else {
+            Arrays.fill(buf,bufLen,buf.length,0);
         }
     }
 

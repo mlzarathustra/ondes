@@ -1,7 +1,10 @@
 #!/bin/bash
 
 run -in 828 -out 'main o' \
-    -ch1 noise-sweep -ch2 noise \
-    -ch3 noise-lfo -ch4 noise-filter \
-    -ch5 pink -ch6 pink-filter
+    -ch1 noise-sweep \
+    -ch2 noise \
+    -ch3 noise-lfo \
+    -ch4 noise-filter \
+    -ch5 pink \
+    -ch6 pink-filter \
 
