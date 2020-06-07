@@ -197,6 +197,11 @@ public class MonoMainMix extends MonoComponent {
         }
         catch (Exception ex) { err.println("error writing to "+log); }
     }
+    public void logFlush() {
+        if (log == null) return;
+        try { log.flush(); }
+        catch (Exception ex) { err.println("Error flushing log."); }
+    }
 
     public void update() {
         int sum=0;

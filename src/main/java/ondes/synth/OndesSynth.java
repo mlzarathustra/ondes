@@ -343,6 +343,10 @@ public class OndesSynth extends Thread implements EndListener {
         }
     }
 
+    public void logFlush() {
+        if (monoMainMix != null) monoMainMix.logFlush();
+    }
+
 
     public MonoComponent getMainOutput() {
         if (USE_LIMITER) {

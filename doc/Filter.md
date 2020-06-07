@@ -83,9 +83,12 @@ lpf:
   out: main
 ```
 
-And as more of a hack than anything else, I decided to try sweeping the filter. It gets some clicks here and there, but it still sounds pretty cool. 
 
-You can hear it in the `pwm-sweep` patch.
+I tried sweeping the filter by adding and removing elements from the vector running the average. Which does work, though not very smoothly. It's pretty gritty in fact.  I believe the right way would be to adjust the coefficients of the filter rather than adding and subtracting them. 
+
+For now I am leaving it as-is in case it turns out to be useful, but I hope to replace it with a smooth sweep.
+
+You can hear the current version in the `pwm-sweep` patch. 
 
 The two components below are the LFO and the filter. See the patch YAML for the rest. 
 ```

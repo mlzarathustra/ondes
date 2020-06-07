@@ -232,6 +232,7 @@ public class App {
 
         try { in.readLine(); }
         catch (Exception ignore) { }
+        synth.logFlush();
 
         midiDev.close();
         mixer.close();

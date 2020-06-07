@@ -308,6 +308,8 @@ public abstract class WaveGen extends MonoComponent {
         fltInp = getFloat(config.get("freq"),
             "freq must be a number. can be floating.");
         if (fltInp != null) freqOverride = fltInp;
+
+        synth.getInstant().reservePhaseClocks(1);
     }
 
     @Override

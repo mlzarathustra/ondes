@@ -98,13 +98,14 @@ class AnharmonicWaveGen extends WaveGen {
 
         if (waves == null || waves.length == 0) {
             err.println(
-                "Anharmonic composite wave form currently requires \n" +
+                "Anharmonic composite wave form requires \n" +
                     "a list of value pairs (frequency, divisor).\n");
         }
+        else synth.getInstant().reservePhaseClocks(waves.length + 1);
     }
 
     // TODO - pool phase clocks
-    //         the program "almost" uses this, and overloads a lot
+    //         the program named "almost" uses this, and overloads a lot
     //         I'm betting the allocation and garbage collect are why.
 
     @Override
