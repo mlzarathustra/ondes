@@ -14,10 +14,11 @@ It currently works on my system by using the `run` script in the main directory 
         run -in 828 -out "main out" -ch1 octave -ch2 10
 
 You may need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `run` with no arguments for command line help.
+See [JavaSoundNaming.md](doc/JavaSoundNaming.md) for an explanation of how JavaSound names inputs and outputs, which is distinctly confusing.
 
 (This is all assuming you ran Gradle to build the jar file. See below)
 
-Given the state of computer sound responding to MIDI (sluggish) this app is generally not suitable for live performance of anything requiring timing. However, it should still be useful in cases where timing is not critical.  Please see "audio buffer size" below for more on the latency responding to MIDI.  
+Given the state of computer sound responding to MIDI (sluggish) this app is generally not suitable for live performance of anything requiring timing. However, it should still be useful in cases where timing is not critical.  Please see [AudioBuffer.md](doc/AudioBuffer.md) for more on the latency responding to MIDI.  
 
 Yet to be created are the Envelope generation and friends (e.g. multidimensional panning envelopes). At present, the Wave Generators and some basic IIR filtering are fairly solid within the framework.
 
@@ -52,44 +53,12 @@ There are a series of bash scripts (in the `scripts` directory) that tell the ap
 ---
 ## programming patches
 
-Next you'll probably want to check out the files in the `doc` directory, starting with [Voice.md](doc/Voice.md)
+Next you'll probably want to check out the files in the `doc` directory, starting with: 
+
+[Voice.md](doc/Voice.md)
 
 
----
-## audio buffer size
 
-Why the keyboard is so sluggish to respond: it's inherent in the design of computer sound, which is geared for playback of already-existing signals, e.g. a CD. In such applications, a delay is unimportant, so long as everything is delayed by the same amount. However, when the system has to respond to timed input, it can do nothing until the current buffer is emptied. Hence the delay. 
-
-You can set the buffer size with the following argument to the ondes.App class:
-  -buffer-size <size>
-  
-If you get nothing but clicks or sound with breaks in it, the audio buffer needs to be bigger. Default is 2048, which should work with most systems.
-
-For computer-based sound, the signal needs to be sent in big chunks, namely the buffer. If the buffer is too small, the audio system can't send the bytes fast enough and you get clicks or breaks as described above.
-
-The problem with making the buffer bigger is that whenever you trigger a note, the system needs to wait for the current buffer to be processed before anything new can emerge. Since a buffer of about 2048 samples seems to be generally required, that means a delay of up to 2048/44100 seconds before the note begins to sound. How long that delay is will depend on where it happens to be in filling the buffer when you hit the note. 
-
-The delay is called "latency." The variation in the delay is called "jitter." 
-
-2048/44100 is about  0.0464399 seconds or 46 milliseconds. It's quite palpable. 
-
-It's possible ASIO might help with this problem, but JavaSound offers no official support. Also, I've had the same trouble with ASIO, so it may not even help. For more on the gory details, see: http://jsresources.sourceforge.net/faq_misc.html#asio  
-  
-
-## JavaSound naming convention
-
-
-The naming Java Sound employs is confusing, as it is expressed from the perspective of the mixer or outside device rather than that of the application: 
-
- - MIDI 
-    - transmitter - The application uses to receive MIDI messages, from a keyboard or sequencer
-    - receiver - The application uses to send MIDI messages for playback, to a synth or sequencer
-    
-- AUDIO 
-    - source - The application uses to play back sounds by sending audio data 
-    - target - The application uses to receive audio data fed in from a sound or audio signal source.  
- 
-For the purposes of the app, I am sticking as close to the original labeling as possible, while at the same time doing my best to abstract away some of the busy work.  
 
 
 
