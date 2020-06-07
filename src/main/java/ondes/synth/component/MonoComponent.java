@@ -110,15 +110,20 @@ public abstract class MonoComponent implements ConfigHelper {
         for (Object oneOut : compOutList) {
             String label = oneOut.toString();
             if (label.contains(".")) {
-                String outComp = label.substring(0,label.indexOf("."));
+                String outCompStr = label.substring(0,label.indexOf("."));
                 String outSelect = label.substring(label.indexOf(".")+1);
-                setOutput((MonoComponent) components.get(outComp), outSelect);
+                MonoComponent outComp = (MonoComponent) components.get(outCompStr);
+                if (outComp == null) {
+                    err.println("ERROR! Attempting to connect to non-existent " +
+                        "component '"+outCompStr+"'.'"+outSelect+"'");
+                }
+                setOutput(outComp, outSelect);
             }
             else {
                 MonoComponent comp = (MonoComponent) components.get(oneOut);
                 if (comp == null) {
                     err.println("ERROR! Attempting to connect to non-existent " +
-                        "output '"+oneOut+"'");
+                        "component '"+oneOut+"'");
                     return;
                 }
                 setOutput(comp);
