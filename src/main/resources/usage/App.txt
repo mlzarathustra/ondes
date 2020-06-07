@@ -1,24 +1,26 @@
 
     Ondes Synthesizer
     ---------------------------
-    Arguments are mostly in pairs:
-
     System settings:
         Select input and output devices:
-          -in <input MIDI device>
-          -out <output Audio device>
+            -in <input MIDI device>
+            -out <output Audio device>
 
-      The 'device' label is used to search for a device with
-      the necessary capabilities whose label contains that string.
+        The 'device' label is used to search for a device with
+        the necessary capabilities whose label contains that string.
 
-      See READ.md for help finding devices in your system.
+        See README.md for help finding devices in your system.
 
-        Audio System
-          -buffer-size <size>
+            -buffer-size <size>
 
         If you get clicks or breaks in the sound, the audio buffer
-        needs to be bigger. Default is 1024, which should work with
-        most systems. See README.md for more.
+        needs to be bigger. Default is 2048, which should be fairly
+        safe. However, if you can get away with a smaller buffer
+        without disruptions in sound, the synth will respond more
+        quickly to keyboard input. It displays the buffer size on
+        startup.
+
+        See README.md for more.
 
     Program settings:
         Display then Exit:
@@ -27,7 +29,16 @@
                  A patch is identified by either its name or the
                  index as given by this command.
 
+            -all-patches -show-patches
+                Same as the above, but recursively traverses into
+                subdirectories of the filesystem 'program' directory.
+                The options must appear in that order, or you won't see
+                the extra patches.
+
+                Index numbers will change when -all-patches is set.
+
             -show-patch <patch name | index>
+            -all-patches -show-patch <patch name | index>
 
         Select:
             -all | -patch <(patch name | index) for all channels>
@@ -37,6 +48,14 @@
 
        Patches can be supplied as YAML files in the directory
        ./program; a number are supplied internally as resources.
+
+       In order to access a patch in a subdirectory of ./program,
+       you must say -all-patches before it. For example, to load
+       ramp-up-iir-10k from the test subdirectory, say:
+
+            run -in 828 -out speaker -all-patches -ch1 ramp-up-iir-10k
+
+    Miscellaneous settings:
 
        -log-main-out - dumps verbose debugging information into
         'update.log.' See timing.md for more info.
