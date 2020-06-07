@@ -1,0 +1,18 @@
+#!/bin/bash
+
+run -in 828 -out 'main o' \
+ -ch1  almost \
+ -ch2  fourths \
+ -ch4  'four sour' \
+ -ch5  noise \
+ -ch6  noise-filter \
+ -ch7  noise-lfo \
+ -ch8  noise-sweep \
+ -ch9  pink \
+ -ch10  pink-filter \
+ -ch11  pwm \
+ -ch12  pwm-sweep \
+ -ch13  repeater \
+ -ch14  'two pwm' \
+ -ch15  'two pwm filter' \
+

@@ -1,12 +1,17 @@
 # Ondes synth - to do
 
- - if output component is followed by a number, use it to scale output.
+ - pool phase clocks, to make anharmonic voices run more smoothly.
+
+ - get rid of the `name:` property in the patch files and use the file name minus .yaml instead.
+    - warn of duplicates
+    - make normalize ' ' and '_' to '-' 
+
+ - if a number follows the output component name, use it to scale output.
   
  - pitch bend
  
  - try out the Nyquist multiplier for velocity in WaveGen.velocityMultiplier
    
-
  - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings.
 
  - LFO pitch mod (i.e. FM)
@@ -20,10 +25,9 @@
  - add an option **pitch-scale**: amount
  
  - try modulating the duty cycle of a sawtooth wave.
-      
- - add a low-pass filter near 20khz to reduce aliasing
 
  - create a component that simply maps midi key to a value
+    for use in modulation, 
     with an option for linear or logarithmic. 
    
  

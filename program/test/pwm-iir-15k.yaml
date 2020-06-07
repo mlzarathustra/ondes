@@ -22,7 +22,7 @@ lpf:
   type: filter
   shape: iir
   key: lp_6_15k
-  level-scale: .05
+  level-scale: 1
   out: main
 
 

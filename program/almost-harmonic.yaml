@@ -8,7 +8,6 @@ osc1:
   offset: 0
   shape: anharmonic
   waves:
-    # powers of 2^(5/12)
     - 1 1
     - 2.01 2
     - 3.01 3
@@ -27,7 +26,6 @@ osc2:
   type: wave
   shape: anharmonic
   waves:
-    # powers of 2^(5/12)
     - 1 1
     - 2.01 2
     - 3 3

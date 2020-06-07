@@ -8,9 +8,16 @@ run  -in 828 -out 'main o' -all-patches \
     -ch5 pwm-iir  \
     -ch6 pwm \
     -ch7 sine-iir-440 \
-    -ch8 sine-iir-10k \
-    -ch9 ramp-up-iir-10k \
-    -ch10 ramp-up \
+    -ch8 sine-iir-1k \
+    -ch9 sine-iir-5k \
+    -ch10 sine-iir-10k \
+    -ch11 ramp-up-iir-440 \
+    -ch12 ramp-up-iir-1k \
+    -ch13 ramp-up-iir-2k \
+    -ch14 ramp-up-iir-5k \
+    -ch15 ramp-up-iir-10k \
+    -ch16 ramp-up \
+
 
 
 

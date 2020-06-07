@@ -1,0 +1,5 @@
+#!/bin/bash
+
+run  -in 828 -out 'main o' \
+        -ch1 filter-test 
+

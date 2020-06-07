@@ -103,6 +103,10 @@ class AnharmonicWaveGen extends WaveGen {
         }
     }
 
+    // TODO - pool phase clocks
+    //         the program "almost" uses this, and overloads a lot
+    //         I'm betting the allocation and garbage collect are why.
+
     @Override
     public void resume() {
         super.resume();

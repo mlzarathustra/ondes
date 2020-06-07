@@ -190,7 +190,9 @@ public class App {
         //
         out.println("Input device : "+inDevStr);
         out.println("Output device: "+outDevStr);
-        out.println("Program Names: "+Arrays.toString(progNames));
+
+        //  it displays the ones it has loaded later on.
+        //out.println("Program Names: "+Arrays.toString(progNames));
 
         MidiDevice midiDev = getMidiDev(inDevStr);
         if (midiDev == null) {
