@@ -37,7 +37,7 @@ class AnharmonicWaveGen extends WaveGen {
      */
     List<Instant.PhaseClock> clocks = new ArrayList<>();
 
-    static double TAO=Math.PI*2.0;
+    static float TAO=(float)(Math.PI*2.0);
     private int scaledAmp;
 
 
@@ -63,8 +63,8 @@ class AnharmonicWaveGen extends WaveGen {
         }
     }
 
-    private final double[] defaultWave = { 1,1, 2,2, 3,3 };
-    private double[] waves;
+    private final float[] defaultWave = { 1,1, 2,2, 3,3 };
+    private float[] waves;
 
     @Override
     @SuppressWarnings("rawtypes,unchecked")
@@ -82,9 +82,9 @@ class AnharmonicWaveGen extends WaveGen {
                 .collect(joining(" "));
             String[] waveTokens = waveString.split("[\\s,]+");
 
-            waves = new double[waveTokens.length];
+            waves = new float[waveTokens.length];
             for (int i = 0; i< waves.length; ++i) {
-                try { waves[i] = Double.parseDouble(waveTokens[i]); }
+                try { waves[i] = (float)Double.parseDouble(waveTokens[i]); }
                 catch (Exception ex) {
                     err.println("could not parse "+waveTokens[i]+" as float");
                 }
@@ -129,7 +129,7 @@ class AnharmonicWaveGen extends WaveGen {
      */
     @Override
     public int currentValue() {
-        double sum=0;
+        float sum=0;
         for (int ov = 0; ov< waves.length-1; ov+=2) {
             sum += sineLookup( clocks.get(ov/2).getPhase() * TAO )
                 / waves[ov+1];
