@@ -16,6 +16,7 @@ import ondes.synth.voice.VoiceMaker;
 import ondes.synth.wire.WiredIntSupplier;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -174,6 +175,7 @@ public class OndesSynth extends Thread implements EndListener {
         String[]    progNames,
         int         bufSize
     ) {
+        super("OndesSynth - main thread");
         this.midiInDev = midiInDev;
         midiListener = new MidiListenerThread(this);
 
@@ -341,6 +343,22 @@ public class OndesSynth extends Thread implements EndListener {
             u2 =SineLookup.sineLookup(0);
 
         listen();
+
+        // TODO - does this even help fix the gaps? 
+        // attempting to give the audio thread greater priority...
+        // "almost" still gets gaps in the sound.
+        //
+        Thread[] ta=new Thread[activeCount()+10];
+        Thread.enumerate(ta);
+        for (Thread t : ta) {
+            if (t != null) {
+                if (t.toString().contains("Dispatcher")) t.setPriority(10);
+                else if (t.toString().contains("Ondes")) t.setPriority(1);
+                out.println(t);
+            }
+        }
+        //
+        //
 
         for (;;) {
             synchronized (lock){
