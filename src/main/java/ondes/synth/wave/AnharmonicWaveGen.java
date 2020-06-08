@@ -6,6 +6,7 @@ import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 
 import static java.util.stream.Collectors.joining;
 import static ondes.mlz.SineLookup.sineLookup;
@@ -140,6 +141,7 @@ class AnharmonicWaveGen extends WaveGen {
     // DEBUG HACK
     @Override
     public void noteON(MidiMessage msg) {
+        //out.println("AnharmonicWaveGen.noteON ");
         super.noteON(msg);
     }
 

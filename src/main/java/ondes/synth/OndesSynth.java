@@ -103,6 +103,7 @@ public class OndesSynth extends Thread implements EndListener {
     private int sampleRate;
 
     private final MidiDevice midiInDev;
+    private final MidiListenerThread midiListener;
 
     /**
      * <p>
@@ -174,6 +175,7 @@ public class OndesSynth extends Thread implements EndListener {
         int         bufSize
     ) {
         this.midiInDev = midiInDev;
+        midiListener = new MidiListenerThread(this);
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
@@ -196,6 +198,7 @@ public class OndesSynth extends Thread implements EndListener {
      * before the "off" we re-trigger.
      */
     void noteON(MidiMessage msg) {
+        //out.println(" OndesSynth.noteON("+MlzMidi.toString(msg)+")");
         int chan = msg.getStatus() & 0xf;
         int note = msg.getMessage()[1];
 
@@ -247,7 +250,10 @@ public class OndesSynth extends Thread implements EndListener {
     }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
-        if (DB) out.println(ts+" : "+MlzMidi.toString(msg));
+        if (DB) {
+            out.println(" OndesSynth.routeMidiMessage : " +
+                "[" + ts + "] " + MlzMidi.toString(msg));
+        }
 
         //  Note-ON messes with the phase clocks list
         //  so don't do it while incrementing them
@@ -274,7 +280,9 @@ public class OndesSynth extends Thread implements EndListener {
         Receiver recv = new Receiver() {
             public void close() {};
             public void send(MidiMessage msg, long ts) {
-                routeMidiMessage(msg,ts);
+                //routeMidiMessage(msg,ts);
+                out.println("OndesSynth.listen("+MlzMidi.toString(msg)+")");
+                midiListener.routeMidiMessage(msg);
             }
         };
 
@@ -294,6 +302,8 @@ public class OndesSynth extends Thread implements EndListener {
             out.println(ex);
             System.exit(-1);
         }
+
+        midiListener.start();
     }
 
     /**
@@ -325,10 +335,11 @@ public class OndesSynth extends Thread implements EndListener {
     //  a constructor triggered by Note-ON
     //
     public void run() {
-        // preload class data
 
-        FreqTable.getFreq(0);
-        SineLookup.sineLookup(0);
+        // preload class data
+        double
+            u1 = FreqTable.getFreq(0),
+            u2 =SineLookup.sineLookup(0);
 
         listen();
 

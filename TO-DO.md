@@ -29,7 +29,8 @@
  - create a component that simply maps midi key to a value
     for use in modulation, 
     with an option for linear or logarithmic. 
-   
+  
+ - try Helmholtz as oscillator / resonator   
  
  -----------
  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)

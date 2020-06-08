@@ -24,7 +24,7 @@ import static java.lang.System.out;
  * All wave generators must extend this class.
  */
 public abstract class WaveGen extends MonoComponent {
-    public static boolean VERBOSE = true;
+    public static boolean VERBOSE = false;
 
     protected Instant.PhaseClock phaseClock;
     static final double oneStep = pow(2, 1.0/12);

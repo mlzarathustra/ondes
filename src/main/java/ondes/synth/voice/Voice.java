@@ -3,6 +3,7 @@ package ondes.synth.voice;
 import javax.sound.midi.MidiMessage;
 import java.util.*;
 
+import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.EndListener;
@@ -11,6 +12,7 @@ import ondes.synth.wire.Junction;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked")
@@ -131,6 +133,7 @@ public class Voice {
     }
 
     public void processMidiMessage(MidiMessage msg) {
+        //out.println(" Voice.processMidiMessage: "+ MlzMidi.toString(msg));
         ArrayList<MonoComponent> listeners =
             midiListeners[7 & (msg.getStatus()>>4)];
 
