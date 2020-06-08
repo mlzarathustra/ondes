@@ -224,9 +224,13 @@ public class MonoMainMix extends MonoComponent {
                 //  It blocks if needed.
                 //
                 int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
+                long now=System.nanoTime();
+                if (now - beforeWrite > 100_000_000) {
+                    // for a 2k buffer, the whole cycle needs to be under 46 ms.
+                    out.println(String.format(" >> srcLine.write block: %,d <<",(now-beforeWrite)));
+                }
 
                 if (LOG_MAIN_OUT) {
-                    long now=System.nanoTime();
                     // loops++; for limiting # of outputs
 
                     logWrite("srcLine.write() rs="+rs+
@@ -234,9 +238,8 @@ public class MonoMainMix extends MonoComponent {
                         "    write took "+ String.format("%,d ns",(now-beforeWrite))+
                         "    process "+ String.format("%,d ns", (beforeWrite - lastWrite))
                     );
-                    lastWrite=now;
-
                 }
+                lastWrite=now;
             }
         }
     }

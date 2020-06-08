@@ -24,7 +24,6 @@ public class MidiListenerThread extends Thread {
             try {
                 synchronized (this) {
                     wait();
-                    //out.println(" MidiListenerThread wait() ended");
                 }
             } catch (InterruptedException ex) {
                 //  with notify, we shouldn't reach this.
@@ -33,14 +32,11 @@ public class MidiListenerThread extends Thread {
             if (stop) return;
 
             //  process queue
-            //out.println( " MidiListener.queue: "+queue);
             while (!queue.isEmpty()) {
                 MidiMessage msg;
                 synchronized(this) {
-                    //out.println(" MidiListenerThread.run() queue[A]: "+queue);
                     msg = queue.pop();
                 }
-                //out.println(" MidiListenerThread.run() queue[B]: "+queue);
                 synth.routeMidiMessage(msg,0);
             }
         }

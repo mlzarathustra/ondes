@@ -141,7 +141,6 @@ class AnharmonicWaveGen extends WaveGen {
     // DEBUG HACK
     @Override
     public void noteON(MidiMessage msg) {
-        //out.println("AnharmonicWaveGen.noteON ");
         super.noteON(msg);
     }
 

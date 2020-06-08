@@ -198,7 +198,6 @@ public class OndesSynth extends Thread implements EndListener {
      * before the "off" we re-trigger.
      */
     void noteON(MidiMessage msg) {
-        //out.println(" OndesSynth.noteON("+MlzMidi.toString(msg)+")");
         int chan = msg.getStatus() & 0xf;
         int note = msg.getMessage()[1];
 

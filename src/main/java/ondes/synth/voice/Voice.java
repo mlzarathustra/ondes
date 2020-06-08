@@ -133,7 +133,6 @@ public class Voice {
     }
 
     public void processMidiMessage(MidiMessage msg) {
-        //out.println(" Voice.processMidiMessage: "+ MlzMidi.toString(msg));
         ArrayList<MonoComponent> listeners =
             midiListeners[7 & (msg.getStatus()>>4)];
 
