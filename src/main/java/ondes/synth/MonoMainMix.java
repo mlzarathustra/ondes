@@ -56,12 +56,18 @@ public class MonoMainMix extends MonoComponent {
     private byte[] lineBuffer;
     private int[] outputBuffer;
     //
+    private int avgLatency, timingOverflow;
 
 
     public MonoMainMix(Mixer mixer) { this(mixer,2048); }
 
     public MonoMainMix(Mixer mixer, int bufferSize) {
         this.bufferSize = bufferSize;
+
+        // in nanoseconds. it's just for a message,
+        // so it doesn't need to be precise
+        avgLatency =  (int)( ((float)bufferSize * 1_000_000_000.0) / sampleRate );
+        timingOverflow = avgLatency * 3 / 2;
 
         Line.Info[] lineInfo = mixer.getSourceLineInfo();
         out.println(Arrays.toString(lineInfo));
@@ -129,14 +135,20 @@ public class MonoMainMix extends MonoComponent {
         srcLine.start(); // without this, you won't get any sound.
     }
 
-    //  transform for endian-ness, multiple channels,
-    //  unsigned samples.
-    //
-    private void toLineFmt(int[] outputBuffer) {
+    /**
+     * <p>
+     *     transform for endian-ness, multiple channels, unsigned samples.
+     * </p>
+     * @param outputBuffer - the buffer to copy into lineBuffer
+     * @param count - how many bytes to copy
+     * @return - how many bytes were copied into lineBuffer
+     */
+    private int toLineFmt(int[] outputBuffer, int count) {
         byte[] split = new byte[bytesPerSample];
         int lbIdx=0;
         long unsignedOffset = signed ? 0 : 1 << (8*bytesPerSample - 1);
-        for (int val : outputBuffer) {
+        for (int obp=0; obp<count; ++obp) {
+            int val = outputBuffer[obp];
             val += unsignedOffset;
             for (int i=0; i<bytesPerSample; ++i) {
                 int si = littleEndian ? i : bytesPerSample-(i+1);
@@ -153,6 +165,7 @@ public class MonoMainMix extends MonoComponent {
                 }
             }
         }
+        return lbIdx;
     }
 
     /*
@@ -209,40 +222,49 @@ public class MonoMainMix extends MonoComponent {
 
         outputBuffer[outPos++] = sum;
 
-        if (outPos == outputBuffer.length) {
-            toLineFmt(outputBuffer); // copies into lineBuffer
-            outPos = 0;
-
-            if (DRY) {
-                //out.println("outputBuffer: "+Arrays.toString(outputBuffer));
-                out.println("srcLine.write( disabled )");
-            }
-            else {
-                long beforeWrite = System.nanoTime();
-
-                //  Send the samples to the sound module.
-                //  It blocks if needed.
-                //
-                int rs = srcLine.write(lineBuffer, 0, lineBuffer.length);
-                long now=System.nanoTime();
-                if (now - beforeWrite > 100_000_000) {
-                    // for a 2k buffer, the whole cycle needs to be under 46 ms.
-                    out.println(String.format(" >> srcLine.write block: %,d <<",(now-beforeWrite)));
-                }
-
-                if (LOG_MAIN_OUT) {
-                    // loops++; for limiting # of outputs
-
-                    logWrite("srcLine.write() rs="+rs+
-                        "   delta >> "+ String.format("%,d ns",(now-lastWrite))+
-                        "    write took "+ String.format("%,d ns",(now-beforeWrite))+
-                        "    process "+ String.format("%,d ns", (beforeWrite - lastWrite))
-                    );
-                }
-                lastWrite=now;
-            }
-        }
+        srcLineWrite();
     }
+
+    void srcLineWrite() {
+        if (srcLine.available() == 0 && outPos<outputBuffer.length) return;
+
+        int lineFmtCount = toLineFmt(outputBuffer, outPos); // copies into lineBuffer
+        outPos = 0;
+
+        if (DRY) {
+            //out.println("outputBuffer: "+Arrays.toString(outputBuffer));
+            out.println("srcLine.write( disabled )");
+        }
+        else {
+            long beforeWrite = System.nanoTime();
+
+            //  Send the samples to the sound module.
+            //  It blocks if needed.
+            //
+            int rs = srcLine.write(lineBuffer, 0, lineFmtCount);
+            //out.print("wrote "+rs+" bytes.");
+
+            long now=System.nanoTime();
+            if (now - beforeWrite > timingOverflow) {
+                // for a 2k buffer, the whole cycle needs to be under 46 ms.
+                out.println(String.format(" >> srcLine.write block: %,d <<",(now-beforeWrite)));
+            }
+
+            if (LOG_MAIN_OUT) {
+                // loops++; for limiting # of outputs
+
+                logWrite("srcLine.write() rs="+rs+
+                    "   delta >> "+ String.format("%,d ns",(now-lastWrite))+
+                    "    write took "+ String.format("%,d ns",(now-beforeWrite))+
+                    "    process "+ String.format("%,d ns", (beforeWrite - lastWrite))
+                );
+            }
+            lastWrite=now;
+        }
+
+    }
+
+
 
     @Override
     public void configure(Map config, Map components) {

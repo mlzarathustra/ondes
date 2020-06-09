@@ -1,5 +1,7 @@
 # Ondes synth - to do
 
+ - rename MonoMainMixVarBuf into MonoMainMix.
+
  - get rid of the `name:` property in the patch files and use the file name minus .yaml instead.
     - warn of duplicates
     - normalize ' ' and '_' to '-' 

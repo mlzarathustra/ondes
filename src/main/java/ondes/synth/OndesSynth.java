@@ -12,11 +12,8 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.voice.ChannelVoicePool;
 import ondes.synth.voice.Voice;
-import ondes.synth.voice.VoiceMaker;
-import ondes.synth.wire.WiredIntSupplier;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -98,7 +95,7 @@ public class OndesSynth extends Thread implements EndListener {
     }
 
 //    private MonoMainMix monoMainMix;
-    private MonoMainMixVarBuf monoMainMix;
+    private MonoMainMix monoMainMix;
     //
 
     private Limiter mainLimiter;
@@ -185,7 +182,7 @@ public class OndesSynth extends Thread implements EndListener {
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
 //        monoMainMix = new MonoMainMix(outDev, bufSize);
-        monoMainMix = new MonoMainMixVarBuf(outDev, bufSize);
+        monoMainMix = new MonoMainMix(outDev, bufSize);
         this.sampleRate = monoMainMix.getSampleRate();
         mainLimiter  = getMainLimiter();
         instant = new Instant(sampleRate);

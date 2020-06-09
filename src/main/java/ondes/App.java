@@ -112,7 +112,7 @@ public class App {
         // contains("") will match any
         String inDevStr = "", outDevStr = "";
 
-        // seems to the smallest reliable
+        // Works for most voices. May need to be longer for some.
         int bufferSize=2048;
 
         //  Parse command line args

@@ -58,7 +58,7 @@
     Miscellaneous settings:
 
        -log-main-out - dumps verbose debugging information into
-        'update.log.' See timing.md for more info.
+        'update.log.' See doc/timing.md for more info.
 
        -help or -h gives this help message
 
