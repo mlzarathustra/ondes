@@ -85,7 +85,7 @@ public class Util {
                 // here is a typical URL.getPath() result:
                 //  file:/F:/.../ondes/build/libs/ondes-all.jar!/program
 
-                //out.println("URL path: "+url.getPath());
+                out.println("URL path: "+url.getPath());
                 String urlPath = url.getPath(); // should start with "file:"
                                                 // hence the "5" on the next line.
                 String jarPath = urlPath.substring(5, urlPath.indexOf("!"));

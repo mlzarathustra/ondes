@@ -1,4 +1,4 @@
 #!/bin/bash
 
-java -cp build/libs/ondes-all.jar ondes.audio.AudioInfo $*
+java -cp build/libs/ondes-all.jar ondes.audio.AudioInfo "$@"
 

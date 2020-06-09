@@ -1,0 +1,62 @@
+$ "`cygpath -u 'C:\Program Files\Java\jre1.8.0_191'`/bin/java.exe" -jar build/libs/ondes-all.jar -in 828 -out 'main o' -ch1 'almost'
+depth is 1
+URL path: file:/F:/shiva/Development/music/ondes/build/libs/ondes-all.jar!/program
+Error getting resource files
+Input device : 828
+Output device: main o
+Midi Input device   : 828mk3
+Mixer (audio output): MOTU Main Out 1-2 (MOTU Audio Wave for 64 bit), version Unknown Version
+[interface SourceDataLine supporting 8 audio formats, and buffers of at least 32 bytes, interface Clip supporting 8 audio formats, and buffers of at least 32 bytes]
+com.sun.media.sound.DirectAudioDevice$DirectSDL@184f6be2
+PCM_SIGNED 44100.0 Hz, 16 bit, stereo, 4 bytes/frame, little-endian
+frameSize=4; bufSize=2048; bytesPerSample=2; littleEndian=true; # of channels=2
+Channel  [1]: almost
+Channel  [2]: pwm
+Channel  [3]: pwm
+Channel  [4]: pwm
+Channel  [5]: pwm
+Channel  [6]: pwm
+Channel  [7]: pwm
+Channel  [8]: pwm
+Channel  [9]: pwm
+Channel [10]: pwm
+Channel [11]: pwm
+Channel [12]: pwm
+Channel [13]: pwm
+Channel [14]: pwm
+Channel [15]: pwm
+Channel [16]: pwm
+Press [Enter] to stop.
+Opened device: com.sun.media.sound.MidiInDevice$MidiInTransmitter@5eeffaf
+Listening for MIDI messages.
+Thread[main,5,main]
+MIDI Listener starting.
+Thread[Java Sound Event Dispatcher,10,main]
+Thread[OndesSynth - main thread,1,main]
+Thread[Java Sound MidiInDevice Thread,5,main]
+Thread[OndesSynth - MidiListenerThread,1,main]
+OndesSynth.listen(Note ON [1] -   C3  vel=112 )
+OndesSynth.listen(Note ON [1] -   G3  vel= 75 )
+OndesSynth.listen(Note ON [1] -   C4  vel= 80 )
+OndesSynth.listen(Note ON [1] -   D4  vel= 98 )
+ >> srcLine.write block: 281,216,400 <<
+OndesSynth.listen(Note ON [1] -  A#3  vel= 73 )
+ >> srcLine.write block: 273,389,400 <<
+ >> srcLine.write block: 251,247,400 <<
+ >> srcLine.write block: 123,342,800 <<
+ >> srcLine.write block: 214,460,400 <<
+ >> srcLine.write block: 387,952,000 <<
+ >> srcLine.write block: 100,666,900 <<
+ >> srcLine.write block: 365,368,000 <<
+ >> srcLine.write block: 114,393,100 <<
+ >> srcLine.write block: 373,198,700 <<
+ >> srcLine.write block: 258,573,500 <<
+ >> srcLine.write block: 339,664,000 <<
+ >> srcLine.write block: 310,718,500 <<
+OndesSynth.listen(Note OFF [1] -  A#3  vel= 68 )
+OndesSynth.listen(Note OFF [1] -   G3  vel= 69 )
+OndesSynth.listen(Note OFF [1] -   C3  vel= 40 )
+OndesSynth.listen(Note OFF [1] -   D4  vel= 25 )
+OndesSynth.listen(Note OFF [1] -   C4  vel= 54 )
+
+

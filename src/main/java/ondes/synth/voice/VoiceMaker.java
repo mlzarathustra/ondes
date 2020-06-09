@@ -1,10 +1,7 @@
 package ondes.synth.voice;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
@@ -83,6 +80,10 @@ public class VoiceMaker {
         //
         try {
             out.println("depth is "+depth);
+
+//            Path progPath = FileSystems.getDefault().getPath("program");  // JDK 8
+//            Files.walk(progPath,depth).forEach( path -> {
+
             Files.walk(Path.of("program"),depth).forEach( path -> {
                 Map prog = loadFile(path);
                 if (prog == null) return;

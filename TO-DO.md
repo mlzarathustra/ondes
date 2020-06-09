@@ -1,10 +1,9 @@
 # Ondes synth - to do
 
- - pool phase clocks, to make anharmonic voices run more smoothly.
-
  - get rid of the `name:` property in the patch files and use the file name minus .yaml instead.
     - warn of duplicates
-    - make normalize ' ' and '_' to '-' 
+    - normalize ' ' and '_' to '-' 
+    - add a 'description' property instead of name and display it when listing patches.
 
  - if a number follows the output component name, use it to scale output.
   
@@ -12,12 +11,12 @@
  
  - try out the Nyquist multiplier for velocity in WaveGen.velocityMultiplier
    
- - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings.
+ - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings. Or should that only happen on the output?
 
  - LFO pitch mod (i.e. FM)
  
  - migrate **level-scale** to the MonoComponent level (so automatically configure for it).
- Note that some components will ignore it (e.g. LFO's)  They can warn about it.
+ Note that some components will ignore it (e.g. LFO's) if level-override is set. They can warn about it.
 
  - add velocity scaling for **op-amp** 
  (default: off => velocity-base: 100 velocity-amount: 0)
