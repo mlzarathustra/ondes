@@ -3,8 +3,12 @@ package ondes.synth.envelope;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
+import javax.sound.midi.MidiMessage;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static java.lang.System.out;
+import static java.lang.System.err;
 
 /**
  * Env is basically a state machine. The current state is
@@ -101,15 +105,24 @@ class Env extends MonoComponent {
     }
 
 
-    void noteON() {
+    @Override
+    public void noteON(MidiMessage msg) {
         ON=true;
         setCurStep(0);
     }
 
-    void noteOFF() {
+    @Override
+    public void noteOFF(MidiMessage msg) {
         ON=false;
         setCurStep(release);
     }
+
+    @Override
+    public void midiSustain(int val) {
+
+        out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
+    }
+
 
 
     boolean isCompleteOrig() {

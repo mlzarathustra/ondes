@@ -175,7 +175,7 @@ public class OndeSynth extends Thread implements EndListener {
         String[]    progNames,
         int         bufSize
     ) {
-        super("OndesSynth - main thread");
+        super("OndeSynth - main thread");
         this.midiInDev = midiInDev;
         midiListener = new MidiListenerThread(this);
 
@@ -253,7 +253,7 @@ public class OndeSynth extends Thread implements EndListener {
 
     void routeMidiMessage(MidiMessage msg, long ts) {
         if (DB) {
-            out.println(" OndesSynth.routeMidiMessage : " +
+            out.println(" OndeSynth.routeMidiMessage : " +
                 "[" + ts + "] " + MlzMidi.toString(msg));
         }
 
@@ -283,7 +283,7 @@ public class OndeSynth extends Thread implements EndListener {
             public void close() {};
             public void send(MidiMessage msg, long ts) {
                 //routeMidiMessage(msg,ts);
-                out.println("OndesSynth.listen("+MlzMidi.toString(msg)+")");
+                out.println("OndeSynth.listen("+MlzMidi.toString(msg)+")");
                 midiListener.routeMidiMessage(msg);
             }
         };

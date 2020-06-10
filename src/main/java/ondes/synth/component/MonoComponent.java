@@ -276,7 +276,7 @@ public abstract class MonoComponent implements ConfigHelper {
      * @param msg - a Controller message for this channel
      */
     public void midiControl(MidiMessage msg) {
-        out.println("Controller: "+msg.getMessage()[1]+" length: "+msg.getLength());
+        //out.println("Controller: "+msg.getMessage()[1]+" length: "+msg.getLength());
 
         switch (msg.getMessage()[1]) {
             case 0: midiBankSelectMSB(msg.getMessage()[2]); return;
