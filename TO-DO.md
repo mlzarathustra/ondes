@@ -1,7 +1,29 @@
 # Ondes synth - to do
-
- - rename MonoMainMixVarBuf into MonoMainMix.
-
+ 
+  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
+  
+  - noteOFF routing / voice management - 
+     - default: free the voice on note-OFF (as it is now)
+     - If there's a designated envelope, free the voice when it is finished.
+     - for now, only one envelope determines (rather than an AND or OR logic for several)
+ 
+  - Taper off to avoid clicks at the end of sine waves.
+  - Sustain pedal
+ 
+      ```    
+           #  A possible use case:  
+         
+         midi-key: 
+           type: midi-key # the key number 0-128
+           out: env1.rate 
+      ```
+  ------
+  
+  - LFO pitch mod (i.e. FM)
+  
+ ---- 
+  
+ 
  - get rid of the `name:` property in the patch files and use the file name minus .yaml instead.
     - warn of duplicates
     - normalize ' ' and '_' to '-' 
@@ -15,8 +37,6 @@
    
  - the dot notation might help also with input levels for the OpAmp. If we can label the inputs, then we can give them base/amt settings. Or should that only happen on the output?
 
- - LFO pitch mod (i.e. FM)
- 
  - migrate **level-scale** to the MonoComponent level (so automatically configure for it).
  Note that some components will ignore it (e.g. LFO's) if level-override is set. They can warn about it.
 
@@ -34,26 +54,7 @@
  - try Helmholtz as oscillator / resonator   
  
  -----------
- - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
- 
- - noteOFF routing / voice management - 
-    - default: free the voice on note-OFF (as it is now)
-    - If there's a designated envelope, free the voice when it is finished.
-    - for now, only one envelope determines (rather than an AND or OR logic for several)
 
- - Taper off to avoid clicks at the end of sine waves.
- - Sustain pedal
-
-     ```    
-          #  A possible use case:  
-        
-        midi-key: 
-          type: midi-key # the key number 0-128
-          out: env1.rate 
-     ```
- 
- ------
- 
  Channel components e.g. LFO
  Add a channel-global: on/off flag to components
  Keep them in ChannelVoicePool
