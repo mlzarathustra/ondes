@@ -1,4 +1,4 @@
-package ondes.mlz;
+package ondes.synth.wave.lookup;
 
 import java.util.function.DoubleUnaryOperator;
 

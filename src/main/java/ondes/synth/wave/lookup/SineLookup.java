@@ -1,4 +1,4 @@
-package ondes.mlz;
+package ondes.synth.wave.lookup;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;

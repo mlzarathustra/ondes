@@ -1,6 +1,7 @@
 package ondes.synth.wave;
 
-import ondes.mlz.WaveLookup;
+import ondes.synth.wave.lookup.CompositeWave;
+import ondes.synth.wave.lookup.WaveLookup;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import static java.lang.System.err;
 import static java.lang.System.out;
 
 import static java.util.stream.Collectors.joining;
-import static ondes.mlz.SineLookup.sineLookup;
+import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
 
 /**
@@ -41,16 +42,11 @@ import static ondes.mlz.SineLookup.sineLookup;
  *
  */
 @SuppressWarnings("FieldMayBeFinal")
-class HarmonicWaveGen extends WaveGen {
+class HarmonicWaveGen extends CompositeWave {
 
-    static double TAO=Math.PI*2.0;
-
-    static HashMap<String,WaveLookup> waveLookups=new HashMap<>();
-
-    WaveLookup waveLookup;
 
     @Override
-    void setFreq(double freq) {
+    public void setFreq(double freq) {
         super.setFreq(freq);
     }
 
@@ -70,9 +66,7 @@ class HarmonicWaveGen extends WaveGen {
             {1,1, 2,2, 3,3, 4,2, 8,2, 12,3}
     };
 
-    private double[] waves = presets[0];
-
-    double[] getWave(String preset) {
+    private double[] getWave(String preset) {
         for (int i = 0; i< presetTags.length; ++i) {
             if (presetTags[i].equals(preset)) return presets[i];
         }
@@ -85,7 +79,7 @@ class HarmonicWaveGen extends WaveGen {
         super.configure(config,components);
 
         Object preset = config.get("preset");
-        if (preset != null) waves = getWave(preset.toString());
+        if (preset != null) harmonicWaves = getWave(preset.toString());
 
         Object waveConfig = config.get("waves");
         if (waveConfig instanceof List) {
@@ -97,31 +91,27 @@ class HarmonicWaveGen extends WaveGen {
 
             // it's just numeric pairs, so they can put them all on
             // one line, or split them.
-            String waveString = ""+((List)waveConfig)
-                .stream()
-                .map(Object::toString)
-                .collect(joining(" "));
-            String[] waveTokens = waveString.split("[\\s,]+");
+            String[] waveTokens = listToTokenAry((List)waveConfig);
 
-            waves = new double[waveTokens.length];
-            for (int i = 0; i< waves.length; ++i) {
-                try { waves[i] = Double.parseDouble(waveTokens[i]); }
+            harmonicWaves = new double[waveTokens.length];
+            for (int i = 0; i< harmonicWaves.length; ++i) {
+                try { harmonicWaves[i] = Double.parseDouble(waveTokens[i]); }
                 catch (Exception ex) {
                     err.println("could not parse "+waveTokens[i]+" as float");
                 }
-                if (waves[i] <= 0) {
+                if (harmonicWaves[i] <= 0) {
                     err.println("wave values must be greater than zero.\n" +
                         "falling back to default set.");
-                    waves = this.presets[0];
+                    harmonicWaves = this.presets[0];
                     break;
                 }
             }
         }
 
-        String waveKey = Arrays.toString(waves);
+        String waveKey = Arrays.toString(harmonicWaves);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            //out.println("generating wave lookup.");
+            out.println("generating wave lookup.");
             waveLookup = new WaveLookup(this::currentValue);
             waveLookups.put(waveKey, waveLookup);
         }
@@ -132,18 +122,6 @@ class HarmonicWaveGen extends WaveGen {
             err.println("current presets: "+String.join(" ", presetTags));
         }
     }
-
-    private double currentValue(double phase) {
-        double sum=0;
-        for (int ov = 0; ov< waves.length-1; ov+=2) {
-            sum += sineLookup(
-                phase * TAO * waves[ov] )
-                / waves[ov+1];
-        }
-
-        return sum;
-    }
-
 
     /**
      * @return component level at the instant of this sample.

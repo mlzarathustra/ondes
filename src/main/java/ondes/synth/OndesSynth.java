@@ -6,7 +6,7 @@ import javax.sound.sampled.Mixer;
 import ondes.App;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
-import ondes.mlz.SineLookup;
+import ondes.synth.wave.lookup.SineLookup;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.envelope.Limiter;

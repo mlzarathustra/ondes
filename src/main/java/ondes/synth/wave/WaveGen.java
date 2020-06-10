@@ -172,7 +172,7 @@ public abstract class WaveGen extends MonoComponent {
     double pitchScaleFactor = 10;
 
     double freqMultiplier = 1;
-    double getFreqMultiplier() {
+    public double getFreqMultiplier() {
         if (detune == 0 && offset == 0) {
             freqMultiplier=1;
             return 1;
@@ -212,7 +212,7 @@ public abstract class WaveGen extends MonoComponent {
      * </p>
      * @param freq - the desired frequency
      */
-    void setFreq(double freq) {
+    public void setFreq(double freq) {
         if (freqOverride > 0) {
             freq = freqOverride;
             // noise has no frequency, but should not be scaled at infinity!

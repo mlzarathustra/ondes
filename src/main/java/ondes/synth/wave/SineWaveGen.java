@@ -1,6 +1,6 @@
 package ondes.synth.wave;
 
-import static ondes.mlz.SineLookup.sineLookup;
+import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 import static java.lang.Math.PI;
 
 /**

@@ -1,6 +1,8 @@
 package ondes.synth.wave;
 
 import ondes.synth.Instant;
+import ondes.synth.wave.lookup.CompositeWave;
+import ondes.synth.wave.lookup.WaveLookup;
 
 import javax.sound.midi.MidiMessage;
 import java.util.*;
@@ -8,8 +10,8 @@ import java.util.*;
 import static java.lang.System.err;
 import static java.lang.System.out;
 
-import static java.util.stream.Collectors.joining;
-import static ondes.mlz.SineLookup.sineLookup;
+import static java.util.stream.Collectors.*;
+import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
 /**
  * <p>
@@ -30,16 +32,13 @@ import static ondes.mlz.SineLookup.sineLookup;
  * </p>
  *
  */
-class AnharmonicWaveGen extends WaveGen {
+class AnharmonicWaveGen extends CompositeWave {
     /**
      * The fundamental phase clock remains in WaveGen.
      * Additional anharmonic waves each need their own.
      */
     List<Instant.PhaseClock> clocks = new ArrayList<>();
-
-    static float TAO=(float)(Math.PI*2.0);
-    private int scaledAmp;
-
+    private double[] anharmonicWaves;
 
     /**
      * <p>
@@ -53,18 +52,18 @@ class AnharmonicWaveGen extends WaveGen {
      * @param freq - frequency requested
      */
     @Override
-    void setFreq(double freq) {
+    public void setFreq(double freq) {
         super.setFreq(freq);
-        if (clocks.size() < waves.length/2) return; // got the LFO msg
+        if (clocks.size() < anharmonicWaves.length/2) return; // got the LFO msg
 
-        for (int wp=0; wp<waves.length-1; wp+=2) {
+        for (int wp = 0; wp< anharmonicWaves.length-1; wp+=2) {
             clocks.get(wp/2)
-                .setFrequency( (float)(freq * waves[wp] * getFreqMultiplier()) );
+                .setFrequency( (float)(
+                    freq * anharmonicWaves[wp] * getFreqMultiplier())
+                );
         }
     }
 
-    private final float[] defaultWave = { 1,1, 2,2, 3,3 };
-    private float[] waves;
 
     @Override
     @SuppressWarnings("rawtypes,unchecked")
@@ -76,33 +75,59 @@ class AnharmonicWaveGen extends WaveGen {
 
             // it's just numeric pairs, so you can put them all on
             // one line, or split them.
-            String waveString = ""+((List)waveConfig)
-                .stream()
-                .map(Object::toString)
-                .collect(joining(" "));
-            String[] waveTokens = waveString.split("[\\s,]+");
+            String[] waveTokenAry = listToTokenAry((List)waveConfig);
 
-            waves = new float[waveTokens.length];
-            for (int i = 0; i< waves.length; ++i) {
-                try { waves[i] = (float)Double.parseDouble(waveTokens[i]); }
-                catch (Exception ex) {
-                    err.println("could not parse "+waveTokens[i]+" as float");
+            //  The inputs are in pairs: { freq, divisor }
+            List<Double>
+                hrList = new ArrayList<>(),
+                anList = new ArrayList<>();
+            double freqInp, divInp;
+            for (int i=0; i<waveTokenAry.length; i += 2) {
+                String freqToken = waveTokenAry[i], divToken = waveTokenAry[i+1];
+                try {
+                    freqInp = Double.parseDouble(freqToken);
+                    divInp = Double.parseDouble(divToken);
+                    if (freqInp < 0 || divInp < 0) {
+                        err.println("ERROR! Anharmonic wave values " +
+                            "must be greater than zero.");
+                        continue;
+                    }
+                    if (freqInp % 1.0 == 0) {
+                        hrList.add(freqInp); hrList.add(divInp);
+                    }
+                    else {
+                        anList.add(freqInp); anList.add(divInp);
+                    }
                 }
-                if (waves[i] <= 0) {
-                    err.println("wave values must be greater than zero.\n" +
-                        "falling back to default set.");
-                    waves = defaultWave;
-                    break;
+                catch (Exception ex) {
+                    err.println("ERROR! Could not parse one of {"+
+                        freqToken+", "+divToken+"} as float");
                 }
             }
+            out.println("anList: "+anList+"\nhrList: "+hrList);
+            anharmonicWaves = anList.stream().mapToDouble(v->v).toArray();
+            harmonicWaves = hrList.stream().mapToDouble(v->v).toArray();
         }
 
-        if (waves == null || waves.length == 0) {
+        if (( anharmonicWaves == null || anharmonicWaves.length == 0) &&
+            (harmonicWaves == null || harmonicWaves.length == 0)) {
             err.println(
                 "Anharmonic composite wave form requires \n" +
                     "a list of value pairs (frequency, divisor).\n");
+            return;
         }
-        else synth.getInstant().reservePhaseClocks(waves.length + 1);
+
+        // Set up ANHARMONIC waves
+        synth.getInstant().reservePhaseClocks(anharmonicWaves.length + 1);
+
+        // Set up HARMONIC waves
+        String waveKey = Arrays.toString(harmonicWaves);
+        waveLookup = waveLookups.get(waveKey);
+        if (waveLookup == null) {
+            out.println("generating wave lookup.");
+            waveLookup = new WaveLookup(this::currentValue);
+            waveLookups.put(waveKey, waveLookup);
+        }
     }
 
     // TODO - pool phase clocks
@@ -112,7 +137,7 @@ class AnharmonicWaveGen extends WaveGen {
     @Override
     public void resume() {
         super.resume();
-        for (int i=0; i<waves.length-1; i += 2) {
+        for (int i = 0; i< anharmonicWaves.length-1; i += 2) {
             clocks.add(synth.getInstant().addPhaseClock());
         }
     }
@@ -129,11 +154,13 @@ class AnharmonicWaveGen extends WaveGen {
      */
     @Override
     public int currentValue() {
-        float sum=0;
-        for (int ov = 0; ov< waves.length-1; ov+=2) {
+        double sum=0;
+        for (int ov = 0; ov< anharmonicWaves.length-1; ov+=2) {
             sum += sineLookup( clocks.get(ov/2).getPhase() * TAO )
-                / waves[ov+1];
+                / anharmonicWaves[ov+1];
         }
+        sum +=  waveLookup.valueAt(phaseClock.getPhase()) ;
+        //out.println(sum);
 
         return (int) (sum * getAmp());
     }
