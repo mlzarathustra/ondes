@@ -1,7 +1,7 @@
 package ondes;
 
 import ondes.midi.MlzMidi;
-import ondes.synth.OndesSynth;
+import ondes.synth.OndeSynth;
 import ondes.synth.voice.VoiceMaker;
 
 import javax.sound.midi.MidiDevice;
@@ -214,7 +214,7 @@ public class App {
 
         //  START UP SYNTH
         //
-        OndesSynth synth = new OndesSynth(
+        OndeSynth synth = new OndeSynth(
             44100,      // sample rate
             midiDev,    // input device
             mixer,      // output device

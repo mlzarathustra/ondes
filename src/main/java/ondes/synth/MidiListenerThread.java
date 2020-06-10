@@ -5,8 +5,8 @@ import java.util.*;
 import static java.lang.System.out;
 
 public class MidiListenerThread extends Thread {
-    OndesSynth synth;
-    MidiListenerThread(OndesSynth synth) {
+    OndeSynth synth;
+    MidiListenerThread(OndeSynth synth) {
         super("OndesSynth - MidiListenerThread");
         this.synth = synth;
     }

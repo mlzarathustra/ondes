@@ -1,0 +1,21 @@
+
+name: saw-env
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: main
+
+env1:
+  type: env
+  midi: note-on, note-off, control
+  # preset: piano
+  points: # rate level option
+    - 0 100
+    - 2 75
+    - 10 60
+    - 25 50 hold
+    - 50 25
+    - 10 10 release
+    - 20 0

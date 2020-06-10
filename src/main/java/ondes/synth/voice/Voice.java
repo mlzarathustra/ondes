@@ -3,26 +3,26 @@ package ondes.synth.voice;
 import javax.sound.midi.MidiMessage;
 import java.util.*;
 
-import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.EndListener;
-import ondes.synth.OndesSynth;
+import ondes.synth.OndeSynth;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
 import static java.lang.System.err;
-import static java.lang.System.out;
 import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked")
 public class Voice {
     private Map voiceSpec;
-    private OndesSynth synth;
+    private OndeSynth synth;
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
 
     private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
+
+    private boolean DB=false;
 
     public WiredIntSupplierMaker getWiredIntSupplierMaker() {
         return wiredIntSupplierMaker;
@@ -59,8 +59,21 @@ public class Voice {
         }
     }
 
-    public static final String[] midiMessageTypes =
-        "note-off note-on after control program pressure bend system".split(" ");
+    /**
+     * Midi Message types by index (starting with 0x8, note-OFF)
+     * For controllers, it's all or nothing. To simplify the code.
+     */
+    public static final String[][] midiMessageTypes = {
+        {"note-off"},
+        {"note-on"},
+        {"after"},
+        {"control", "bank-msb", "mod-wheel", "volume", "pan",
+            "bank-lsb", "sustain"},
+        {"program"},
+        {"pressure"},
+        {"bend"},
+        {"system"}
+    };
 
     @SuppressWarnings("rawtypes")
     private void addMidiListeners(MonoComponent comp, Map compSpec) {
@@ -70,7 +83,7 @@ public class Voice {
             String valStr= val.toString();
 
             for (int i=0; i<midiMessageTypes.length; ++i) {
-                if (valStr.equals(midiMessageTypes[i])) {
+                if (Arrays.asList(midiMessageTypes[i]).contains(valStr)) {
                     midiListeners[i].add(comp);
                     break;
                 }
@@ -94,7 +107,7 @@ public class Voice {
     public void setEndListener(EndListener el) { endListener=el; }
 
     @SuppressWarnings("unchecked,rawtypes")
-    Voice(Map voiceSpec, OndesSynth synth) {
+    Voice(Map voiceSpec, OndeSynth synth) {
         this.synth = synth;
         this.voiceSpec = voiceSpec;
 
@@ -135,6 +148,11 @@ public class Voice {
     public void processMidiMessage(MidiMessage msg) {
         ArrayList<MonoComponent> listeners =
             midiListeners[7 & (msg.getStatus()>>4)];
+
+        if (DB) {
+            err.println("Voice.processMidiMessage: listeners = " +
+                Arrays.toString(midiListeners) + "; ");
+        }
 
         for (MonoComponent comp : listeners) {
             switch (msg.getStatus() >> 4) {

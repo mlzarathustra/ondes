@@ -43,5 +43,11 @@ public class EnvMaker {
         return envs.get(DEFAULT_ENV);
     }
 
+    public static Env getEnv() {
+        return new Env();
+    }
+
+
+
 
 }

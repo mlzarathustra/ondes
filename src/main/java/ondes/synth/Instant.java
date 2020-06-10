@@ -40,6 +40,7 @@ public class Instant  {
 
     private int sampleRate;
     private long sampleNumber;
+    private double seconds;
 
     private ArrayDeque<PhaseClock>
         clocks=new ArrayDeque<>(),
@@ -82,10 +83,13 @@ public class Instant  {
     public int getSampleRate() { return sampleRate; }
     public long getSampleNumber() { return sampleNumber; }
 
+    public double getSeconds() { return seconds; }
+
     // // // // //
 
     void next() {
         sampleNumber++;
+        seconds = ((double)sampleNumber)/sampleRate;
         clocks.forEach(PhaseClock::update);
     }
 

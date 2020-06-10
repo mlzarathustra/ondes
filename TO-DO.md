@@ -1,7 +1,18 @@
 # Ondes synth - to do
  
-  - EnvGen needs to be hooked to a "multiply" component (`OpAmp`)
-  
+  - EnvGen
+    - two modes (or maybe two outputs)
+        - as a EG/VCA combo  
+        - DC, to be hooked to a "multiply" component (`OpAmp`)
+    - hold point (sustain)   
+    - release point (not necessarily the last) so if note-OFF arrives in mid-cycle, 
+        it takes the release point (rate, level) as the next step.
+    - alt release: only triggered after note-OFF, when sustain is on.
+        The logic will be tricky if the pedal goes up and down. 
+    - infinite looping: loop-start loop-end - mutually exclusive with hold
+    - extra credit: finite looping
+    - alternate release (triggered when sustain pedal is down)
+            
   - noteOFF routing / voice management - 
      - default: free the voice on note-OFF (as it is now)
      - If there's a designated envelope, free the voice when it is finished.
@@ -22,6 +33,16 @@
   - LFO pitch mod (i.e. FM)
   
  ---- 
+ 
+ Panners - 1D, 2D, 3D
+    - control with lfo(s)
+    - control with envelope
+    
+---  
+
+ - (an)harmonic wave gen: 
+    - force the data to be a list with 2 or 3 columns
+    - the third column can be saw, ramp, square; for harmonic frequencies only, at first.   
   
  
  - get rid of the `name:` property in the patch files and use the file name minus .yaml instead.
@@ -75,4 +96,10 @@
  
  - manage ChannelVoicePool from a separate thread
 
+-----------
+
+ - effects 
+    - echo
+    - reverb
+    - flange
  

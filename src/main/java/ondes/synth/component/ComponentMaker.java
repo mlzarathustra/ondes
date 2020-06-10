@@ -1,10 +1,9 @@
 package ondes.synth.component;
 
-import ondes.synth.OndesSynth;
+import ondes.synth.OndeSynth;
 import ondes.synth.envelope.EnvMaker;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.filter.FilterMaker;
-import ondes.synth.filter.SincFilter;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.OpAmp;
@@ -32,7 +31,7 @@ public class ComponentMaker {
      * @param synth - the synth which is using this component.
      * @return - a new Component as specified
      */
-    public static MonoComponent getMonoComponent(Map specs, OndesSynth synth) {
+    public static MonoComponent getMonoComponent(Map specs, OndeSynth synth) {
         MonoComponent rs;
         if (specs.get("type") == null) {
             err.println("Missing 'type' property for component "+
@@ -46,7 +45,7 @@ public class ComponentMaker {
                 break;
 
             case "env":
-                rs = EnvMaker.getEnv((String)specs.get("shape"));
+                rs = EnvMaker.getEnv();
                 break;
 
             case "mix":

@@ -23,7 +23,7 @@ import static java.lang.System.out;
 import static ondes.mlz.YamlLoader.*;
 
 @SuppressWarnings("FieldMayBeFinal")
-public class OndesSynth extends Thread implements EndListener {
+public class OndeSynth extends Thread implements EndListener {
 
     boolean DB = false;
 
@@ -168,7 +168,7 @@ public class OndesSynth extends Thread implements EndListener {
      *                   for each channel. A loose "contains" match compares
      *                   the input with the 'name' property of the program.
      */
-    public OndesSynth(
+    public OndeSynth(
         int         sampleRate,
         MidiDevice  midiInDev,
         Mixer       outDev,

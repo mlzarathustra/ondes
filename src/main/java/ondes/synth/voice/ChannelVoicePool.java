@@ -1,9 +1,8 @@
 package ondes.synth.voice;
 
-import ondes.synth.OndesSynth;
+import ondes.synth.OndeSynth;
 
 import java.util.ArrayDeque;
-import static java.lang.System.out;
 
 /**
  * <p>
@@ -17,7 +16,7 @@ import static java.lang.System.out;
  */
 public class ChannelVoicePool {
     String progName;
-    OndesSynth synth;
+    OndeSynth synth;
     
     ArrayDeque<Voice> available=new ArrayDeque<>();
     ArrayDeque<Voice> inUse = new ArrayDeque<>();
@@ -28,7 +27,7 @@ public class ChannelVoicePool {
      * @param progName - which program to load
      * @param synth - what synth will be playing them
      */
-    public ChannelVoicePool(String progName, OndesSynth synth) {
+    public ChannelVoicePool(String progName, OndeSynth synth) {
         this(progName,synth,10);
     }
 
@@ -39,7 +38,7 @@ public class ChannelVoicePool {
      * @param synth - what synth will be playing them
      */
     public ChannelVoicePool(String progName,
-                     OndesSynth synth,
+                     OndeSynth synth,
                      int count) {
         
         this.progName = progName;

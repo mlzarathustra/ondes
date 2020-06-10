@@ -1,6 +1,6 @@
 package ondes.synth.component;
 
-import ondes.synth.OndesSynth;
+import ondes.synth.OndeSynth;
 import ondes.synth.voice.Voice;
 import ondes.synth.wire.WiredIntSupplier;
 
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("rawtypes")
@@ -85,7 +86,7 @@ public abstract class MonoComponent implements ConfigHelper {
 
     public List<MonoComponent> outputs = new ArrayList<>(); // for release
 
-    protected OndesSynth synth;
+    protected OndeSynth synth;
 
            // /// // /// // ///     // /// // /// // /// //
        // *** // *** // *** // *** // *** //     ** /// ** //
@@ -143,7 +144,7 @@ public abstract class MonoComponent implements ConfigHelper {
      */
     public abstract void resume();
 
-    void setSynth(OndesSynth s) { synth = s; }
+    void setSynth(OndeSynth s) { synth = s; }
 
     /**
      *
@@ -274,7 +275,25 @@ public abstract class MonoComponent implements ConfigHelper {
      * </ul>
      * @param msg - a Controller message for this channel
      */
-    public void midiControl(MidiMessage msg) { }
+    public void midiControl(MidiMessage msg) {
+        out.println("Controller: "+msg.getMessage()[1]+" length: "+msg.getLength());
+
+        switch (msg.getMessage()[1]) {
+            case 0: midiBankSelectMSB(msg.getMessage()[2]); return;
+            case 1: midiModWheel(msg.getMessage()[2]); return;
+            case 7: midiVolume(msg.getMessage()[2]); return;
+            case 10: midiPan(msg.getMessage()[2]); return;
+            case 32: midiBankSelectLSB(msg.getMessage()[2]); return;
+            case 64: midiSustain(msg.getMessage()[2]); return;
+        }
+    }
+
+    public void midiBankSelectMSB(int val) { }
+    public void midiModWheel(int val) { }
+    public void midiVolume(int val) { }
+    public void midiPan(int val) { }
+    public void midiBankSelectLSB(int val) { }
+    public void midiSustain(int val) { }
 
     /**
      * If this component should receive MIDI Program Change messages,

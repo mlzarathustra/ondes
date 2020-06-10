@@ -60,6 +60,12 @@ class Env extends MonoComponent {
         return curStep;
     }
 
+    Env() {
+        //  TODO - most of the work will happen in configure()
+        // when we have the Map
+
+    }
+
     /**
      * Expects pairs of integers alternating: rate,level;
      * rate is 1-100, level is 0-100. Rate will range from
@@ -72,7 +78,7 @@ class Env extends MonoComponent {
      */
     Env(Integer... params) throws InstantiationException {
 
-        throw new InstantiationException(" This class needs to be adapted to the Ondes model!");
+        //throw new InstantiationException(" This class needs to be adapted to the Ondes model!");
         //
         // TODO - implement, then uncomment the below and delete the above.
 

@@ -1,11 +1,9 @@
 package ondes.synth.voice;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import ondes.synth.OndesSynth;
+import ondes.synth.OndeSynth;
 
 import static java.lang.System.out;
 import static java.lang.System.err;
@@ -185,7 +183,7 @@ public class VoiceMaker {
      * @param synth - the OndesSynth this voice will be associated with
      * @return - a new voice constructed from the specifications given
      */
-    public static Voice getVoice(String progName, OndesSynth synth) {
+    public static Voice getVoice(String progName, OndeSynth synth) {
         Map m = getVoiceMap(progName);
         if (m == null) return null; // getVoiceMap will show an error
         return new Voice(m, synth);
