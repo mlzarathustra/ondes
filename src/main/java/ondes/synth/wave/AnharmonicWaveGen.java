@@ -104,7 +104,6 @@ class AnharmonicWaveGen extends CompositeWave {
                         freqToken+", "+divToken+"} as float");
                 }
             }
-            out.println("anList: "+anList+"\nhrList: "+hrList);
             anharmonicWaves = anList.stream().mapToDouble(v->v).toArray();
             harmonicWaves = hrList.stream().mapToDouble(v->v).toArray();
         }
@@ -124,7 +123,6 @@ class AnharmonicWaveGen extends CompositeWave {
         String waveKey = Arrays.toString(harmonicWaves);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            out.println("generating wave lookup.");
             waveLookup = new WaveLookup(this::currentValue);
             waveLookups.put(waveKey, waveLookup);
         }

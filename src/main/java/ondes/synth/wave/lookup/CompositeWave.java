@@ -25,8 +25,6 @@ public abstract class CompositeWave extends WaveGen {
     protected double currentValue(double phase) {
         double sum=0;
         for (int ov = 0; ov< harmonicWaves.length-1; ov+=2) {
-            if (first) out.println("CompositeWave.currentValue freq="+harmonicWaves[ov]+
-                "; div="+harmonicWaves[ov+1]);
             sum += sineLookup( phase * TAO * harmonicWaves[ov] )
                 / harmonicWaves[ov+1];
         }

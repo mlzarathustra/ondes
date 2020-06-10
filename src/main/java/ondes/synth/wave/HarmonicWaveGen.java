@@ -111,7 +111,6 @@ class HarmonicWaveGen extends CompositeWave {
         String waveKey = Arrays.toString(harmonicWaves);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            out.println("generating wave lookup.");
             waveLookup = new WaveLookup(this::currentValue);
             waveLookups.put(waveKey, waveLookup);
         }
