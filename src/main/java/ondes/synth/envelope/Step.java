@@ -1,48 +1,62 @@
 package ondes.synth.envelope;
 
 /**
- * One step (state) of the envelope.  rate is 1..100; destLevel is 0..1
+ * <p>
+ *     One step (state) of the envelope.
+ * </p>
+ *
  * <p>
  *
- * Assuming a sample rate of 44100, the rate will range between
- * 1 sample and about 23 seconds (from the formula 1/rate**3
- * in setRate() below)
- * <p>
  *
- * 1 is the quickest rate, 100 the slowest.
+ *
  *
  */
 class Step {
+
+    /**
+     * <p>
+     *     rate is the number of milliseconds to execute a full sweep,
+     *     from level 0 to 1 or vice versa.  It is a logarithmic curve,
+     *     meaning that the rate starts out quicker and slows as it
+     *     converges with destLevel.
+     * </p>
+     * <p>
+     *     So at the rate of 1000 (1 second) it will take longer than
+     *     1/10th of a second to sweep from .1 to 0. The reason it
+     * </p>
+     *
+     */
     private int rate;
-    double destLevel, delta;
+
+    /**
+     * destLevel is floating point, 0 <= destLevel <= 1
+     */
+    double destLevel;
 
     Step(int r, double l) {
-        rate=Math.max(1, Math.min(100,r));
-        destLevel=Math.max(0,Math.min(1,l));
-    }
-
-    void setDelta(double curLevel) {
-        delta = 1.0 / (double)(rate*rate*rate);
-        if (destLevel < curLevel) delta = -delta;
+        rate=r;
+        destLevel=l;
     }
 
     double nextVal(double curLevel) {
         if (curLevel == destLevel) return curLevel;
 
-        curLevel += delta;
-        if (    (delta > 0 && curLevel > destLevel) ||
-                (delta < 0 && curLevel < destLevel)) {
 
-            curLevel=destLevel;
-        }
         curLevel=Math.max(0.0,Math.min(1.0,curLevel)); //  clip between 0.0 and 1.0
         return curLevel;
     }
 
+    // This check may need to happen above, as we need to know
+    // the value of the previous step so we know which direction we
+    // were going in.
+    //
     boolean isComplete(double level) {
-        return
-                (delta == 0) ||
-                (delta > 0 && level >= destLevel) ||
-                (delta < 0 && level <= destLevel);
+        return false;
+
+        // TODO - implement
+
+//                (delta == 0) ||
+//                (delta > 0 && level >= destLevel) ||
+//                (delta < 0 && level <= destLevel);
     }
 }

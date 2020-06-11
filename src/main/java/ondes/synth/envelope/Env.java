@@ -37,7 +37,7 @@ class Env extends MonoComponent {
 
     private double curLevel;  // range: 0 to 1
 
-    private ArrayList<Step> steps = new ArrayList<Step>();
+    private ArrayList<Step> steps = new ArrayList<>();
     private Step release=new Step(0,0);
 
     private Step curStep;
@@ -170,6 +170,9 @@ class Env extends MonoComponent {
 
     public void configure(Map config, Map components) {
         super.configure(config, components);
+
+        Object preset = config.get("preset");
+
 
         // TODO - implement
 

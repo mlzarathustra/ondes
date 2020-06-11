@@ -7,19 +7,22 @@ osc1:
 
 env1:
   type: env
-  # meaning, when this envelope finishes its cycle,
-  # it calls synth.noteEnded(voice.midiChan, voice.midiNote)
   terminate-voice: true
   midi: note-on, note-off, control
   # preset: piano
   points:
     # columns: rate level [option]
-    - 0 100
-    - 2 75
+    - 7 100 re-trigger
+    - 8 75
     - 10 60
     - 25 50 hold
     - 50 25
-    - 10 10 release
+    - 10 10
     - 20 0
-    - 50 10 alt-release
+    - 50 10 release
     - 20 0
+    - 100 0 alt-release
+
+  out: main
+
+
