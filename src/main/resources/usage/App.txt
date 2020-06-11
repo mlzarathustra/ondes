@@ -1,5 +1,5 @@
 
-    Ondes Synthesizer
+    OndeSynthesizer
     ---------------------------
     System settings:
         Select input and output devices:

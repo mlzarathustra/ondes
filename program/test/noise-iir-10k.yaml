@@ -1,7 +1,4 @@
 
-
-name: noise-iir-10k
-
 noise1:
   midi: note-on
   type: wave

@@ -1,7 +1,5 @@
 
 
-name: noise-lfo
-
 noise1:
   midi: note-on
   type: wave

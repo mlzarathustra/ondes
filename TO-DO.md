@@ -1,4 +1,4 @@
-# Ondes synth - to do
+# OndeSynth - to do
  
   - EnvGen
     - two modes (or maybe two outputs)

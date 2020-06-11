@@ -2,8 +2,6 @@
 
 # you can hear how A440 and its harmonics are missing.
 
-name: filter-test
-
 osc1:
   midi: note-on
   type: wave

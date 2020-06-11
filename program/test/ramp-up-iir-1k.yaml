@@ -1,6 +1,4 @@
 
-name: ramp-up-iir-1k
-
 osc1:
   midi: note-on
   type: wave

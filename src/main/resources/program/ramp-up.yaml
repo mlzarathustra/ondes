@@ -1,6 +1,4 @@
 
-name: ramp-up
-
 osc1:
   midi: note-on
   type: wave

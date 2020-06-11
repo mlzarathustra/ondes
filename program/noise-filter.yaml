@@ -1,7 +1,5 @@
 
 
-name: noise-filter
-
 noise1:
   midi: note-on
   type: wave

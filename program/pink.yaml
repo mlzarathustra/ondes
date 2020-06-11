@@ -1,6 +1,4 @@
 
-name: pink
-
 noise1:
   midi: note-on
   type: wave

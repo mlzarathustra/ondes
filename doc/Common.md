@@ -26,17 +26,24 @@ All signals traveling inside the voice are of type integer, so 32 bits of accura
  - **note-on** - Note-ON
  - **note-off** - Note-OFF
  - **after** - After-touch
- - **control** - MIDI controllers, including 
-    - 0 - bank select MSB
-    - 1 - mod wheel
-    - 7 - volume
-    - 10 - pan
-    - 32 - bank select LSB
-    - 64 - sustain pedal
+ - **control** - MIDI controllers
+ 
+    Sub-types:
+    - 0 - **bank-msb**
+    - 1 - **mod-wheel**
+    - 7 - **volume**
+    - 10 - **pan**
+    - 32 - **bank-lsb**
+    - 64 - **sustain** 
+    
+    If you send any controller to a component it will receive all of them. The labels for the specific controllers are  for convenience, and are all equivalent to simply saying "control."   
  - **program** - program change
  - **pressure** - channel pressure
  - **bend** - pitch bend
  - **system** - system message     
+
+
+ ** ** 
 
 (The reason it's "note-on" instead of just "on" is that YAML converts the word "on" into a boolean, and we would like a string. It also converts a number of other words to boolean: on,off,yes,no,true,false, in whatever case).
 

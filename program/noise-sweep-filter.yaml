@@ -1,7 +1,5 @@
 
 
-name: noise-sweep
-
 noise1:
   midi: note-on
   type: wave

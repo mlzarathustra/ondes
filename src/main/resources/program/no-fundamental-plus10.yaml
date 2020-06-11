@@ -2,7 +2,7 @@
 #  adding in that 10th harmonic makes a
 #  subtle difference in the feel.
 #
-name: no fundamental plus ten
+description: no fundamental plus ten
 
 osc1:
   midi: note-on

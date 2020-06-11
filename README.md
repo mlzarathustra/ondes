@@ -1,4 +1,4 @@
-# Ondes Synthesizer
+# OndeSynthesizer
 (under construction)
  
 ![](notes/images/ondes-synth-architecture-diagram.png)

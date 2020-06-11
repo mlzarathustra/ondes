@@ -1,7 +1,4 @@
 
-
-name: repeater
-
 osc1:
   midi: note-on
   type: wave

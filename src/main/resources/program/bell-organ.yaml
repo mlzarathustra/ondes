@@ -2,8 +2,6 @@
 
 # This could be a good electric piano base.
 
-name: bell-organ
-
 osc1:
   midi: note-on
   type: wave

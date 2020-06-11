@@ -13,9 +13,9 @@ The FIR does have one Pole at `dc` ("Direct Current") which is another way of sa
 
 An impulse response is a wave generated when a filter is subjected to a brief impulse, essentially a 'spike.' For an FIR, the impulse response is the same as the set of 'b' parameters used in the filter. An IIR, however has a response of theoretically infinite length, because unlike the FIR filter it feeds back the output (and taps into the delay of the output) back into the signal. That feedback is dictated by the 'a' parameters.  
 
-**Ondes Synth** currently features both IIR and FIR filters. 
+**OndeSynth** currently features both IIR and FIR filters. 
 
-Of the two, the IIR filter is more flexible. Since Ondes Synth provides a standard IIR engine, it's possible to generate the `a` and `b` coefficients using MatLab, and plug in the data to the `IIRSpecLib` class for it to be available via a **key:** element as shown below.  
+Of the two, the IIR filter is more flexible. Since OndeSynth provides a standard IIR engine, it's possible to generate the `a` and `b` coefficients using MatLab, and plug in the data to the `IIRSpecLib` class for it to be available via a **key:** element as shown below.  
 
 Eventually I would like a 4-pole sweeping VCF with Q like the Moog synthesizer, but one thing at a time. 
 

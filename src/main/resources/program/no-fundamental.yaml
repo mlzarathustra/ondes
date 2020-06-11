@@ -1,8 +1,6 @@
 
 # see also "no fundamental plus ten"
 
-name: no fundamental
-
 osc1:
   midi: note-on
   type: wave

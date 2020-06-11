@@ -52,20 +52,13 @@ public class VoiceMaker {
 //        loadPrograms();
 //    }
 
+    @SuppressWarnings("unchecked")
     private static void addLabeledProg(Map prog, String fn) {
         if (prog == null) return; // file read error, reported elsewhere
-
-        if (prog.get("name") == null) {
-            err.println("Warning:  program/"+fn
-                +" has no name label," +
-                "\n    >>> so the program won't be accessible.");
-        }
-        else if (! (prog.get("name") instanceof String)) {
-            err.println("Warning:  program/"+fn+
-                ": 'name' key at the top level is not a String" +
-                "\n    >>> so the program won't be accessible.");
-        }
-        else programs.add(prog);
+        String name = fn.replaceAll("^.*\\\\","")  // one slash becomes 4!
+            .replaceFirst("(?i).yaml$","");
+        prog.put("name", name);
+        programs.add(prog);
 
     }
     public static void loadPrograms() {
@@ -77,7 +70,7 @@ public class VoiceMaker {
         //  any with similar names internally
         //
         try {
-            out.println("depth is "+depth);
+            //out.println("depth is "+depth);
 
 //            Path progPath = FileSystems.getDefault().getPath("program");  // JDK 8
 //            Files.walk(progPath,depth).forEach( path -> {
@@ -86,7 +79,6 @@ public class VoiceMaker {
                 Map prog = loadFile(path);
                 if (prog == null) return;
                 addLabeledProg(prog, path.toString());
-
             });
         }
         catch (Exception ignore) {

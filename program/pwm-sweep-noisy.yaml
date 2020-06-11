@@ -1,6 +1,4 @@
 
-name: pwm-sweep-noisy
-
 # adding in the iir filter creates some
 # interesting noise in the middle registers.
 

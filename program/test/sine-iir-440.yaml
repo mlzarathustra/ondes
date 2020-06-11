@@ -1,7 +1,5 @@
 
 
-name: sine-iir-440
-
 noise1:
   midi: note-on
   type: wave

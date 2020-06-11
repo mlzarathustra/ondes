@@ -1,7 +1,4 @@
 
-
-name: pwm-iir-15k
-
 osc1:
   midi: note-on
   type: wave
