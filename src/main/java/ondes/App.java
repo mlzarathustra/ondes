@@ -122,6 +122,11 @@ public class App {
         String[] progNames = new String[16];
         for (int i=0; i<16; ++i) progNames[i]="";
 
+        if (Arrays.asList(args).contains("-all-patches")) {
+            out.println("load all patches");
+            VoiceMaker.setRecurseSubdirs(true);
+        }
+
         for (int i=0; i<args.length; ++i) {
 
             //  options with no following args
@@ -140,10 +145,7 @@ public class App {
                 continue;
 
                 case "-hold": hold=true; continue;
-                case "-all-patches":
-                    out.println("list all patches");
-                    VoiceMaker.setRecurseSubdirs(true);
-                    continue;
+                case "-all-patches": continue;
             }
 
             // options with following args - if we get here

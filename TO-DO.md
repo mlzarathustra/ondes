@@ -43,12 +43,6 @@
  - (an)harmonic wave gen: 
     - force the data to be a list with 2 or 3 columns
     - the third column can be saw, ramp, square; for harmonic frequencies only, at first.   
-  
- 
- - get rid of the `name:` property in the patch files and use the file name minus .yaml instead.
-    - warn of duplicates
-    - normalize ' ' and '_' to '-' 
-    - add a 'description' property instead of name and display it when listing patches.
 
  - if a number follows the output component name, use it to scale output.
   

@@ -32,8 +32,6 @@
             -all-patches -show-patches
                 Same as the above, but recursively traverses into
                 subdirectories of the filesystem 'program' directory.
-                The options must appear in that order, or you won't see
-                the extra patches.
 
                 Index numbers will change when -all-patches is set.
 
@@ -48,12 +46,6 @@
 
        Patches can be supplied as YAML files in the directory
        ./program; a number are supplied internally as resources.
-
-       In order to access a patch in a subdirectory of ./program,
-       you must say -all-patches before it. For example, to load
-       ramp-up-iir-10k from the test subdirectory, say:
-
-            run -in 828 -out speaker -all-patches -ch1 ramp-up-iir-10k
 
     Miscellaneous settings:
 
