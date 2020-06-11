@@ -20,6 +20,8 @@ public class Voice {
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private EndListener endListener;
 
+    public int midiNote, midiChan;
+
     private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
 
     private boolean DB=false;
@@ -171,7 +173,7 @@ public class Voice {
         //        we won't do it here.
         //
         if (msg.getStatus()>>4 == 8) {  // Note-OFF
-            endListener.noteEnded(msg);
+            synth.noteEnded(msg);
         }
 
     }

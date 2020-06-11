@@ -55,10 +55,12 @@ public class OndeSynth extends Thread implements EndListener {
         void addVoice(Voice v, int chan, int note) {
             voices[chan][note]=v;
             playing[chan].add(v);
+            v.midiNote = note;
         }
 
         void delVoice(int chan, int note) {
             if (voices[chan][note] == null) return;
+            voices[chan][note].midiNote = -1;
             playing[chan].remove(voices[chan][note]);
             voices[chan][note] = null;
         }
@@ -75,6 +77,10 @@ public class OndeSynth extends Thread implements EndListener {
     VoiceTracker voiceTracker = new VoiceTracker();
 
     /**
+     * How many voices to preload on each channel.
+     */
+    int voicePreloadCount = 10;
+    /**
      * Each MIDI channel has its own voice pool.
      * Rather than creating the voice each time, we retrieve one
      * that has already been created.
@@ -85,7 +91,7 @@ public class OndeSynth extends Thread implements EndListener {
         for (int chan=0; chan<16; ++chan) {
             if (progNames[chan] != null) {
                 channelVoicePool[chan]=
-                    new ChannelVoicePool(progNames[chan],this,10);
+                    new ChannelVoicePool(progNames[chan],this, chan, voicePreloadCount);
 
                 out.println(String.format("Channel %4s: ", "["+(1+chan)+"]")+
                     channelVoicePool[chan].peekVoice()

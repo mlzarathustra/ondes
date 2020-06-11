@@ -95,5 +95,6 @@
  - effects 
     - echo
     - reverb
-    - flange
+    - flange / phase
+    - distortion 
  

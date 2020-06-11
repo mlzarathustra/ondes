@@ -17,6 +17,7 @@ import java.util.ArrayDeque;
 public class ChannelVoicePool {
     String progName;
     OndeSynth synth;
+    int chan;
     
     ArrayDeque<Voice> available=new ArrayDeque<>();
     ArrayDeque<Voice> inUse = new ArrayDeque<>();
@@ -27,8 +28,8 @@ public class ChannelVoicePool {
      * @param progName - which program to load
      * @param synth - what synth will be playing them
      */
-    public ChannelVoicePool(String progName, OndeSynth synth) {
-        this(progName,synth,10);
+    public ChannelVoicePool(String progName, OndeSynth synth, int chan) {
+        this(progName,synth,chan,10);
     }
 
     /**
@@ -39,14 +40,17 @@ public class ChannelVoicePool {
      */
     public ChannelVoicePool(String progName,
                      OndeSynth synth,
+                     int chan,
                      int count) {
         
         this.progName = progName;
         this.synth = synth;
+        this.chan = chan;
         
         while (count-- > 0) {
             Voice voice = VoiceMaker.getVoice(progName,synth);
             if (voice == null) return; // getVoice should give an error.
+            voice.midiChan = chan;
             available.add(voice);
         }
     }
