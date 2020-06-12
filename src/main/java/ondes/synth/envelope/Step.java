@@ -20,21 +20,6 @@ class Step {
     StepResult stepResult = new StepResult();
 
     /**
-     * <p>
-     *     rate is the number of milliseconds to execute a full sweep,
-     *     from level 0 to 1 or vice versa.  It is a logarithmic curve,
-     *     meaning that the rate starts out quicker and slows as it
-     *     converges with destLevel.
-     * </p>
-     * <p>
-     *     So at the rate of 1000 (1 second) it will take longer than
-     *     1/10th of a second to sweep from .1 to 0. The reason it
-     * </p>
-     *
-     */
-    private int rate;
-
-    /**
      * destLevel is floating point, 0 <= destLevel <= 1
      */
     double level;
@@ -51,14 +36,20 @@ class Step {
 
     /**
      * <p>
-     *     For some reason, 4.6052 (the denominator) is log(10).
-     *     Someone with better math skills could tell me why.
+     *     rate is the number of milliseconds to execute a full sweep,
+     *     from level 0 to 100 or vice versa.  It is a logarithmic curve,
+     *     meaning that the rate starts out quicker and slows as it
+     *     converges with destLevel.
      * </p>
      * <p>
-     *     What I CAN say is that this equation does seem to
-     *     produce the delay described when I plot it in MatLab.
-     *     It was more or less a lucky guess.
-     *     What's life without mystery? :^)
+     *     So at the rate of 1000 (1 second) it will take quite a bit
+     *     longer than 1/10th of a second to sweep from .1 to 0.
+     * </p>
+     * <p>
+     *     The reason it can't be proportional to the actual step associated
+     *     with it is that events (pedal up or down, note on or off) can cause a
+     *     jump from one step to another step different from the sequential
+     *     progression.
      * </p>
      *
      * @param rate - rate of full transition (in milliseconds)
@@ -66,23 +57,27 @@ class Step {
      * @param sampleRate - sampling frequency
      */
     Step(int rate, double level, int sampleRate) {
-        this.rate=rate;
         this.level =level;
         this.sampleRate = sampleRate;
 
-        d = (sampleRate * rate / 1000.0) / 4.6052;
+        d = (sampleRate * rate / 1000.0) / 4.616;
         k = m = 1.0/d;
     }
 
+    /**
+     * See t1.m for MatLab test
+     * @param curLevel - the current signal level
+     * @return - the next signal level 0 <= rs <= 100
+     */
     StepResult nextVal(double curLevel) {
-
         if (curLevel == level) {
             stepResult.level = curLevel;
             stepResult.done = true;
             return stepResult;
         }
 
-        double nextLevel = curLevel + (k + (level - curLevel) * m);
+        double delta = level - curLevel;
+        double nextLevel = curLevel + (signum(delta)*k + delta*m);
 
         stepResult.done = false;
         if ( (curLevel > level && nextLevel <= level) ||
@@ -92,8 +87,7 @@ class Step {
             stepResult.level = level;
             return stepResult;
         }
-        //  clip between 0.0 and 1.0
-        stepResult.level = max(0.0, min(1.0, nextLevel));
+        stepResult.level = max(0.0, min(100.0, nextLevel));
         return stepResult;
     }
 }

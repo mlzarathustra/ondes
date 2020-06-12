@@ -171,6 +171,9 @@ class Env extends MonoComponent {
 
     @Override
     public int currentValue() {
+        // TODO - REMEMBER: level is 100x, so it's
+        //    inputs.sum() * level / 100.0
+
         return 0;
     }
 

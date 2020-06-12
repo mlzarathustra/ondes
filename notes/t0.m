@@ -1,6 +1,6 @@
 rs=[]
 for d=1:200
-  a=2;
+  a=1;
   k=1/d;
   m=1/d;
 
@@ -10,4 +10,5 @@ for d=1:200
   rs(length(rs)+1)=length(a);
 endfor
 
-plot(rs)
+plot(rs);
+
