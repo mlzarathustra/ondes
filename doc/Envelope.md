@@ -1,4 +1,5 @@
 # Envelope Parameters  
+  ## _under construction_
   
 An Envelope has two outputs: 
  - a signal attenuated by the envelope.
