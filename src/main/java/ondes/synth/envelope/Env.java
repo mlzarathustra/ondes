@@ -38,13 +38,12 @@ class Env extends MonoComponent {
     private double curLevel;  // range: 0 to 1
 
     private ArrayList<Step> steps = new ArrayList<>();
-    private Step release=new Step(0,0);
+    private Step release=new Step(0,0,synth.getSampleRate());
 
     private Step curStep;
 
     private void setCurStep(Step step) {
         curStep=step;
-        curStep.setDelta(curLevel);
     }
 
     //  clip idx, set curStep, and set delta from curLevel
@@ -54,7 +53,6 @@ class Env extends MonoComponent {
         stepIdx=idx;
         if (steps.size() == 0 || stepIdx >= steps.size()) curStep = release;
         else curStep=steps.get(idx);
-        curStep.setDelta(curLevel);
     }
 
     Step currentStep() { return curStep; }
@@ -143,14 +141,23 @@ class Env extends MonoComponent {
 
     double nextVal() {
         if (!ON && curLevel == 0) return 0;
-        if (curStep.isComplete(curLevel)) {
+        if (isComplete(curLevel)) {
             if (curStep == release) return 0.0;
             if (stepIdx == steps.size()-1) return curLevel; // sustain
 
             nextStep();
         }
         double rs=curLevel;
-        curLevel = curStep.nextVal(curLevel);
+        Step.StepResult stepResult = curStep.nextVal(curLevel);
+        curLevel = stepResult.level;
+
+        if (stepResult.done) {
+
+            //  TODO - move on to the next step.
+
+
+        }
+
         return rs;
     }
 
@@ -166,6 +173,18 @@ class Env extends MonoComponent {
     public int currentValue() {
         return 0;
     }
+
+    // This check may need to happen above, as we need to know
+    // the value of the previous step so we know which direction we
+    // were going in.
+    //
+    boolean isComplete(double level) {
+        return false;
+
+        // TODO - implement
+
+    }
+
 
 
     public void configure(Map config, Map components) {

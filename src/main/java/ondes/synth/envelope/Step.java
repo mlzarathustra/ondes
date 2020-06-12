@@ -1,17 +1,23 @@
 package ondes.synth.envelope;
 
+import static java.lang.Math.*;
+
 /**
  * <p>
  *     One step (state) of the envelope.
  * </p>
- *
  * <p>
- *
- *
- *
- *
+ *     It has a level and a rate, and knows how to take the next step
+ *     to a given level given the specified sampling rate.
+ * </p>
  */
 class Step {
+
+    static class StepResult {
+        double level;
+        boolean done;
+    }
+    StepResult stepResult = new StepResult();
 
     /**
      * <p>
@@ -31,32 +37,63 @@ class Step {
     /**
      * destLevel is floating point, 0 <= destLevel <= 1
      */
-    double destLevel;
+    double level;
 
-    Step(int r, double l) {
-        rate=r;
-        destLevel=l;
+    /**
+     * probably an integer, but double for the math
+     */
+    double sampleRate;
+
+    /**
+     * used for computing the next step.
+     */
+    double d, k, m;
+
+    /**
+     * <p>
+     *     For some reason, 4.6052 (the denominator) is log(10).
+     *     Someone with better math skills could tell me why.
+     * </p>
+     * <p>
+     *     What I CAN say is that this equation does seem to
+     *     produce the delay described when I plot it in MatLab.
+     *     It was more or less a lucky guess.
+     *     What's life without mystery? :^)
+     * </p>
+     *
+     * @param rate - rate of full transition (in milliseconds)
+     * @param level - level to transition to
+     * @param sampleRate - sampling frequency
+     */
+    Step(int rate, double level, int sampleRate) {
+        this.rate=rate;
+        this.level =level;
+        this.sampleRate = sampleRate;
+
+        d = (sampleRate * rate / 1000.0) / 4.6052;
+        k = m = 1.0/d;
     }
 
-    double nextVal(double curLevel) {
-        if (curLevel == destLevel) return curLevel;
+    StepResult nextVal(double curLevel) {
 
+        if (curLevel == level) {
+            stepResult.level = curLevel;
+            stepResult.done = true;
+            return stepResult;
+        }
 
-        curLevel=Math.max(0.0,Math.min(1.0,curLevel)); //  clip between 0.0 and 1.0
-        return curLevel;
-    }
+        double nextLevel = curLevel + (k + (level - curLevel) * m);
 
-    // This check may need to happen above, as we need to know
-    // the value of the previous step so we know which direction we
-    // were going in.
-    //
-    boolean isComplete(double level) {
-        return false;
+        stepResult.done = false;
+        if ( (curLevel > level && nextLevel <= level) ||
+            (curLevel < level && nextLevel >= level) ) {
 
-        // TODO - implement
-
-//                (delta == 0) ||
-//                (delta > 0 && level >= destLevel) ||
-//                (delta < 0 && level <= destLevel);
+            stepResult.done = true;
+            stepResult.level = level;
+            return stepResult;
+        }
+        //  clip between 0.0 and 1.0
+        stepResult.level = max(0.0, min(1.0, nextLevel));
+        return stepResult;
     }
 }
