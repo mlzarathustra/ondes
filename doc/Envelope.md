@@ -11,7 +11,7 @@ Here's a sample Envelope YAML:
 ```yaml
 env1:
   type: env
-  terminate-voice: true
+  exit: true
   midi: note-on, note-off, sustain
 
   # preset: piano
@@ -56,7 +56,7 @@ OndeSynth will not layer two notes at the same pitch on the same channel. If you
     - **note-off**
     - **sustain**
         
-  - **terminate-voice** - If set, when this envelope finishes its cycle, it calls 
+  - **exit** - If set, when this envelope finishes its cycle, it calls 
   
             synth.noteEnded(voice.midiChan, voice.midiNote)
       

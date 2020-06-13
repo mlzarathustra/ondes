@@ -1,7 +1,7 @@
 package ondes.synth.component;
 
 import ondes.synth.OndeSynth;
-import ondes.synth.envelope.EnvMaker;
+import ondes.synth.envelope.Envelope;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.filter.FilterMaker;
 import ondes.synth.wave.WaveMaker;
@@ -45,7 +45,7 @@ public class ComponentMaker {
                 break;
 
             case "env":
-                rs = EnvMaker.getEnv();
+                rs = new Envelope();
                 break;
 
             case "mix":

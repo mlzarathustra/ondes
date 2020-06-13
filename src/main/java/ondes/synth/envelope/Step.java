@@ -8,7 +8,8 @@ import static java.lang.Math.*;
  * </p>
  * <p>
  *     It has a level and a rate, and knows how to take the next step
- *     to a given level given the specified sampling rate.
+ *     to a given level given the specified sampling rate, or
+ *     signal that it is done getting there.
  * </p>
  */
 class Step {
@@ -20,9 +21,22 @@ class Step {
     StepResult stepResult = new StepResult();
 
     /**
-     * destLevel is floating point, 0 <= destLevel <= 1
+     * rate is how long it takes to get to "level"
+     */
+    double rate;
+
+
+    /**
+     * level is floating point, 0 <= level <= 100
      */
     double level;
+
+    /**
+     * guarantee that level is within range.
+     */
+    double clip(double level) {
+        return max(0.0, min(100.0, level));
+    }
 
     /**
      * probably an integer, but double for the math
@@ -33,6 +47,7 @@ class Step {
      * used for computing the next step.
      */
     double d, k, m;
+
 
     /**
      * <p>
@@ -51,13 +66,18 @@ class Step {
      *     jump from one step to another step different from the sequential
      *     progression.
      * </p>
+     * <p>
+     *     level is between 0 to 100. If a value outside the range is given,
+     *     it will be clipped without warning.
+     * </p>
      *
      * @param rate - rate of full transition (in milliseconds)
      * @param level - level to transition to
      * @param sampleRate - sampling frequency
      */
     Step(int rate, double level, int sampleRate) {
-        this.level =level;
+        this.rate = max(0,rate);
+        this.level = clip(level);
         this.sampleRate = sampleRate;
 
         d = (sampleRate * rate / 1000.0) / 4.616;
@@ -70,8 +90,8 @@ class Step {
      * @return - the next signal level 0 <= rs <= 100
      */
     StepResult nextVal(double curLevel) {
-        if (curLevel == level) {
-            stepResult.level = curLevel;
+        if (rate == 0 || curLevel == level) {
+            stepResult.level = level;
             stepResult.done = true;
             return stepResult;
         }
@@ -87,7 +107,7 @@ class Step {
             stepResult.level = level;
             return stepResult;
         }
-        stepResult.level = max(0.0, min(100.0, nextLevel));
+        stepResult.level = clip(stepResult.level);
         return stepResult;
     }
 }

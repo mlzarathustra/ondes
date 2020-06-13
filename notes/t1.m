@@ -22,7 +22,8 @@ function stepResult = nextVal(curLevel, sampleRate, rate, level, d, k, m)
     nextLevel = curLevel + ( sign(delta) * k  +  delta * m);
 
     stepResult.done = false;
-    if  ((curLevel > level && nextLevel <= level) || (curLevel < level && nextLevel >= level))
+    if  ((curLevel > level && nextLevel <= level) || 
+         (curLevel < level && nextLevel >= level))
         stepResult.done = true;
         stepResult.level = level;
         return;
