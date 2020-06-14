@@ -9,19 +9,19 @@ env1:
   type: env
   exit: true
   midi: note-on, note-off, control
-  preset: clavier
-#  points:
-#    # columns: rate level [option]
-#    - 7 100 re-trigger
-#    - 8 75
-#    - 10 60
-#    - 25 50 hold
-#    - 50 25
-#    - 10 10
-#    - 20 0
-#    - 50 10 release
-#    - 20 0
-#    - 100 0 alt-release
+#  preset: clavier
+  points:
+    # columns: rate level [option]
+    - 7 100 re-trigger
+    - 8 75
+    - 10 60
+    - 25 50 hold
+    - 50 25
+    - 10 10
+    - 20 0
+    - 50 10 release
+    - 20 4
+    - 100 0 alt-release
 
   out: main
 

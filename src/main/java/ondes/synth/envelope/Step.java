@@ -49,6 +49,7 @@ class Step {
     double d, k, m;
 
 
+
     /**
      * <p>
      *     rate is the number of milliseconds to execute a full sweep,
@@ -82,6 +83,16 @@ class Step {
 
         d = (sampleRate * rate / 1000.0) / 4.616;
         k = m = 1.0/d;
+    }
+
+    Step(Envelope.StepParam sp) {
+        this((int)sp.rate, sp.level, sp.sampleRate);
+    }
+
+    public String toString() {
+        return "Step { rate="+rate+"; level="+level+
+            "; sampleRate="+sampleRate+
+            "; d="+d+"; k="+k+"; m="+m+" } ";
     }
 
     /**

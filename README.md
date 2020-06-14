@@ -1,7 +1,7 @@
 # OndeSynthesizer
 (under construction)
  
-![](notes/images/ondes-synth-architecture-diagram.png)
+![](doc/images/ondes-synth-architecture-diagram.png)
 
 
 ## synthesizer

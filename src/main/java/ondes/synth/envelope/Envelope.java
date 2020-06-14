@@ -4,13 +4,11 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.System.out;
 import static java.lang.System.err;
+import static java.util.stream.Collectors.toList;
 
 /**
  * <p>
@@ -85,7 +83,7 @@ public class Envelope extends MonoComponent {
      */
     void setSteps(Integer... params) {
         if (params.length < 2) {
-            err.println("Envelope does not provide any steps. A default will be used.");
+            err.println("Envelope does not provide a valid list of steps. A default will be used.");
             params = envs.get("organ");
         }
         if (params.length % 2 == 1) {
@@ -100,20 +98,39 @@ public class Envelope extends MonoComponent {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    boolean setSteps(List lines) {
-        for (int i=0; i<lines.size(); ++i) {
-            String[] tokens = lines.get(i).toString().split("[\\s,]+");
+    /**
+     * NOTE: this is the order they MUST appear in (though any
+     * may be omitted)
+     */
+    static final List<String> options =
+        Arrays.asList("re-trigger", "hold", "release", "alt-release");
 
+    class StepParam {
+        double rate, level;
+        int sampleRate = synth.getSampleRate();
 
-
-
+        String option="";
+        boolean ok = false;
+        StepParam(String line) {
+            String[] tokens = line.split("[\\s,]+");
+            if (tokens.length < 2 || tokens.length > 3) return;
+            try {
+                rate = Double.parseDouble(tokens[0]);
+                level = Double.parseDouble(tokens[1]);
+            }
+            catch (Exception ex) { return; }
+            if (tokens.length == 3) {
+                option = tokens[2];
+                ok = (options.contains(option) );
+            }
+            else ok=true;
         }
-
-
-
-        return true;
+        public String toString() {
+            return "StepParam { rate="+rate+"; level="+level+
+                "; option="+option+" }";
+        }
     }
+
 
 
 
@@ -159,23 +176,6 @@ public class Envelope extends MonoComponent {
         if (curStep < steps.size() - 1) ++curStep;
     }
 
-    double nextVal() {
-        if (!ON && curLevel == 0) return 0;
-        if (isComplete(curLevel)) {
-            if (curStep == release) return 0.0;
-            if (curStep == steps.size()-1) return curLevel; // sustain
-
-            nextStep();
-        }
-        double rs=curLevel;
-        Step.StepResult stepResult = steps.get(curStep).nextVal(curLevel);
-        curLevel = stepResult.level;
-
-        if (stepResult.done) nextStep();
-
-        return rs;
-    }
-
 
 
 
@@ -189,7 +189,24 @@ public class Envelope extends MonoComponent {
         // TODO - REMEMBER: level is 100x, so it's
         //    inputs.sum() * level / 100.0
 
-        return 0;
+        //  TODO - If this level is the same as the last, delay
+        //        for the number of ms specified. Document.
+        //
+
+        if (!ON && curLevel == 0) return 0;
+        if (isComplete(curLevel)) {
+            if (curStep == release) return (int)0.0;
+            if (curStep == steps.size()-1) return (int)curLevel; // sustain
+
+            nextStep();
+        }
+        double rs=curLevel;
+        Step.StepResult stepResult = steps.get(curStep).nextVal(curLevel);
+        curLevel = stepResult.level;
+
+        if (stepResult.done) nextStep();
+
+        return (int)rs;
     }
 
     // This check may need to happen above, as we need to know
@@ -201,6 +218,105 @@ public class Envelope extends MonoComponent {
 
         // TODO - implement
 
+    }
+
+    @Override
+    public void pause() {/* no phase clocks to shut off.*/}
+
+    @Override
+    public void resume() {/* no phase clocks to turn on.*/}
+
+
+                     // ... // ... //   .. ///                 ..
+      // /// // ///     // /// // ///        //     ///      //      ///   // /// .. ...
+       //   .. ... .. ... .. ... ..   .. ... // ... // ... // ... // ... // ...
+           // *** // *** // *** // ***             *** // *** // *** // *** // ***
+                ///  **    /// **     .. ... .. ... // ***      /// **    //
+
+    Step zeroZeroStep() {
+        return new Step(0, 0, synth.getSampleRate());
+    }
+
+    /**
+     *
+     * <p>
+     *     Parse the points given and set steps accordingly.
+     * </p>
+     * <p>
+     *     Some validity checking: both of the first two fields must
+     *     be valid numbers, and the option must be one of those known.
+     *
+     *     If the rate of the first step is 0, we'll start at its level.
+     *     Otherwise, we add a step 0,0.
+     *
+     * </p>
+     * @param lines - the list of points (strings)
+     * @return - true if all OK.
+     */
+    @SuppressWarnings("rawtypes")
+    boolean setSteps(List lines) {
+        for (Object line : lines) {
+            StepParam sp = new StepParam(line.toString());
+            if (!sp.ok) {
+                err.println("ERROR in envelope points: " + line);
+                return false;
+            }
+            //  supply a step 0,0 if needed
+            if (steps.size() == 0 && sp.rate != 0) {
+                steps.add(zeroZeroStep());
+            }
+            steps.add(new Step(sp));
+            switch (sp.option) {
+                case "": break;
+                case "re-trigger": reTrigger = steps.size() - 1; break;
+                case "hold": hold = steps.size() - 1; break;
+                case "release": release = steps.size() - 1; break;
+                case "alt-release": altRelease = steps.size() - 1; break;
+                default:
+                    err.println("Unknown Envelope option: "+sp.option+" will be ignored.");
+            }
+        }
+        List<Integer> opts = List.of(reTrigger, hold, release, altRelease).stream()
+            .filter( n -> n>= 0).collect(toList());
+        for (int i=0; i<opts.size() - 1; ++i) {
+            if (opts.get(i) > opts.get(i + 1)) {
+                err.println("Envelope options in the wrong order." );
+                err.println("the correct order is: "+ options);
+                return false;
+            }
+        }
+        //  make sure the last step goes to 0
+        if (steps.get(steps.size()-1).level != 0) {
+            steps.add(zeroZeroStep());
+        }
+        //  if there's an alt-release, make sure the step before it
+        //  goes to 0, since it will be the last step of the
+        //  'release' sequence.
+        if (altRelease > 0 && steps.get(altRelease - 1).level != 0) {
+            steps.add(altRelease, zeroZeroStep());
+            altRelease++;
+        }
+
+        steps.forEach(out::println);
+        out.println(String.format("reTrigger=%d, hold=%d, release=%d, altRelease=%d",
+            reTrigger, hold, release, altRelease));
+
+
+        out.println();
+
+        // TODO - make sure that
+        //   * The last step ends on 0. If it doesn't add a step 0,0
+        //   * Same with the last step before alt-release, since it will
+        //     be the last step of the 'release' sequence. (in which case, altRelease++)
+        //   * Define release to be one of:
+        //     - if "hold" exists, the step after it
+        //     - if "release" exists, there.
+        //     - otherwise, the last step.
+        //   * be sure that whichever of re-trigger, hold, release,
+        //     and alt-release appear in that order.
+        //
+
+        return true;
     }
 
 
@@ -251,13 +367,6 @@ public class Envelope extends MonoComponent {
 
 
     }
-
-    @Override
-    public void pause() {/* no phase clocks to shut off.*/}
-
-    @Override
-    public void resume() {/* no phase clocks to turn on.*/}
-
 
 }
 
