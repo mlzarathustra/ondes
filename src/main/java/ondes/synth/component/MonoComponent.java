@@ -31,11 +31,9 @@ public abstract class MonoComponent implements ConfigHelper {
      */
     public void setOutput(MonoComponent comp) {
         comp.addInput(this.getMainOutput());
-        outputs.add(comp); // so we can remove it later
     }
-    public void setOutput(MonoComponent comp, WiredIntSupplier output) {
+    public static void setOutput(MonoComponent comp, WiredIntSupplier output) {
         comp.addInput(output);
-        outputs.add(comp); // so we can remove it later
     }
 
     /**
@@ -56,7 +54,7 @@ public abstract class MonoComponent implements ConfigHelper {
         setOutput(comp, select, this.getMainOutput());
     }
 
-    public void setOutput(MonoComponent comp, String select, WiredIntSupplier output) {
+    public static void setOutput(MonoComponent comp, String select, WiredIntSupplier output) {
         comp.addInput(output, select);
     }
 
@@ -91,9 +89,6 @@ public abstract class MonoComponent implements ConfigHelper {
     public HashMap<String, List<WiredIntSupplier>> namedInputs
         = new HashMap<>();
 
-
-    public List<MonoComponent> outputs = new ArrayList<>(); // for release
-
     protected OndeSynth synth;
 
            // /// // /// // ///     // /// // /// // /// //
@@ -117,34 +112,20 @@ public abstract class MonoComponent implements ConfigHelper {
         }
         List compOutList = getList(compOut);
         setOutput(compOutList, components, getMainOutput());
-        /*
-        for (Object oneOut : compOutList) {
-            String label = oneOut.toString();
-            if (label.contains(".")) {
-                String outCompStr = label.substring(0,label.indexOf("."));
-                String outSelect = label.substring(label.indexOf(".")+1);
-                MonoComponent outComp = (MonoComponent) components.get(outCompStr);
-                if (outComp == null) {
-                    err.println("ERROR! Attempting to connect to non-existent " +
-                        "component '"+outCompStr+"'.'"+outSelect+"'");
-                }
-                else setOutput(outComp, outSelect);
-            }
-            else {
-                MonoComponent comp = (MonoComponent) components.get(oneOut);
-                if (comp == null) {
-                    err.println("ERROR! Attempting to connect to non-existent " +
-                        "component '"+oneOut+"'");
-                    return;
-                }
-                setOutput(comp);
-            }
-        }
-
-         */
     }
 
-    public void setOutput(List compOutList, Map components, WiredIntSupplier output) {
+    /**
+     * <p>
+     *     Assigns an output to a component's input list. Handles the '.' syntax
+     * </p>
+     * @param compOutList - a list of strings defining the output destinations.
+     *                    Can be plain component names (e.g. vcf1) or a dotted name
+     *                    (e.g. osc1.pwm)
+     * @param components - the components we can connect to in this voice, plus main
+     * @param output - which output to connect (i.e. to add to the other component's
+     *               input list)
+     */
+    public static void setOutput(List compOutList, Map components, WiredIntSupplier output) {
         for (Object oneOut : compOutList) {
             String label = oneOut.toString();
             if (label.contains(".")) {
@@ -169,10 +150,6 @@ public abstract class MonoComponent implements ConfigHelper {
         }
 
     }
-
-
-
-
 
     /**
      * disconnect phase clocks.
@@ -265,6 +242,23 @@ public abstract class MonoComponent implements ConfigHelper {
     public void delInput(WiredIntSupplier input) {
         inputs.remove(input);
     }
+
+                                                                                           /*
+          .. ...                                 .. **    ..        ..  .
+              // /// // /// // /// //               ** *     .. ... ... ..... ..... *
+                      . . ... . . .. . . .. . . .. . . .. . . .. .
+                   \\\\  //// \\\\ /// \\ /// \\ /// \\ /// \\ /// \\ ///
+                       .      ** --         ++ +++ +. +++   /// \\ /// \\ /// \\ //
+                                        /// \\ /// \\ /// \\ //
+
+                                   ..........
+
+
+
+          .....       MIDI EVENTS                              ............
+
+
+    */
 
     /**
      * If this component should receive MIDI ON messages,

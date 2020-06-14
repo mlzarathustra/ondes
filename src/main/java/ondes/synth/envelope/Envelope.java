@@ -393,8 +393,7 @@ public class Envelope extends MonoComponent {
             }
             else {
                 try {
-                    List<Double> minMax = Arrays
-                        .asList(minMaxStr.split("[\\s,]+")).stream()
+                    List<Double> minMax = Arrays.stream(minMaxStr.split("[\\s,]+"))
                         .map( Double::parseDouble ).collect(toList());
 
                     if (minMax.size() == 1) minMax.add(0.0);
@@ -403,6 +402,7 @@ public class Envelope extends MonoComponent {
                             "ERROR! out-level-amp: if present, must be one or two numbers.");
 
 
+                        // TODO - finish
 
                     }
                 }
