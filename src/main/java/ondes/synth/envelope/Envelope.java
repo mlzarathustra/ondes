@@ -57,7 +57,7 @@ public class Envelope extends MonoComponent {
     // /// // /// // /// // /// // /// // /// // /// // /// // /// //
 
     public WiredIntSupplier levelOutput = null;
-    int outLevelMin=0, outLevelMax=100;
+    double outLevelMin=0, outLevelMax=100;
 
     public Envelope() { }
 
@@ -154,8 +154,10 @@ public class Envelope extends MonoComponent {
 
     void show() {
         steps.forEach(out::println);
-        out.println(String.format("reTrigger=%d, hold=%d, release=%d, altRelease=%d",
+        out.println(String.format("[Indexes] reTrigger=%d, hold=%d, release=%d, altRelease=%d",
             reTrigger, hold, release, altRelease));
+        out.println(String.format("outLevelMin=%f outLevelMax=%f",
+            outLevelMin, outLevelMax));
         out.println();
     }
 
@@ -397,13 +399,15 @@ public class Envelope extends MonoComponent {
                         .map( Double::parseDouble ).collect(toList());
 
                     if (minMax.size() == 1) minMax.add(0.0);
-                    else if (minMax.size() > 2) {
+
+                    if (minMax.size() == 2) {
+                        Collections.sort(minMax);
+                        outLevelMin = minMax.get(0);
+                        outLevelMax = minMax.get(1);
+                    }
+                    else {
                         err.println(
                             "ERROR! out-level-amp: if present, must be one or two numbers.");
-
-
-                        // TODO - finish
-
                     }
                 }
                 catch (NumberFormatException ex) {
@@ -412,19 +416,8 @@ public class Envelope extends MonoComponent {
 
                 }
             }
-
-
-
         }
-
-
-
-
-        // TODO - implement: out-level,
-        //  out-level-amp -> outLevelMin, outLevelMax
-
-
+        show();
     }
-
 }
 

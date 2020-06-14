@@ -5,6 +5,7 @@ import ondes.synth.noise.PinkNoiseGen;
 
 import java.util.*;
 
+import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.keyStrip;
 
@@ -48,6 +49,10 @@ public class WaveMaker {
      * @return a wave generator as named by key
      */
     public static WaveGen getWaveGen(String shape) {
+        if (shape == null) {
+            err.println("WaveMaker: shape is null! Falling back to saw.");
+            shape = "saw";
+        }
         Class<? extends WaveGen> wgClass = waveGenClasses.get(keyStrip(shape));
         try {
             return wgClass.getDeclaredConstructor().newInstance();
