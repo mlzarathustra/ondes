@@ -33,6 +33,10 @@ public abstract class MonoComponent implements ConfigHelper {
         comp.addInput(this.getMainOutput());
         outputs.add(comp); // so we can remove it later
     }
+    public void setOutput(MonoComponent comp, WiredIntSupplier output) {
+        comp.addInput(output);
+        outputs.add(comp); // so we can remove it later
+    }
 
     /**
      * <p>
@@ -49,7 +53,11 @@ public abstract class MonoComponent implements ConfigHelper {
      *             will receive our output.
      */
     public void setOutput(MonoComponent comp, String select) {
-        comp.addInput(this.getMainOutput(), select);
+        setOutput(comp, select, this.getMainOutput());
+    }
+
+    public void setOutput(MonoComponent comp, String select, WiredIntSupplier output) {
+        comp.addInput(output, select);
     }
 
 
@@ -108,6 +116,8 @@ public abstract class MonoComponent implements ConfigHelper {
             return;
         }
         List compOutList = getList(compOut);
+        setOutput(compOutList, components, getMainOutput());
+        /*
         for (Object oneOut : compOutList) {
             String label = oneOut.toString();
             if (label.contains(".")) {
@@ -118,7 +128,7 @@ public abstract class MonoComponent implements ConfigHelper {
                     err.println("ERROR! Attempting to connect to non-existent " +
                         "component '"+outCompStr+"'.'"+outSelect+"'");
                 }
-                setOutput(outComp, outSelect);
+                else setOutput(outComp, outSelect);
             }
             else {
                 MonoComponent comp = (MonoComponent) components.get(oneOut);
@@ -130,7 +140,37 @@ public abstract class MonoComponent implements ConfigHelper {
                 setOutput(comp);
             }
         }
+
+         */
     }
+
+    public void setOutput(List compOutList, Map components, WiredIntSupplier output) {
+        for (Object oneOut : compOutList) {
+            String label = oneOut.toString();
+            if (label.contains(".")) {
+                String outCompStr = label.substring(0,label.indexOf("."));
+                String outSelect = label.substring(label.indexOf(".")+1);
+                MonoComponent outComp = (MonoComponent) components.get(outCompStr);
+                if (outComp == null) {
+                    err.println("ERROR! Attempting to connect to non-existent " +
+                        "component '"+outCompStr+"'.'"+outSelect+"'");
+                }
+                else setOutput(outComp, outSelect, output);
+            }
+            else {
+                MonoComponent comp = (MonoComponent) components.get(oneOut);
+                if (comp == null) {
+                    err.println("ERROR! Attempting to connect to non-existent " +
+                        "component '"+oneOut+"'");
+                    return;
+                }
+                setOutput(comp, output);
+            }
+        }
+
+    }
+
+
 
 
 

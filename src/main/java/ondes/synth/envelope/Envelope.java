@@ -10,6 +10,7 @@ import static java.lang.System.out;
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
 import static java.lang.Math.*;
+import static ondes.mlz.Util.getList;
 
 /**
  * <p>
@@ -380,6 +381,42 @@ public class Envelope extends MonoComponent {
                 setSteps();
             }
         }
+
+        Object levelOutObj = config.get("out-level");
+        if (levelOutObj != null) {
+            List levelOutList = getList(levelOutObj);
+            setOutput(levelOutList, components, levelOutput);
+
+            String minMaxStr = config.get("out-level-amp").toString();
+            if (minMaxStr == null) {
+                outLevelMin = 0; outLevelMax = 100;
+            }
+            else {
+                try {
+                    List<Double> minMax = Arrays
+                        .asList(minMaxStr.split("[\\s,]+")).stream()
+                        .map( Double::parseDouble ).collect(toList());
+
+                    if (minMax.size() == 1) minMax.add(0.0);
+                    else if (minMax.size() > 2) {
+                        err.println(
+                            "ERROR! out-level-amp: if present, must be one or two numbers.");
+
+
+
+                    }
+                }
+                catch (NumberFormatException ex) {
+                    err.println("ERROR: Envelope: Invalid number in out-level-amp. "+
+                        minMaxStr);
+
+                }
+            }
+
+
+
+        }
+
 
 
 
