@@ -9,6 +9,7 @@ import java.util.*;
 import static java.lang.System.out;
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
+import static java.lang.Math.*;
 
 /**
  * <p>
@@ -26,7 +27,6 @@ public class Envelope extends MonoComponent {
     private int hold = -1;
     private int release = -1;
     private int altRelease = -1;
-
 
     /**
      * Do we return this voice to the pool when done?
@@ -51,23 +51,135 @@ public class Envelope extends MonoComponent {
 
     private double curLevel;  // range: 0 to 1
 
-    private ArrayList<Step> steps = new ArrayList<>();
+    private final ArrayList<Step> steps = new ArrayList<>();
 
-    public Envelope() {
-        //  TODO - most of the work will happen in configure()
-        // when we have the Map
+    // /// // /// // /// // /// // /// // /// // /// // /// // /// //
+
+    public WiredIntSupplier levelOutput = null;
+    int outLevelMin=0, outLevelMax=100;
+
+    public Envelope() { }
+
+    @Override
+    public void noteON(MidiMessage msg) {
+        noteON=true;
+        ON = true;
+        curStep = max(reTrigger, 0);
+    }
+
+    @Override
+    public void noteOFF(MidiMessage msg) {
+        if (!susDown) ON=false;
+        curStep = getRelease();
+    }
+
+    @Override
+    public void midiSustain(int val) {
+        if (val > 0) {
+            susDown = true;
+            ON = true;
+        }
+        else {
+            susDown = false;
+            if (!noteON) {
+                ON = false;
+                curStep = getRelease();
+            }
+        }
+        out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
+    }
+
+    void nextStep() {
+
+        //  TODO - this needs to be a lot smarter!
+
+        if (curStep < steps.size() - 1) ++curStep;
+    }
+
+    boolean isComplete(double level) {
+        return false;
+
+        // TODO - implement
 
     }
 
+
+
+
+    @Override
+    public int currentValue() {
+        int signal=0;
+        for (WiredIntSupplier inp : inputs) signal += inp.getAsInt();
+        return (int)(currentLevel(0,100)/100.0 * signal);
+    }
+
+    public int currentLevel() {
+        return (int)currentLevel(outLevelMin, outLevelMax);
+
+    }
+
+
+    public double currentLevel(double min, double max) {
+        // TODO - REMEMBER: level is 100x, so it's
+        //    inputs.sum() * level / 100.0
+
+        //  TODO - If this level is the same as the last, delay
+        //        for the number of ms specified. Document.
+        //
+
+        if (!ON && curLevel == 0) return 0;
+        if (isComplete(curLevel)) {
+            if (curStep == release) return (int)0.0;
+            if (curStep == steps.size()-1) return (int)curLevel; // sustain
+
+            nextStep();
+        }
+        double rs=curLevel;
+        Step.StepResult stepResult = steps.get(curStep).nextVal(curLevel);
+        curLevel = stepResult.level;
+
+        if (stepResult.done) nextStep();
+
+        return rs;
+    }
+
+
+
+    @Override
+    public void pause() {/* no phase clocks to shut off.*/}
+
+    @Override
+    public void resume() {/* no phase clocks to turn on.*/}
+
+    void show() {
+        steps.forEach(out::println);
+        out.println(String.format("reTrigger=%d, hold=%d, release=%d, altRelease=%d",
+            reTrigger, hold, release, altRelease));
+        out.println();
+    }
+
+
+                     // ... // ... //   .. ///                 ..
+      // /// // ///     // /// // ///        //     ///      //      ///   // /// .. ...
+       //   .. ... .. ... .. ... ..   .. ... // ... // ... // ... // ... // ...
+           // *** // *** // *** // ***             *** // *** // *** // *** // ***
+                ///  **    /// **     .. ... .. ... // ***      /// **    //
+
+    /*
+
+                    CONFIGURATION
+
+                        presets
+     */
 
     static Map<String, Integer[]> envs = new HashMap<>();
 
     static {
         //  pairs are { rate, level } (@see Step)
         //  levels are from 0 to 100
-        envs.put("organ", new Integer[] { 8, 100, 8, 0});
-        envs.put("clavier", new Integer[] {0, 100, 2,75, 25,50, 50,0, 10,0});
-        envs.put("fade", new Integer[] {15,75, 25,100, 35,0});
+        envs.put("organ", new Integer[] { 0,0, 8, 100, 8, 0});
+        envs.put("clavier", new Integer[] {0,0, 0, 100, 2,75, 25,50, 50,0, 10,0});
+        envs.put("fade", new Integer[] {0,0, 15,75, 25,100, 35,0});
     }
 
     /**
@@ -97,6 +209,13 @@ public class Envelope extends MonoComponent {
                 synth.getSampleRate()));
         }
     }
+
+    /*
+                    CONFIGURATION
+
+                    points
+
+     */
 
     /**
      * NOTE: this is the order they MUST appear in (though any
@@ -131,107 +250,19 @@ public class Envelope extends MonoComponent {
         }
     }
 
-
-
-
     private int getRelease() {
         if (release >= 0) return release;
         return steps.size() - 1;
     }
 
-
-
-
-    @Override
-    public void noteON(MidiMessage msg) {
-        noteON=true;
-        ON = true;
-        if (reTrigger >= 0) curStep = reTrigger;
-        else curStep = 0;
-    }
-
-    @Override
-    public void noteOFF(MidiMessage msg) {
-        if (!susDown) ON=false;
-        curStep = getRelease();
-    }
-
-    @Override
-    public void midiSustain(int val) {
-        if (val > 0) {
-            susDown = true;
-            ON = true;
+    public WiredIntSupplier getLevelOutput() {
+        if (levelOutput == null) {
+            levelOutput = getVoice()
+                .getWiredIntSupplierMaker()
+                .getWiredIntSupplier(this::currentLevel);
         }
-        else {
-            susDown = false;
-            if (!noteON) {
-                ON = false;
-                curStep = getRelease();
-            }
-        }
-        out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
+        return levelOutput;
     }
-
-    void nextStep() {
-        if (curStep < steps.size() - 1) ++curStep;
-    }
-
-
-
-
-    @Override
-    public WiredIntSupplier getMainOutput() {
-        return null;
-    }
-
-    @Override
-    public int currentValue() {
-        // TODO - REMEMBER: level is 100x, so it's
-        //    inputs.sum() * level / 100.0
-
-        //  TODO - If this level is the same as the last, delay
-        //        for the number of ms specified. Document.
-        //
-
-        if (!ON && curLevel == 0) return 0;
-        if (isComplete(curLevel)) {
-            if (curStep == release) return (int)0.0;
-            if (curStep == steps.size()-1) return (int)curLevel; // sustain
-
-            nextStep();
-        }
-        double rs=curLevel;
-        Step.StepResult stepResult = steps.get(curStep).nextVal(curLevel);
-        curLevel = stepResult.level;
-
-        if (stepResult.done) nextStep();
-
-        return (int)rs;
-    }
-
-    // This check may need to happen above, as we need to know
-    // the value of the previous step so we know which direction we
-    // were going in.
-    //
-    boolean isComplete(double level) {
-        return false;
-
-        // TODO - implement
-
-    }
-
-    @Override
-    public void pause() {/* no phase clocks to shut off.*/}
-
-    @Override
-    public void resume() {/* no phase clocks to turn on.*/}
-
-
-                     // ... // ... //   .. ///                 ..
-      // /// // ///     // /// // ///        //     ///      //      ///   // /// .. ...
-       //   .. ... .. ... .. ... ..   .. ... // ... // ... // ... // ... // ...
-           // *** // *** // *** // ***             *** // *** // *** // *** // ***
-                ///  **    /// **     .. ... .. ... // ***      /// **    //
 
     Step zeroZeroStep() {
         return new Step(0, 0, synth.getSampleRate());
@@ -296,31 +327,18 @@ public class Envelope extends MonoComponent {
             steps.add(altRelease, zeroZeroStep());
             altRelease++;
         }
+        if (altRelease < 0) altRelease = release;
 
-        steps.forEach(out::println);
-        out.println(String.format("reTrigger=%d, hold=%d, release=%d, altRelease=%d",
-            reTrigger, hold, release, altRelease));
-
-
-        out.println();
-
-        // TODO - make sure that
-        //   * The last step ends on 0. If it doesn't add a step 0,0
-        //   * Same with the last step before alt-release, since it will
-        //     be the last step of the 'release' sequence. (in which case, altRelease++)
-        //   * Define release to be one of:
-        //     - if "hold" exists, the step after it
-        //     - if "release" exists, there.
-        //     - otherwise, the last step.
-        //   * be sure that whichever of re-trigger, hold, release,
-        //     and alt-release appear in that order.
-        //
-
+        if (release < 0) {
+            if (hold >= 0) {
+                release = hold +((hold < steps.size() - 1) ? 1 : 0);
+            }
+            else release = steps.size() - 1;
+        }
         return true;
     }
 
-
-
+    @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         super.configure(config, components);
         Object inp;
@@ -363,7 +381,10 @@ public class Envelope extends MonoComponent {
             }
         }
 
-        // TODO - implement: out, out-level, out-level-amp
+
+
+        // TODO - implement: out-level,
+        //  out-level-amp -> outLevelMin, outLevelMax
 
 
     }

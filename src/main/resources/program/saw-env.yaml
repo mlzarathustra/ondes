@@ -21,7 +21,7 @@ env1:
     - 20 0
     - 50 10 release
     - 20 4
-    - 100 0 alt-release
+    - 100 7 alt-release
 
   out: main
 
