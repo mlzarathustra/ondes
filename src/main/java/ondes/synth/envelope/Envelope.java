@@ -21,43 +21,57 @@ import static ondes.mlz.Util.getList;
 public class Envelope extends MonoComponent {
 
     /**
+     * NOTE: this is the order they MUST appear in (though any
+     * may be omitted)
+     */
+    static final List<String> options =
+        Arrays.asList("re-trigger", "hold", "release", "alt-release");
+    static Map<String, Integer[]> envs = new HashMap<>();
+
+    static {
+        //  pairs are { rate, level } (@see Step)
+        //  levels are from 0 to 100
+        envs.put("organ", new Integer[] { 0,0, 8,100, 8,0});
+        envs.put("clavier", new Integer[] {0,0, 0,100, 2,75, 25,50, 50,0, 10,0});
+        envs.put("fade", new Integer[] {0,0, 15,75, 25,100, 35,0});
+    }
+
+    private final ArrayList<Step> steps = new ArrayList<>();
+    public WiredIntSupplier levelOutput = null;
+    double outLevelMin=0, outLevelMax=100;
+    boolean firstNoteON = true;
+    /**
      * These are all indexes into steps
      */
     private int curStep = -1;
     private int reTrigger = -1;
     private int hold = -1;
     private int release = -1;
-    private int altRelease = -1;
 
+    // /// // /// // /// // /// // /// // /// // /// // /// // /// //
+    private int altRelease = -1;
     /**
      * Do we return this voice to the pool when done?
      */
     private boolean exit = false;
-
     /**
      * true if the last note message received was "ON"
      * or the sustain pedal is down.
      */
     private boolean ON=false;
-
     /**
      * true if the last note message received was "ON"
      */
     private boolean noteON = false;
-
     /**
      * true if the last sustain pedal message was "DOWN"
      */
     private boolean susDown = false;
-
-    private double curLevel;  // range: 0 to 1
-
-    private final ArrayList<Step> steps = new ArrayList<>();
-
-    // /// // /// // /// // /// // /// // /// // /// // /// // /// //
-
-    public WiredIntSupplier levelOutput = null;
-    double outLevelMin=0, outLevelMax=100;
+    /**
+     * range: 1..100
+     * @see Step#clip(double)
+     */
+    private double curLevel;
 
     public Envelope() { }
 
@@ -65,13 +79,21 @@ public class Envelope extends MonoComponent {
     public void noteON(MidiMessage msg) {
         noteON=true;
         ON = true;
-        curStep = max(reTrigger, 0);
+        if (firstNoteON) curStep = 0;
+        else curStep = max(reTrigger, 0);
     }
 
     @Override
     public void noteOFF(MidiMessage msg) {
         if (!susDown) ON=false;
         curStep = getRelease();
+
+        // TODO - does it jump to alt release if susDown?
+    }
+
+    private int getRelease() {
+        if (release >= 0) return release;
+        return steps.size() - 1;
     }
 
     @Override
@@ -104,25 +126,13 @@ public class Envelope extends MonoComponent {
 
     }
 
-
-
-
-    @Override
-    public int currentValue() {
-        int signal=0;
-        for (WiredIntSupplier inp : inputs) signal += inp.getAsInt();
-        return (int)(currentLevel(0,100)/100.0 * signal);
-    }
-
     public int currentLevel() {
         return (int)currentLevel(outLevelMin, outLevelMax);
-
     }
-
 
     public double currentLevel(double min, double max) {
         // TODO - REMEMBER: level is 100x, so it's
-        //    inputs.sum() * level / 100.0
+        //    (inputs.sum() * level / 100.0) * (max - min) + min
 
         //  TODO - If this level is the same as the last, delay
         //        for the number of ms specified. Document.
@@ -144,21 +154,11 @@ public class Envelope extends MonoComponent {
         return rs;
     }
 
-
-
     @Override
-    public void pause() {/* no phase clocks to shut off.*/}
-
-    @Override
-    public void resume() {/* no phase clocks to turn on.*/}
-
-    void show() {
-        steps.forEach(out::println);
-        out.println(String.format("[Indexes] reTrigger=%d, hold=%d, release=%d, altRelease=%d",
-            reTrigger, hold, release, altRelease));
-        out.println(String.format("outLevelMin=%f outLevelMax=%f",
-            outLevelMin, outLevelMax));
-        out.println();
+    public int currentValue() {
+        int signal=0;
+        for (WiredIntSupplier inp : inputs) signal += inp.getAsInt();
+        return (int)(currentLevel(0.0, 1.0) * signal);
     }
 
 
@@ -175,42 +175,24 @@ public class Envelope extends MonoComponent {
                         presets
      */
 
-    static Map<String, Integer[]> envs = new HashMap<>();
+    @Override
+    public void pause() {/* no phase clocks to shut off.*/}
 
-    static {
-        //  pairs are { rate, level } (@see Step)
-        //  levels are from 0 to 100
-        envs.put("organ", new Integer[] { 0,0, 8, 100, 8, 0});
-        envs.put("clavier", new Integer[] {0,0, 0, 100, 2,75, 25,50, 50,0, 10,0});
-        envs.put("fade", new Integer[] {0,0, 15,75, 25,100, 35,0});
+    @Override
+    public void resume() {
+        /* no phase clocks to turn on.*/
+
+        // first envelope starts at 0
+        firstNoteON = true;
     }
 
-    /**
-     * <p>
-     *      Expects pairs of integers alternating: rate,level;
-     *      rate is in milliseconds (for a full sweep). level is 0-100.
-     *      The level is a percent of full volume for the main output, or
-     *      the maximum out-level-amp for out-level.
-     * </p>
-     * <p>
-     *     If there are an odd number of integers, the last will be ignored.
-     * </p>
-     */
-    void setSteps(Integer... params) {
-        if (params.length < 2) {
-            err.println("Envelope does not provide a valid list of steps. A default will be used.");
-            params = envs.get("organ");
-        }
-        if (params.length % 2 == 1) {
-            err.println("Warning: Envelope received an odd number of values." +
-                " The last one will be ignored");
-        }
-        for (int idx=0; idx<params.length-1; idx+=2) {
-            steps.add(new Step(
-                params[idx],
-                (double)params[idx+1],
-                synth.getSampleRate()));
-        }
+    void show() {
+        steps.forEach(out::println);
+        out.println(String.format("[Indexes] reTrigger=%d, hold=%d, release=%d, altRelease=%d",
+            reTrigger, hold, release, altRelease));
+        out.println(String.format("outLevelMin=%f outLevelMax=%f",
+            outLevelMin, outLevelMax));
+        out.println();
     }
 
     /*
@@ -219,14 +201,6 @@ public class Envelope extends MonoComponent {
                     points
 
      */
-
-    /**
-     * NOTE: this is the order they MUST appear in (though any
-     * may be omitted)
-     */
-    static final List<String> options =
-        Arrays.asList("re-trigger", "hold", "release", "alt-release");
-
     class StepParam {
         double rate, level;
         int sampleRate = synth.getSampleRate();
@@ -253,9 +227,33 @@ public class Envelope extends MonoComponent {
         }
     }
 
-    private int getRelease() {
-        if (release >= 0) return release;
-        return steps.size() - 1;
+    /**
+     * <p>
+     *      Expects pairs of integers alternating: rate,level;
+     *      rate is in milliseconds (for a full sweep). level is 0-100.
+     *      The level is a percent of full volume for the main output, or
+     *      the maximum out-level-amp for out-level.
+     * </p>
+     * <p>
+     *     If there are an odd number of integers, the last will be ignored.
+     * </p>
+     */
+    void setSteps(Integer... params) {
+        if (params.length < 2) {
+            err.println("Envelope does not provide a valid list of steps. " +
+                "A default will be used.");
+            params = envs.get("organ");
+        }
+        if (params.length % 2 == 1) {
+            err.println("Warning: Envelope received an odd number of values." +
+                " The last one will be ignored");
+        }
+        for (int idx=0; idx<params.length-1; idx+=2) {
+            steps.add(new Step(
+                params[idx],
+                (double)params[idx+1],
+                synth.getSampleRate()));
+        }
     }
 
     public WiredIntSupplier getLevelOutput() {
@@ -278,8 +276,10 @@ public class Envelope extends MonoComponent {
      * </p>
      * <p>
      *     Some validity checking: both of the first two fields must
-     *     be valid numbers, and the option must be one of those known.
-     *
+     *     be valid numbers, and the option must be one of those known,
+     *     and in the proper order.
+     * </p>
+     * <p>
      *     If the rate of the first step is 0, we'll start at its level.
      *     Otherwise, we add a step 0,0.
      *
@@ -310,8 +310,10 @@ public class Envelope extends MonoComponent {
                     err.println("Unknown Envelope option: "+sp.option+" will be ignored.");
             }
         }
+
+        // Make sure options appear in the correct order (-1 = n/a)
         List<Integer> opts = List.of(reTrigger, hold, release, altRelease).stream()
-            .filter( n -> n>= 0).collect(toList());
+            .filter( n -> n >= 0).collect(toList());
         for (int i=0; i<opts.size() - 1; ++i) {
             if (opts.get(i) > opts.get(i + 1)) {
                 err.println("Envelope options in the wrong order." );
@@ -319,10 +321,12 @@ public class Envelope extends MonoComponent {
                 return false;
             }
         }
+
         //  make sure the last step goes to 0
         if (steps.get(steps.size()-1).level != 0) {
             steps.add(zeroZeroStep());
         }
+
         //  if there's an alt-release, make sure the step before it
         //  goes to 0, since it will be the last step of the
         //  'release' sequence.
@@ -330,14 +334,18 @@ public class Envelope extends MonoComponent {
             steps.add(altRelease, zeroZeroStep());
             altRelease++;
         }
-        if (altRelease < 0) altRelease = release;
 
+        //  figure out where the 'release' step is
         if (release < 0) {
             if (hold >= 0) {
                 release = hold +((hold < steps.size() - 1) ? 1 : 0);
             }
             else release = steps.size() - 1;
         }
+
+        //  if altRelease wasn't given, it's the same as release.
+        if (altRelease < 0) altRelease = release;
+
         return true;
     }
 
@@ -365,7 +373,17 @@ public class Envelope extends MonoComponent {
                 "Using default.");
             setSteps();
         }
-        else if (preset != null) {
+        else if (points != null) {
+            if (!(points instanceof List)) {
+                err.println("Envelope: 'points' is not a list. reverting to default.");
+                setSteps();
+            }
+            else if (!setSteps((List)points)) {
+                err.println("Reverting to default");
+                setSteps();
+            }
+        }
+        else {
             Integer[] presetVals = envs.get(preset.toString());
             if (presetVals == null) {
                 err.println("Envelope: Preset "+preset+" does not exist.");
@@ -373,21 +391,12 @@ public class Envelope extends MonoComponent {
             }
             else setSteps(presetVals);
         }
-        else {
-            if (!(points instanceof List)) {
-                err.println("Envelope: 'points' is not a list. reverting to default.");
-                setSteps();
-            }
-            if (!setSteps((List)points)) {
-                err.println("Reverting to default");
-                setSteps();
-            }
-        }
 
+        // The level output is for modulating other components (e.g. PWM)
         Object levelOutObj = config.get("out-level");
         if (levelOutObj != null) {
             List levelOutList = getList(levelOutObj);
-            setOutput(levelOutList, components, levelOutput);
+            setOutput(levelOutList, components, getLevelOutput());
 
             String minMaxStr = config.get("out-level-amp").toString();
             if (minMaxStr == null) {
@@ -408,16 +417,19 @@ public class Envelope extends MonoComponent {
                     else {
                         err.println(
                             "ERROR! out-level-amp: if present, must be one or two numbers.");
+                        outLevelMin=0; outLevelMax=100;
                     }
                 }
                 catch (NumberFormatException ex) {
                     err.println("ERROR: Envelope: Invalid number in out-level-amp. "+
                         minMaxStr);
+                    outLevelMin=0; outLevelMax=100;
 
                 }
             }
         }
         show();
     }
+
 }
 

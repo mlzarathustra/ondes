@@ -116,7 +116,8 @@ public abstract class MonoComponent implements ConfigHelper {
 
     /**
      * <p>
-     *     Assigns an output to a component's input list. Handles the '.' syntax
+     *     Assigns an output to a component's input list. Handles the '.' syntax,
+     *     in the first part of the 'if.' outSelect is the part after the dot.
      * </p>
      * @param compOutList - a list of strings defining the output destinations.
      *                    Can be plain component names (e.g. vcf1) or a dotted name
