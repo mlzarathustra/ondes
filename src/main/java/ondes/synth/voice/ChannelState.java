@@ -3,9 +3,11 @@ package ondes.synth.voice;
 import ondes.midi.MlzMidi;
 
 import javax.sound.midi.MidiMessage;
-import java.util.Arrays;
-import java.util.HashMap;
+import javax.sound.midi.ShortMessage;
+import java.util.*;
 
+
+import static java.lang.System.err;
 import static java.lang.System.out;
 
 /**
@@ -13,6 +15,8 @@ import static java.lang.System.out;
  * brought online can inherit it.
  */
 public class ChannelState {
+
+    int channel;
     
     HashMap<Integer,Integer> controllers = new HashMap<>();
     HashMap<Integer,Integer> afterKeys = new HashMap<>();
@@ -20,14 +24,17 @@ public class ChannelState {
     int program;
     int pitchBend;
 
-    public ChannelState() { reset(); }
+    public ChannelState(int channel) {
+        this.channel = channel;
+        reset();
+    }
 
     void reset() {
         controllers.clear();
         afterKeys.clear();
         channelPressure = -1;
         program = -1;
-        pitchBend = -1;
+        pitchBend = Integer.MIN_VALUE;
     }
 
     public void update(MidiMessage msg) {
@@ -57,7 +64,26 @@ public class ChannelState {
                 
             case 0xf: break; // not tracking system events. 
         }
-        
+    }
+
+    public List<MidiMessage> getMessages() {
+        ArrayList<MidiMessage> rs = new ArrayList<>();
+        try {
+            for (int k : afterKeys.keySet()) {
+                rs.add(new ShortMessage(0xa + channel, k, afterKeys.get(k)));
+            }
+            for (int k : controllers.keySet()) {
+                rs.add(new ShortMessage(0xb0 + channel, k, controllers.get(k)));
+            }
+            if (program >= 0)
+                rs.add(new ShortMessage(0xc0 + channel, program, 0));
+            if (channelPressure >= 0)
+                rs.add(new ShortMessage(0xd0 + channel, channelPressure, 0));
+            if (pitchBend != Integer.MIN_VALUE)
+                rs.add(new ShortMessage(0xe0 + channel, pitchBend & 0x7f, pitchBend >> 7));
+        }
+        catch (Exception ex) { err.println("ChannelState.getMessages: "+ex); }
+        return rs;
     }
     
     

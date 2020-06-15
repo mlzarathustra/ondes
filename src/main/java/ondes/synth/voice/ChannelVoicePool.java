@@ -2,6 +2,7 @@ package ondes.synth.voice;
 
 import ondes.synth.OndeSynth;
 
+import javax.sound.midi.MidiMessage;
 import java.util.ArrayDeque;
 
 /**
@@ -18,6 +19,12 @@ public class ChannelVoicePool {
     String progName;
     OndeSynth synth;
     int chan;
+
+    ChannelState channelState;
+
+    public void updateState(MidiMessage msg) {
+        channelState.update(msg);
+    }
     
     ArrayDeque<Voice> available=new ArrayDeque<>();
     ArrayDeque<Voice> inUse = new ArrayDeque<>();
@@ -46,6 +53,7 @@ public class ChannelVoicePool {
         this.progName = progName;
         this.synth = synth;
         this.chan = chan;
+        channelState = new ChannelState(chan);
         
         while (count-- > 0) {
             Voice voice = VoiceMaker.getVoice(progName,synth);
@@ -67,7 +75,6 @@ public class ChannelVoicePool {
         return voice;
     }
 
-    int count=0;
     public Voice getVoice() {
         Voice voice;
         if (available.size() > 0) voice = available.pop();
@@ -77,7 +84,9 @@ public class ChannelVoicePool {
 
         inUse.push(voice);
 
-        // TODO - need to inherit channel state
+        // propagate channel state
+        channelState.getMessages()
+            .forEach( voice::processMidiMessage );
 
         voice.resume();
         return voice;

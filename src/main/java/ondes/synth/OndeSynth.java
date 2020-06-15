@@ -77,11 +77,6 @@ public class OndeSynth extends Thread implements EndListener {
 
     VoiceTracker voiceTracker = new VoiceTracker();
 
-    ChannelState[] channelStates = new ChannelState[16];
-    {
-        for (int i=0; i<16; ++i) channelStates[i] = new ChannelState();
-    }
-
     /**
      * How many voices to preload on each channel.
      */
@@ -261,7 +256,7 @@ public class OndeSynth extends Thread implements EndListener {
         for (Voice v : voiceTracker.getChannelPlaying(chan)) {
             v.processMidiMessage(msg);
         }
-        channelStates[chan].update(msg);
+        channelVoicePool[chan].updateState(msg);
     }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
