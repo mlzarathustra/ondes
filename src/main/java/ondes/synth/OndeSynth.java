@@ -293,7 +293,6 @@ public class OndeSynth extends Thread implements EndListener {
         Receiver recv = new Receiver() {
             public void close() {};
             public void send(MidiMessage msg, long ts) {
-                //routeMidiMessage(msg,ts);
                 //out.println("OndeSynth.listen("+MlzMidi.toString(msg)+")");
                 midiListener.routeMidiMessage(msg);
             }

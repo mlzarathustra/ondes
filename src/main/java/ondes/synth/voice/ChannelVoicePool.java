@@ -76,6 +76,9 @@ public class ChannelVoicePool {
         if (voice == null) return null;
 
         inUse.push(voice);
+
+        // TODO - need to inherit channel state
+
         voice.resume();
         return voice;
     }

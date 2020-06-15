@@ -4,6 +4,8 @@ import ondes.midi.MlzMidi;
 
 import javax.sound.midi.MidiMessage;
 import java.util.Arrays;
+import java.util.HashMap;
+
 import static java.lang.System.out;
 
 /**
@@ -12,21 +14,22 @@ import static java.lang.System.out;
  */
 public class ChannelState {
     
-    int[] controllers = new int[128];
-    int[] afterKeys = new int[128];
+    HashMap<Integer,Integer> controllers = new HashMap<>();
+    HashMap<Integer,Integer> afterKeys = new HashMap<>();
     int channelPressure;
+    int program;
     int pitchBend;
 
     public ChannelState() { reset(); }
 
     void reset() {
-        Arrays.fill(controllers, -1);
-        Arrays.fill(afterKeys, -1);
+        controllers.clear();
+        afterKeys.clear();
         channelPressure = -1;
+        program = -1;
         pitchBend = -1;
     }
-    
-    
+
     public void update(MidiMessage msg) {
         //out.println("ChannelState.update: "+ MlzMidi.toString(msg));
 
@@ -36,14 +39,14 @@ public class ChannelState {
 
         switch(msg.getStatus() >> 4) {
             case 0xa:
-                afterKeys[d[1]] = d[2];
+                afterKeys.put((int)d[1],(int)d[2]);
                 break;
             case 0xb:
-                controllers[d[1]] = d[2];
+                controllers.put((int)d[1], (int)d[2]);
                 break;
 
             case 0xc:
-                //midiProgram(msg); // not tracking
+                program = d[1];
                 break;
             case 0xd:
                 channelPressure = d[1];
