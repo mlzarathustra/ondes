@@ -56,11 +56,7 @@ public class Envelope extends MonoComponent {
      * Do we return this voice to the pool when done?
      */
     private boolean exit = false;
-    /**
-     * true if the last note message received was "ON"
-     * or the sustain pedal is down.
-     */
-    private boolean ON=false;
+
     /**
      * true if the last note message received was "ON"
      */
@@ -69,6 +65,12 @@ public class Envelope extends MonoComponent {
      * true if the last sustain pedal message was "DOWN"
      */
     private boolean susDown = false;
+
+    /**
+     * true if we're before the release step.
+     */
+    private boolean preRelease = true;
+
     /**
      * range: 1..100
      * @see Step#clip(double)
@@ -80,86 +82,102 @@ public class Envelope extends MonoComponent {
     @Override
     public void noteON(MidiMessage msg) {
         noteON=true;
-        ON = true;
 
         chan = msg.getStatus() & 0xf;
         note = msg.getMessage()[1];
 
         if (firstNoteON) curStep = 0;
         else curStep = max(reTrigger, 0);
+
     }
 
     @Override
     public void noteOFF(MidiMessage msg) {
-        if (!susDown) ON=false;
-
-        curStep = release;
-
-        // TODO - does it jump to alt release if susDown?
+        noteON = false;
+        if (!susDown) setCurStep(release);
     }
 
     @Override
     public void midiSustain(int val) {
         if (val > 0) {
             susDown = true;
-            ON = true;
+            if (!preRelease) setCurStep(altRelease);
         }
         else {
             susDown = false;
             if (!noteON) {
-                ON = false;
-                curStep = release;
+                setCurStep(release);
             }
         }
         out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
     }
 
-    void nextStep() {
+    void setCurStep(int step) {
+        curStep = step;
 
-        //  TODO - this needs to be a lot smarter!
+        if (curStep == release) preRelease = false;
 
-        if (curStep < steps.size() - 1) ++curStep;
-
-        if (isComplete()) synth.noteEnded(chan,note);
-
+        // a Hold needs to know its start time.
+        Step next = steps.get(curStep);
+        if (next instanceof Hold) {
+            ((Hold) next).reset();
+        }
     }
 
-    boolean isComplete() {
-        return false;
 
-        // TODO - implement
+    private void nextStep() {
 
+        // holding. no advance
+        if (curStep == hold && (susDown || noteON)) return;
+
+        // if at the end, exit
+        if (curStep == release || curStep == steps.size()-1) {
+            // we can't remove the note immediately from main.out
+            // while it's looping through its inputs.
+            synth.queueNoteEnd(chan,note);
+            return;
+        }
+        setCurStep(curStep + 1);
     }
 
+    // /// // ///     // /// // ///     // /// // ///    // /// // ///
+
+    /**
+     * <p>
+     *      For the "out-level" output. Outputs the level
+     *      of attenuation without the signal. For modulating
+     *      frequency, pwm, &c.
+     * </p>
+     *
+     * @return - the output level in a range defined by the
+     *      "out-level-amp" config parameter.
+     */
     public int currentLevel() {
         return (int)currentLevel(outLevelMin, outLevelMax);
     }
 
+    /**
+     * <p>
+     *     the Step will return a level between 0 and 100,
+     *     hence the division by 100.0
+     * </p>
+     * @param min - lowest return value expected
+     * @param max - hightest return value expected
+     * @return - the level at the current step
+     */
     public double currentLevel(double min, double max) {
-        // TODO - REMEMBER: level is 100x, so it's
-        //    (inputs.sum() * level / 100.0) * (max - min) + min
-
-        //  TODO - If this level is the same as the last, delay
-        //        for the number of ms specified. Document.
-        //
-
-        if (!ON && curLevel == 0) return 0;
-        // TODO - use Step.done instead
-//        if (isComplete(curLevel)) {
-//            if (curStep == release) return (int)0.0;
-//            if (curStep == steps.size()-1) return (int)curLevel; // sustain
-//
-//            nextStep();
-//        }
-        double rs=curLevel;
         Step.StepResult stepResult = steps.get(curStep).nextVal(curLevel);
         curLevel = stepResult.level;
 
         if (stepResult.done) nextStep();
 
-        return rs;
+        return min + ((max - min) * (curLevel / 100.0));
     }
 
+    /**
+     * @return - the current output, the input signal attenuated by
+     *           the envelope (i.e. currentLevel())
+     */
     @Override
     public int currentValue() {
         int signal=0;
@@ -190,6 +208,7 @@ public class Envelope extends MonoComponent {
 
         // first envelope starts at 0
         firstNoteON = true;
+        preRelease = true;
     }
 
     void show() {
@@ -305,7 +324,13 @@ public class Envelope extends MonoComponent {
             if (steps.size() == 0 && sp.rate != 0) {
                 steps.add(zeroZeroStep());
             }
-            steps.add(new Step(sp));
+            // if this level is the same as the last, it's a hold
+            if (steps.size() > 0 && steps.get(steps.size()-1).level == sp.level) {
+                steps.add(new Hold((int)sp.rate, sp.level, synth.getInstant()));
+            }
+            else {
+                steps.add(new Step(sp));
+            }
             switch (sp.option) {
                 case "": break;
                 case "re-trigger": reTrigger = steps.size() - 1; break;

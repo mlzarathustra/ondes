@@ -3,7 +3,7 @@ osc1:
   midi: note-on
   type: wave
   shape: saw
-  out: main
+  out: env1
 
 env1:
   type: env
@@ -24,13 +24,13 @@ env1:
     - 100 7 alt-release
 
   out: main
-  out-level: osc2.pwm
-  out-level-amp: 2222
+#  out-level: osc2.pwm
+#  out-level-amp: 2222
 
-osc2:
-  midi: note-on
-  type: wave
-  shape: pwm
-  out: main
+#osc2:
+#  midi: note-on
+#  type: wave
+#  shape: pwm
+#  out: main
 
 

@@ -118,7 +118,8 @@ class Step {
             stepResult.level = level;
             return stepResult;
         }
-        stepResult.level = clip(stepResult.level);
+
+        stepResult.level = clip(nextLevel);
         return stepResult;
     }
 }

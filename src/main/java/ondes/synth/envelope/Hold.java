@@ -2,6 +2,8 @@ package ondes.synth.envelope;
 
 import ondes.synth.Instant;
 
+
+
 /**
  * Like Step, but it implements a hold at this level
  * for the specified amount.
@@ -11,7 +13,6 @@ import ondes.synth.Instant;
 public class Hold extends Step {
     Instant instant;
     double start;
-
 
     Hold(int rate, double level, Instant instant) {
         super(rate,level,instant.getSampleRate());

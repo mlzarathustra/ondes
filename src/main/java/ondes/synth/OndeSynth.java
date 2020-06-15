@@ -6,7 +6,6 @@ import javax.sound.sampled.Mixer;
 import ondes.App;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
-import ondes.synth.voice.ChannelState;
 import ondes.synth.wave.lookup.SineLookup;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
@@ -15,8 +14,7 @@ import ondes.synth.voice.ChannelVoicePool;
 import ondes.synth.voice.Voice;
 import ondes.synth.wire.WiredIntSupplierMaker;
 
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.lang.System.err;
@@ -26,7 +24,7 @@ import static ondes.mlz.YamlLoader.*;
 @SuppressWarnings("FieldMayBeFinal")
 public class OndeSynth extends Thread {
 
-    boolean DB = false;
+    boolean SHOW_MIDI = true;
 
     /**
      * Tracks which voices are playing on each channel.
@@ -242,11 +240,17 @@ public class OndeSynth extends Thread {
     }
 
     public void noteEnded(int chan, int note) {
-        Voice voice = voiceTracker.getVoice(chan,note);
+        Voice voice = voiceTracker.getVoice(chan, note);
         if (voice != null) {
             channelVoicePool[chan].releaseVoice(voice);
         }
-        voiceTracker.delVoice(chan,note);
+        voiceTracker.delVoice(chan, note);
+    }
+
+    private List<List<Integer>> endedNoteQueue = new ArrayList<>();
+
+    public void queueNoteEnd(int chan, int note) {
+        endedNoteQueue.add(List.of(chan,note));
     }
 
 
@@ -263,7 +267,7 @@ public class OndeSynth extends Thread {
     }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
-        if (DB) {
+        if (SHOW_MIDI) {
             out.println(" OndeSynth.routeMidiMessage : " +
                 "[" + ts + "] " + MlzMidi.toString(msg));
         }
@@ -374,6 +378,9 @@ public class OndeSynth extends Thread {
                 resetWires();
                 instant.next();
                 monoMainMix.update();
+
+                endedNoteQueue.forEach( n -> noteEnded(n.get(0), n.get(1)));
+                endedNoteQueue.clear();
             }
 
             if (stop) return;
