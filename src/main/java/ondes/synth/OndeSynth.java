@@ -6,6 +6,7 @@ import javax.sound.sampled.Mixer;
 import ondes.App;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
+import ondes.synth.voice.ChannelState;
 import ondes.synth.wave.lookup.SineLookup;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
@@ -75,6 +76,11 @@ public class OndeSynth extends Thread implements EndListener {
     }
 
     VoiceTracker voiceTracker = new VoiceTracker();
+
+    ChannelState[] channelStates = new ChannelState[16];
+    {
+        for (int i=0; i<16; ++i) channelStates[i] = new ChannelState();
+    }
 
     /**
      * How many voices to preload on each channel.
@@ -255,6 +261,7 @@ public class OndeSynth extends Thread implements EndListener {
         for (Voice v : voiceTracker.getChannelPlaying(chan)) {
             v.processMidiMessage(msg);
         }
+        channelStates[chan].update(msg);
     }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
@@ -266,15 +273,13 @@ public class OndeSynth extends Thread implements EndListener {
         //  Note-ON messes with the phase clocks list
         //  so don't do it while incrementing them
         synchronized(lock) {
-            String status = "unknown";
             int s = msg.getStatus() >> 4;
             switch (s) {
                 case 0x8:
-                    status = "Note OFF";
                     noteOFF(msg);
                     break;
+
                 case 0x9:
-                    status = "Note ON";
                     noteON(msg);
                     break;
 
@@ -289,7 +294,7 @@ public class OndeSynth extends Thread implements EndListener {
             public void close() {};
             public void send(MidiMessage msg, long ts) {
                 //routeMidiMessage(msg,ts);
-                out.println("OndeSynth.listen("+MlzMidi.toString(msg)+")");
+                //out.println("OndeSynth.listen("+MlzMidi.toString(msg)+")");
                 midiListener.routeMidiMessage(msg);
             }
         };

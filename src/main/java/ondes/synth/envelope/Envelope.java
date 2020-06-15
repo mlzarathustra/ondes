@@ -86,14 +86,9 @@ public class Envelope extends MonoComponent {
     @Override
     public void noteOFF(MidiMessage msg) {
         if (!susDown) ON=false;
-        curStep = getRelease();
+        curStep = release;
 
         // TODO - does it jump to alt release if susDown?
-    }
-
-    private int getRelease() {
-        if (release >= 0) return release;
-        return steps.size() - 1;
     }
 
     @Override
@@ -106,7 +101,7 @@ public class Envelope extends MonoComponent {
             susDown = false;
             if (!noteON) {
                 ON = false;
-                curStep = getRelease();
+                curStep = release;
             }
         }
         out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
@@ -328,7 +323,7 @@ public class Envelope extends MonoComponent {
         }
 
         //  if there's an alt-release, make sure the step before it
-        //  goes to 0, since it will be the last step of the
+        //  goes to 0, since that will be the last step of the
         //  'release' sequence.
         if (altRelease > 0 && steps.get(altRelease - 1).level != 0) {
             steps.add(altRelease, zeroZeroStep());
@@ -340,12 +335,11 @@ public class Envelope extends MonoComponent {
             if (hold >= 0) {
                 release = hold +((hold < steps.size() - 1) ? 1 : 0);
             }
-            else release = steps.size() - 1;
+            else {
+                if (altRelease < 0) release = steps.size() - 1;
+                else release = altRelease - 1;
+            }
         }
-
-        //  if altRelease wasn't given, it's the same as release.
-        if (altRelease < 0) altRelease = release;
-
         return true;
     }
 

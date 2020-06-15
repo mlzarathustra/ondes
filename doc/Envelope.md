@@ -120,8 +120,12 @@ OndeSynth will not layer two notes at the same pitch on the same channel. If you
        to return the voice to the pool.  
   
       Default is false. Note that in YAML, the words 'on' and 'yes' also indicate 'true', as 'off' and 'no' indicate false.
-
-
+    
+  - **out** - the output of the signal attenuated by the envelope
+  - **out-level** - the output of the envelope level, in a range given by the next parameter:
+  - **out-level-amp** - the range of the output level. Can be either one or two numbers. If it's only one, the other limit defaults zero. The limits can be specified in either order. The 0-100 standard level of the envelope will be scaled to match the min and max levels given here. 
+---
+##Preset and Points
   - **preset** - either "preset" or "points" should be present, but not both. (so above, preset: is commented out.)  Current presets are: 
     - **clavier**
     - **organ**
@@ -129,18 +133,56 @@ OndeSynth will not layer two notes at the same pitch on the same channel. If you
     
     The presets are mostly to simplify initial creation, so they're not meant to be flexible.
     
-  - **points** - a set of points in three columns, the third being an optional qualifier. Either **points** or **preset** should be present, but not both. Each point should contain the following: 
-    - rate - milliseconds to execute a full sweep from 0 to 100 or vice versa. See the discussion of rate below. 
-    - level (decimal) - a level from 0 to 100, inclusive. 0 &le; level &le; 100.
-    - qualifier (optional) - additional information about this point, as follows, in the order they may be encountered. All are optional. 
-        - **re-trigger** - by default, a re-trigger (Note-ON arriving before this envelope has finished) will jump back to 0,0. If a re-trigger flag appears, it will jump back here instead.
-        - **hold** - if the envelope reaches this point and the note is still in an "ON" state it will remain at this point until we reach an "OFF" state (definitions above).
-        - **alt-release** - if we get a note-off and the sustain pedal is down, we jump to here. Jump back to the point after hold, or whatever subsequent point it had been on its way to before, when the sustain pedal goes up.  
+  - **points** - a set of points in three columns, the third being an optional qualifier. Either **points** or **preset** should be present, but not both. Each point should contain the following:
+   
+    - _rate_ - milliseconds to execute a full sweep from 0 to 100 or vice versa. See the discussion of rate below. 
+    - _level_ (decimal) - a level from 0 to 100, inclusive. 0 &le; level &le; 100.
+    - _qualifier_ (optional) - additional information about this point.
     
-  - **out** - the output of the signal attenuated by the envelope
-  - **out-level** - the output of the envelope level, in a range given by the next parameter:
-  - **out-level-amp** - the range of the output level. Can be either one or two numbers. If it's only one, the other limit defaults zero. The limits can be specified in either order. The 0-100 standard level of the envelope will be scaled to match the min and max levels given here. 
-  
+Qualifiers are one of: 
+ - **re-trigger**     
+ - **hold** 
+ - **release**     
+ - **alt-release** 
+ 
+ They are all optional, but the ones that appear must be in the order given above.      
+    
+## how the envelope works    
+The envelope may be divided into two phases, based on the **release** point, whether or not it's labeled. The release point is determined as follows: 
+
+- if it's labeled, that point.    
+- If it's not labeled, but there is a **hold** point, then the **release** is the point after it. 
+- If neither is present, the **release** is the last point, or if **alt-release** exists, the last point before **alt-release**. If the last point given does not go to zero, a point will be added with rate and level zero, meaning an immediate cutoff.
+
+The course of the envelope can thus be divided into two stages:
+     
+- _pre-release_ - everything up to the **release** point if it exists.     
+- _release_ - starting with the transit to the **release** point, and everything after.
+
+The way the sustain pedal works depends on which phase you are in. 
+       
+Starting with the note-ON, the envelope will traverse points up to the **hold** so long as either the note or the sustain pedal is down.       
+        
+If the voice reaches an OFF state (note UP and pedal UP) before the **hold** it will jump to the release point as described above.
+
+During the _release_ phase, if **alt-release** exists, it will jump between **release** and **alt-release** according to whether the sustain pedal is UP or DOWN respectively.    
+    
+The most obvious use for **alt-release** is for the release to fade out, but the alt-release it to be a single point that goes to zero more slowly:
+    
+ ```yaml  
+        - 5000 0 release # 5 second release
+        - 1e9 0 alt-release # essentially, infinite hold
+ ```    
+So that with the pedal down, the decay will pause, but with the pedal up the decay will resume again.
+
+##Qualifiers  
+Here they are again, in order:
+     
+- **re-trigger** - by default, a re-trigger (Note-ON arriving before this envelope has finished) will jump back to 0,0. If a re-trigger flag appears, it will jump back here instead.
+- **hold** - if the envelope reaches this point and the note is still in an "ON" state it will remain at this point until we reach an "OFF" state (note UP and pedal UP)
+- **release** - if the note reaches an OFF state before the hold (or there is no hold) we jump to here.  
+- **alt-release** - In the _release_ phase, we jump to here if the pedal is DOWN, and to **release** if the pedal is UP. 
+
    
 ## Rate, meaning of
 
