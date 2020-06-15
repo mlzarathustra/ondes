@@ -24,7 +24,7 @@ import static java.lang.System.out;
 import static ondes.mlz.YamlLoader.*;
 
 @SuppressWarnings("FieldMayBeFinal")
-public class OndeSynth extends Thread implements EndListener {
+public class OndeSynth extends Thread {
 
     boolean DB = false;
 
@@ -222,8 +222,6 @@ public class OndeSynth extends Thread implements EndListener {
         if (v == null) return; // getVoiceMap() displays the warning
 
         voiceTracker.addVoice(v,chan,note);
-        v.setEndListener(this);
-        //v.resume(); // getVoice above calls resume.
         v.processMidiMessage(msg);
     }
 
@@ -237,7 +235,12 @@ public class OndeSynth extends Thread implements EndListener {
         playing.processMidiMessage(msg);
     }
 
-    @Override
+    public void noteEnded(MidiMessage msg) {
+        int chan = msg.getStatus() & 0xf;
+        int note = msg.getMessage()[1];
+        noteEnded(chan, note);
+    }
+
     public void noteEnded(int chan, int note) {
         Voice voice = voiceTracker.getVoice(chan,note);
         if (voice != null) {

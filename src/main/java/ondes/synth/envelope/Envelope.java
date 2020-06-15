@@ -40,6 +40,8 @@ public class Envelope extends MonoComponent {
     public WiredIntSupplier levelOutput = null;
     double outLevelMin=0, outLevelMax=100;
     boolean firstNoteON = true;
+    int chan, note; // for exit
+
     /**
      * These are all indexes into steps
      */
@@ -79,6 +81,10 @@ public class Envelope extends MonoComponent {
     public void noteON(MidiMessage msg) {
         noteON=true;
         ON = true;
+
+        chan = msg.getStatus() & 0xf;
+        note = msg.getMessage()[1];
+
         if (firstNoteON) curStep = 0;
         else curStep = max(reTrigger, 0);
     }
@@ -86,6 +92,7 @@ public class Envelope extends MonoComponent {
     @Override
     public void noteOFF(MidiMessage msg) {
         if (!susDown) ON=false;
+
         curStep = release;
 
         // TODO - does it jump to alt release if susDown?
@@ -112,9 +119,12 @@ public class Envelope extends MonoComponent {
         //  TODO - this needs to be a lot smarter!
 
         if (curStep < steps.size() - 1) ++curStep;
+
+        if (isComplete()) synth.noteEnded(chan,note);
+
     }
 
-    boolean isComplete(double level) {
+    boolean isComplete() {
         return false;
 
         // TODO - implement
@@ -134,12 +144,13 @@ public class Envelope extends MonoComponent {
         //
 
         if (!ON && curLevel == 0) return 0;
-        if (isComplete(curLevel)) {
-            if (curStep == release) return (int)0.0;
-            if (curStep == steps.size()-1) return (int)curLevel; // sustain
-
-            nextStep();
-        }
+        // TODO - use Step.done instead
+//        if (isComplete(curLevel)) {
+//            if (curStep == release) return (int)0.0;
+//            if (curStep == steps.size()-1) return (int)curLevel; // sustain
+//
+//            nextStep();
+//        }
         double rs=curLevel;
         Step.StepResult stepResult = steps.get(curStep).nextVal(curLevel);
         curLevel = stepResult.level;
@@ -354,6 +365,8 @@ public class Envelope extends MonoComponent {
         else if (inp != null) {
             err.println("Envelope: exit property was specified but is not boolean.");
         }
+        // don't set it if it's false, because another envelope might.
+        if (exit) getVoice().setWaitForEnv(exit);
 
         Object preset = config.get("preset");
         Object points = config.get("points");

@@ -6,7 +6,6 @@ import java.util.*;
 import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
-import ondes.synth.EndListener;
 import ondes.synth.OndeSynth;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.WiredIntSupplierMaker;
@@ -19,7 +18,9 @@ public class Voice {
     private Map voiceSpec;
     private OndeSynth synth;
     private HashMap<String, MonoComponent> components=new HashMap<>();
-    private EndListener endListener;
+    private boolean waitForEnv = false;
+
+    public void setWaitForEnv(boolean v) { waitForEnv = v; }
 
     public int midiNote, midiChan;
 
@@ -107,8 +108,6 @@ public class Voice {
         wiredIntSupplierMaker.reset();
     }
 
-    public void setEndListener(EndListener el) { endListener=el; }
-
     @SuppressWarnings("unchecked,rawtypes")
     Voice(Map voiceSpec, OndeSynth synth) {
         this.synth = synth;
@@ -171,13 +170,9 @@ public class Voice {
             }
         }
 
-        // TODO - if an envelope handles the notification,
-        //        we won't do it here.
-        //
-        if (msg.getStatus()>>4 == 8) {  // Note-OFF
+        if (msg.getStatus()>>4 == 8 && !waitForEnv) {  // Note-OFF
             synth.noteEnded(msg);
         }
-
     }
 
     public String toString() {
