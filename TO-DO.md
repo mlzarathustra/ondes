@@ -1,44 +1,23 @@
 # OndeSynth - to do
  
-  - EnvGen
-    - two modes (or maybe two outputs)
-        - as a EG/VCA combo  
-        - DC, to be hooked to a "multiply" component (`OpAmp`)
-    - hold point (sustain)   
-    - release point (not necessarily the last) so if note-OFF arrives in mid-cycle, 
-        it takes the release point (rate, level) as the next step.
-    - alt release: only triggered after note-OFF, when sustain is on.
-        The logic will be tricky if the pedal goes up and down. 
-    - infinite looping: loop-start loop-end - mutually exclusive with hold
-    - extra credit: finite looping
-    - alternate release (triggered when sustain pedal is down)
-            
-  - noteOFF routing / voice management - 
-     - default: free the voice on note-OFF (as it is now)
-     - If there's a designated envelope, free the voice when it is finished.
-     - for now, only one envelope determines (rather than an AND or OR logic for several)
- 
-  - Taper off to avoid clicks at the end of sine waves.
-  - Sustain pedal
- 
-      ```    
-           #  A possible use case:  
-         
-         midi-key: 
-           type: midi-key # the key number 0-128
-           out: env1.rate 
-      ```
-  ------
+
   
   - LFO pitch mod (i.e. FM)
   
  ---- 
  
- Panners - 1D, 2D, 3D
+ - Panners - 1D, 2D, 3D
     - control with lfo(s)
     - control with envelope
     
 ---  
+  - Channel components e.g. LFO
+ Add a channel-global: on/off flag to components
+     - Keep them in ChannelVoicePool
+     - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
+     - which in turn, it passes to the Voice() constructor for the configure step.
+   
+ *****
 
  - (an)harmonic wave gen: 
     - force the data to be a list with 2 or 3 columns
@@ -69,14 +48,21 @@
  - try Helmholtz as oscillator / resonator   
  
  -----------
-
- Channel components e.g. LFO
- Add a channel-global: on/off flag to components
- Keep them in ChannelVoicePool
-  - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
-  - which in turn, it passes to the Voice() constructor for the configure step.
-   
- *****
+   - EnvGen
+ 
+     - infinite looping: loop-start loop-end - mutually exclusive with hold
+     - extra credit: finite looping
+ 
+   - If there is no envelope, add a default one to taper off to avoid clicks at the end of sine waves.
+  
+       ```    
+            #  A possible use case:  
+          
+          midi-key: 
+            type: midi-key # the key number 0-128
+            out: env1.rate 
+       ```
+   ------
 
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
  

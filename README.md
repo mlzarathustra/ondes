@@ -20,7 +20,7 @@ See [JavaSoundNaming.md](doc/JavaSoundNaming.md) for an explanation of how JavaS
 
 Given the state of computer sound responding to MIDI (sluggish) this app is generally not suitable for live performance of anything requiring timing. However, it should still be useful in cases where timing is not critical.  Please see [AudioBuffer.md](doc/AudioBuffer.md) for more on the latency responding to MIDI.  
 
-Yet to be created are the Envelope generation and friends (e.g. multidimensional panning envelopes). At present, the Wave Generators and some basic IIR filtering are fairly solid within the framework.
+Envelope generation is now working. There will be similar features to follow (e.g. multidimensional panning envelopes). At present, the Wave Generators and some basic IIR filtering are fairly solid within the framework.
 
 See [the to-do file](TO-DO.md) for more on what is in the pipeline.  
 
