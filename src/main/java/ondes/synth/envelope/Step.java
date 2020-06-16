@@ -93,15 +93,16 @@ class Step {
         this((int)sp.rate, sp.level, sp.sampleRate);
     }
 
+    boolean SHORT_STRING = true;
     public String toString() {
+        if (SHORT_STRING) {
+            return String.format(
+                "Step { rate=%8.1f level=%7.2f sampleRate=%3.0f -- " +
+                    "d=%6.3e k=%2.3e m=%2.3e", rate, level, sampleRate, d,k,m);
+        }
         return "Step { rate="+rate+"; level="+level+
             "; sampleRate="+sampleRate+
             "; d="+d+"; k="+k+"; m="+m+" } ";
-
-//        return String.format(
-//            "Step { rate=%5.2f level=%3.2f sampleRate=%3.0f -- " +
-//                "d=%6.3e k=%2.3e m=%2.3e", rate, level, sampleRate, d,k,m);
-
     }
 
     /**
@@ -123,7 +124,7 @@ class Step {
         if ( (curLevel > level && nextLevel <= level) ||
             (curLevel < level && nextLevel >= level) ) {
 
-            out.println("StepResult: DONE");
+            if (Envelope.DB) out.println("StepResult: DONE");
 
             stepResult.done = true;
             stepResult.level = level;

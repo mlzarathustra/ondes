@@ -19,6 +19,7 @@ import static ondes.mlz.Util.getList;
  * </p>
  */
 public class Envelope extends MonoComponent {
+    static public boolean DB = false;
 
     /**
      * NOTE: this is the order they MUST appear in (though any
@@ -94,7 +95,11 @@ public class Envelope extends MonoComponent {
     @Override
     public void noteOFF(MidiMessage msg) {
         noteON = false;
-        if (!susDown) setCurStep(release);
+        if (!susDown) {
+            preRelease = false;
+            if (curStep == hold) setCurStep(hold+1);
+            else setCurStep(release);
+        }
     }
 
     @Override
@@ -111,11 +116,11 @@ public class Envelope extends MonoComponent {
                 setCurStep(release);
             }
         }
-        out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
+        if (DB) out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
     }
 
     private void setCurStep(int step) {
-        out.println("setCurStep("+step+")");
+        if (DB) out.println("setCurStep("+step+")");
         curStep = step;
 
         if (curStep == release) preRelease = false;
@@ -134,9 +139,10 @@ public class Envelope extends MonoComponent {
         if (curStep == hold && (susDown || noteON)) return;
 
         // if at the end, exit
-        if (curStep == release || curStep == steps.size()-1) {
+        if (curStep == altRelease-1 || curStep == steps.size()-1) {
             // we can't remove the note immediately from main.out
             // while it's looping through its inputs.
+            if (DB) out.println("Queuing note end.");
             synth.queueNoteEnd(chan,note);
             return;
         }
@@ -215,7 +221,7 @@ public class Envelope extends MonoComponent {
     }
 
     void show() {
-        steps.forEach(out::println);
+        for (int i=0; i<steps.size(); ++i) out.println("["+i+"] "+steps.get(i));
         out.println(String.format("[Indexes] reTrigger=%d, hold=%d, release=%d, altRelease=%d",
             reTrigger, hold, release, altRelease));
         out.println(String.format("outLevelMin=%f outLevelMax=%f",
@@ -365,6 +371,10 @@ public class Envelope extends MonoComponent {
         if (steps.get(steps.size()-1).level != 0) {
             steps.add(zeroZeroStep());
         }
+        if (hold >= 0 && steps.get(hold).level == 0) {
+            out.println("Envelope: hold step cannot go to 0.");
+            hold = -1;
+        }
 
         //  if there's an alt-release, make sure the step before it
         //  goes to 0, since that will be the last step of the
@@ -468,7 +478,7 @@ public class Envelope extends MonoComponent {
                 }
             }
         }
-        show();
+        if (DB) show();
     }
 
 }

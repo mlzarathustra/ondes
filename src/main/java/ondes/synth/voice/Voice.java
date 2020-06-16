@@ -26,7 +26,7 @@ public class Voice {
 
     private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
 
-    private boolean DB=true;
+    private boolean DB=false;
 
     public WiredIntSupplierMaker getWiredIntSupplierMaker() {
         return wiredIntSupplierMaker;

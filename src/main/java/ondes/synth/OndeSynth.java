@@ -24,7 +24,7 @@ import static ondes.mlz.YamlLoader.*;
 @SuppressWarnings("FieldMayBeFinal")
 public class OndeSynth extends Thread {
 
-    boolean SHOW_MIDI = true;
+    boolean SHOW_MIDI = false;
 
     /**
      * Tracks which voices are playing on each channel.
