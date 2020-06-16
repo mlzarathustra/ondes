@@ -1,0 +1,13 @@
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: env1
+  level-out: 3
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  preset: organ
+  out: main

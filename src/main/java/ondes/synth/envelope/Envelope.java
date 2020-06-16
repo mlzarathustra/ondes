@@ -27,14 +27,19 @@ public class Envelope extends MonoComponent {
      */
     static final List<String> options =
         Arrays.asList("re-trigger", "hold", "release", "alt-release");
-    static Map<String, Integer[]> envs = new HashMap<>();
+    static Map<String, List<String>> envs = new HashMap<>();
 
     static {
         //  pairs are { rate, level } (@see Step)
         //  levels are from 0 to 100
-        envs.put("organ", new Integer[] { 0,0, 8,100, 8,0});
-        envs.put("clavier", new Integer[] {0,0, 0,100, 2,75, 25,50, 50,0, 10,0});
-        envs.put("fade", new Integer[] {0,0, 15,75, 25,100, 35,0});
+        envs.put("organ",
+            List.of("8 100 hold", "10 0"));
+
+        envs.put("clavier",
+            List.of("4 100", "10 75", "2000 33", "5000 10", "500 0"));
+
+        envs.put("fade",
+            List.of("3000 100 re-trigger", "2000 85  hold", "5000 0", "1e9 0 alt-release"));
     }
 
     private final ArrayList<Step> steps = new ArrayList<>();
@@ -276,22 +281,8 @@ public class Envelope extends MonoComponent {
      *     If there are an odd number of integers, the last will be ignored.
      * </p>
      */
-    void setSteps(Integer... params) {
-        if (params.length < 2) {
-            err.println("Envelope does not provide a valid list of steps. " +
-                "A default will be used.");
-            params = envs.get("organ");
-        }
-        if (params.length % 2 == 1) {
-            err.println("Warning: Envelope received an odd number of values." +
-                " The last one will be ignored");
-        }
-        for (int idx=0; idx<params.length-1; idx+=2) {
-            steps.add(new Step(
-                params[idx],
-                (double)params[idx+1],
-                synth.getSampleRate()));
-        }
+    void setSteps() {
+        setSteps(envs.get("organ"));
     }
 
     public WiredIntSupplier getLevelOutput() {
@@ -438,7 +429,7 @@ public class Envelope extends MonoComponent {
             }
         }
         else {
-            Integer[] presetVals = envs.get(preset.toString());
+            List<String> presetVals = envs.get(preset.toString());
             if (presetVals == null) {
                 err.println("Envelope: Preset "+preset+" does not exist.");
                 setSteps();

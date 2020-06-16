@@ -1,0 +1,20 @@
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: env1
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 4 100
+    - 10 75
+    - 2000 33
+    - 5000 10
+    - 500 0
+
+
+  out: main
