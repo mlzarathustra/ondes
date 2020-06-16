@@ -89,6 +89,7 @@ public class Envelope extends MonoComponent {
 
         if (firstNoteON) curStep = 0;
         else curStep = max(reTrigger, 0);
+        firstNoteON = false;
 
     }
 
