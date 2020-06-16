@@ -1,6 +1,7 @@
 package ondes.synth.envelope;
 
 import static java.lang.Math.*;
+import static java.lang.System.out;
 
 /**
  * <p>
@@ -17,6 +18,9 @@ class Step {
     static class StepResult {
         double level;
         boolean done;
+        public String toString() {
+            return "StepResult { level="+level+"; done="+done+" }";
+        }
     }
     StepResult stepResult = new StepResult();
 
@@ -76,12 +80,12 @@ class Step {
      * @param level - level to transition to
      * @param sampleRate - sampling frequency
      */
-    Step(int rate, double level, int sampleRate) {
+    Step(double rate, double level, int sampleRate) {
         this.rate = max(0,rate);
         this.level = clip(level);
         this.sampleRate = sampleRate;
 
-        d = (sampleRate * rate / 1000.0) / 4.616;
+        d = ( rate * sampleRate / 1000.0) / 4.616;
         k = m = 1.0/d;
     }
 
@@ -93,6 +97,11 @@ class Step {
         return "Step { rate="+rate+"; level="+level+
             "; sampleRate="+sampleRate+
             "; d="+d+"; k="+k+"; m="+m+" } ";
+
+//        return String.format(
+//            "Step { rate=%5.2f level=%3.2f sampleRate=%3.0f -- " +
+//                "d=%6.3e k=%2.3e m=%2.3e", rate, level, sampleRate, d,k,m);
+
     }
 
     /**
@@ -114,12 +123,18 @@ class Step {
         if ( (curLevel > level && nextLevel <= level) ||
             (curLevel < level && nextLevel >= level) ) {
 
+            out.println("StepResult: DONE");
+
             stepResult.done = true;
             stepResult.level = level;
             return stepResult;
         }
 
         stepResult.level = clip(nextLevel);
+//        if (rate > 10_000) {
+//            out.println("Step.nextVal("+curLevel+
+//                "): stepResult="+stepResult+" nextLevel="+nextLevel);
+//        }
         return stepResult;
     }
 }

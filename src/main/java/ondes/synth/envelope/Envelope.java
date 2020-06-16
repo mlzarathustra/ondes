@@ -101,7 +101,9 @@ public class Envelope extends MonoComponent {
     public void midiSustain(int val) {
         if (val > 0) {
             susDown = true;
-            if (!preRelease) setCurStep(altRelease);
+            if (!preRelease && altRelease >= 0) {
+                setCurStep(altRelease);
+            }
         }
         else {
             susDown = false;
@@ -112,7 +114,8 @@ public class Envelope extends MonoComponent {
         out.println("Env: sustain "+(val>0 ? "ON" : "OFF"));
     }
 
-    void setCurStep(int step) {
+    private void setCurStep(int step) {
+        out.println("setCurStep("+step+")");
         curStep = step;
 
         if (curStep == release) preRelease = false;
@@ -325,7 +328,12 @@ public class Envelope extends MonoComponent {
                 steps.add(zeroZeroStep());
             }
             // if this level is the same as the last, it's a hold
-            if (steps.size() > 0 && steps.get(steps.size()-1).level == sp.level) {
+            // unless this is the alt-release.
+            //
+            if (steps.size() > 0 &&
+                (! sp.option.equals("alt-release")) &&
+                steps.get(steps.size()-1).level == sp.level
+            ) {
                 steps.add(new Hold((int)sp.rate, sp.level, synth.getInstant()));
             }
             else {

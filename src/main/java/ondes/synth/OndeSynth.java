@@ -269,7 +269,8 @@ public class OndeSynth extends Thread {
     void routeMidiMessage(MidiMessage msg, long ts) {
         if (SHOW_MIDI) {
             out.println(" OndeSynth.routeMidiMessage : " +
-                "[" + ts + "] " + MlzMidi.toString(msg));
+                //"[" + ts + "] " + // it's always 0
+                MlzMidi.toString(msg));
         }
 
         //  Note-ON messes with the phase clocks list
