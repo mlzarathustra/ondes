@@ -1,0 +1,42 @@
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 4 4
+    - 8 8
+    - 16 16
+  velocity-base: 30
+  velocity-amount: 80
+  out: env2
+
+osc2:
+  midi: note-on
+  detune: 7
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 4 4
+    - 8 8
+    - 16 16
+  velocity-base: 30
+  velocity-amount: 80
+  out: env2
+
+env2:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 2000 20
+    - 4000 75 re-trigger
+    - 3000 100 hold
+    - 20000 0
+    - 1e9 0 alt-release
+  out: main
