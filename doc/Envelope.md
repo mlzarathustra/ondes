@@ -1,11 +1,12 @@
 # Envelope Parameters  
-  ## _under construction_
   
 An Envelope has two outputs: 
  - a signal attenuated by the envelope.
  - the envelope level itself 
 
-The latter gives the level of the envelope in a specified range, and the former is the result of a set of incoming signals attenuated by the envelope, in other words the mathematical product of a set of incoming signals and the envelope level.  
+The latter gives the level of the envelope in a specified range, and the former is the result of a set of incoming signals attenuated by the envelope, in other words the mathematical product of a set of incoming signals and the envelope level.
+
+_Note - the latter has not been tested yet._  
   
 ## A few examples:
 
@@ -112,14 +113,8 @@ OndeSynth will not layer two notes at the same pitch on the same channel. If you
     - **note-on** 
     - **note-off**
     - **sustain**
-        
-  - **exit** - If set, when this envelope finishes its cycle, it calls 
-  
-            synth.noteEnded(voice.midiChan, voice.midiNote)
-      
-       to return the voice to the pool.  
-  
-      Default is false. Note that in YAML, the words 'on' and 'yes' also indicate 'true', as 'off' and 'no' indicate false.
+    
+  - **exit** - If set, when this envelope finishes its cycle, it stops the voice from playing any longer. Default is false. Note that in YAML, the words 'on' and 'yes' also indicate 'true', as 'off' and 'no' indicate false.
     
   - **out** - the output of the signal attenuated by the envelope
   - **out-level** - the output of the envelope level, in a range given by the next parameter:

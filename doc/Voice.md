@@ -49,8 +49,9 @@ For the lists of parameters available, see the following files:
  - [Common parameters](Common.md)
  - [WaveGen parameters](WaveGen.md)
  - [Filter parameters](Filter.md)  
+ - [Envelope parameters](Envelope.md)
     
- --
+ ----
  
        
     
