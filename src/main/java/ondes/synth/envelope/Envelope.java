@@ -138,13 +138,16 @@ public class Envelope extends MonoComponent {
         // holding. no advance
         if (curStep == hold && (susDown || noteON)) return;
 
-        // if at the end, exit
+        // if at the end, and we are responsible for the exit, queue it.
         if (curStep == altRelease-1 || curStep == steps.size()-1) {
-            // we can't remove the note immediately from main.out
-            // while it's looping through its inputs.
-            if (DB) out.println("Queuing note end.");
-            synth.queueNoteEnd(chan,note);
-            return;
+
+            if (exit) {
+                // we can't remove the note immediately from main.out
+                // while it's looping through its inputs.
+                if (DB) out.println("Queuing note end.");
+                synth.queueNoteEnd(chan, note);
+            }
+            return; // stay here.
         }
         setCurStep(curStep + 1);
     }
@@ -224,8 +227,8 @@ public class Envelope extends MonoComponent {
         for (int i=0; i<steps.size(); ++i) out.println("["+i+"] "+steps.get(i));
         out.println(String.format("[Indexes] reTrigger=%d, hold=%d, release=%d, altRelease=%d",
             reTrigger, hold, release, altRelease));
-        out.println(String.format("outLevelMin=%f outLevelMax=%f",
-            outLevelMin, outLevelMax));
+        out.println(String.format("outLevelMin=%f outLevelMax=%f exit=%b",
+            outLevelMin, outLevelMax, exit));
         out.println();
     }
 

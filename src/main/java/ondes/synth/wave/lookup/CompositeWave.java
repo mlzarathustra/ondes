@@ -38,7 +38,7 @@ public abstract class CompositeWave extends WaveGen {
             .stream()
             .map(Object::toString)
             .collect(joining(" "));
-        return str.split("[\\s,]");
+        return str.split("[\\s,]+");
     }
 
 
