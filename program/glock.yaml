@@ -1,0 +1,91 @@
+
+# sharp attack
+osc1: 
+  midi: note-on
+  offset: 12
+  type: wave
+  shape: harmonic
+  waves: 
+    - 1 1
+    - 2 1
+  out: env2
+  level-scale: 3
+
+env2:
+  type: env
+  midi: note-on
+  points:
+    - 0 100
+    - 200 0
+  out: main 
+
+# -- # -- # -- # 
+#  fourths 
+
+osc2: 
+  midi: note-on
+  offset: 12
+  type: wave
+  shape: anharmonic
+  waves: 
+    - 1 1
+    - 2 1
+    - 2.6 3
+    - 5.3 6
+  out: env2
+  level-scale: 1
+
+env2:
+  type: env
+  midi: note-on
+  points:
+    - 0 100
+    - 2000 0
+  out: main 
+# -- # -- # -- # 
+
+
+osc-a1:
+  midi: note-on
+  offset: 12
+  type: wave
+  shape: anharmonic
+  waves:
+    - 1 1
+    - 2 2 
+    - 3 3
+    - 8  4
+    - 15.1 5
+  out: env1
+  level-scale: 2
+
+osc3:
+  midi: note-on
+  offset: 12
+  detune: 10
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2 
+    - 3 3
+    - 8  4
+    - 15 5
+  out: env1
+  level-scale: 2
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 4 100
+    - 10 70
+    - 1000 50 hold
+    - 2000 0
+    - 1e9 0 alt-release
+
+  out: main 
+
+

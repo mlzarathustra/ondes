@@ -6,3 +6,10 @@
 build
 
 update.log
+
+#  VS Code
+bin
+.vscode
+.classpath
+.project
+.settings

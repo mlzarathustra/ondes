@@ -1,0 +1,71 @@
+
+osc-a1:
+  midi: note-on
+  detune: 24
+  type: wave
+  shape: anharmonic
+  waves:
+    - 1 1
+    - 3 3
+    - 8  4
+    - 15.1 5
+  out: env1
+  level-scale: 2
+
+osc-a2:
+  midi: note-on
+  type: wave
+  shape: anharmonic
+  waves:
+    - 1 1
+    - 3 3
+    - 8.01  4
+    - 15 5
+  out: env1
+  level-scale: 2
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 4 100
+    - 10 70
+    - 1000 50 hold
+    - 10000 0
+
+  out: lpf  
+
+ # - - - - - - - - - - -
+
+osc2:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves: 
+    - 10 1
+    - 25 1
+  out: env2
+
+
+env2:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 4000 100
+    - 1000 50 hold
+    - 10000 0
+
+  out: lpf      
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_6_10k
+  level-scale: 1
+  out: main
+
+

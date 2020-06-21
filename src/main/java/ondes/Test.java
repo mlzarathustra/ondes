@@ -27,6 +27,16 @@ public class Test {
         VoiceMaker.main(new String[]{});
     }
 
+    static void t6() {
+        int[] a= { 7,8,9 };
+
+
+        List<Integer> al = Arrays.stream(a).boxed().collect(toList());
+
+
+
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////
 
     public static void main(String[] args) {

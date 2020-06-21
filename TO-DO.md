@@ -3,8 +3,16 @@
 
   
   - LFO pitch mod (i.e. FM)
-  
- ---- 
+    - level-override: needs to allow for min and max, like out-level-amp: does for envelopes.
+    
+ ----
+ - sweep IIR filter by linear extrapolation between data points.      
+    
+ ----
+ 
+ - Ring modulation = f(t) * g(t) where both are sine functions (i.e. have a negative sweep)      
+ 
+ ----
  
  - Panners - 1D, 2D, 3D
     - control with lfo(s)
