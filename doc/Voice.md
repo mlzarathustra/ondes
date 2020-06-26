@@ -50,6 +50,7 @@ For the lists of parameters available, see the following files:
  - [WaveGen parameters](WaveGen.md)
  - [Filter parameters](Filter.md)  
  - [Envelope parameters](Envelope.md)
+ - [OpAmp parameters](OpAmp.md)
     
  ----
  

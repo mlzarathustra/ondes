@@ -138,6 +138,11 @@ public class Envelope extends MonoComponent {
         }
     }
 
+    boolean isComplete() {
+        return curLevel == 0 &&
+            (curStep == altRelease-1 || curStep == steps.size()-1);
+    }
+
 
     private void nextStep() {
 
@@ -198,6 +203,7 @@ public class Envelope extends MonoComponent {
      */
     @Override
     public int currentValue() {
+        if (isComplete()) return 0;
         return (int)(currentLevel(0.0, 1.0) * inputSum());
     }
 

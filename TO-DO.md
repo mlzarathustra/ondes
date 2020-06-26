@@ -1,13 +1,5 @@
 # OndeSynth - to do
 
-
- - tighten the synchronization if possible:
-    - phase clock activation
-    - add component output to main mix inputs
-
----
- - if an envelope is done and at zero but the voice isn't, return without looking at inputs. 
-
 ---
   - LFO pitch mod (i.e. FM)
     - level-override: needs to allow for min and max, like out-level-amp: does for envelopes.
@@ -15,10 +7,6 @@
  ----
  - sweep IIR filter by linear extrapolation between data points.      
     
- ----
- 
- - Ring modulation = f(t) * g(t) where both are sine functions (i.e. have a negative sweep)      
- 
  ----
  
  - Panners - 1D, 2D, 3D
