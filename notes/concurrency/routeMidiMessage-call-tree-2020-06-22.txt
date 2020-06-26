@@ -1,0 +1,51 @@
+
+
+OndeSynth.noteOFF(MidiMessage)  (ondes.synth)
+    VoiceTracker in OndeSynth.getVoice(int, int)  (ondes.synth)
+        - reads from array location, so no issue
+    Voice.processMidiMessage(MidiMessage)  (ondes.synth.voice)
+        - Voice.midiListeners - should be final, so no issue
+        MonoComponent.noteOFF(MidiMessage)  (ondes.synth.component)
+        - TODO - verify, but this should only affect envelopes
+        OndeSynth.noteEnded(MidiMessage)  (ondes.synth)
+        - TODO - call queueNoteEnd() instead
+
+OndeSynth.noteON(MidiMessage)  (ondes.synth)
+    VoiceTracker in OndeSynth.getVoice(int, int)  (ondes.synth)
+    - reads from array, no issue
+    Voice.processMidiMessage(MidiMessage)(2 usages)  (ondes.synth.voice)
+        MonoComponent.noteON(MidiMessage)  (ondes.synth.component)
+        - calls noteON for a list of components, so hopefully no issue
+        TODO - check all MonoComponent.noteON() methods
+    ChannelVoicePool.getVoice()  (ondes.synth.voice)
+        - TODO - note usage of available, inUse
+        VoiceMaker.getVoice(String, OndeSynth)  (ondes.synth.voice)
+        - this call should be rare. only if none are available.
+        - calls new Voice(map, synth)... note that this only
+          configures the voice. new Voice() doesn't connect it.
+          That happens in resume();
+        ArrayDeque.push(E)  (java.util)
+        - inUse (documented above)
+        ChannelState.getMessages()  (ondes.synth.voice)
+        Voice.processMidiMessage(MidiMessage)  (ondes.synth.voice)
+        Iterable.forEach(Consumer<? super T>)  (java.lang)
+        - these align the voice with the channel state by
+          sending all the current state as MIDI messages
+          (e.g. sustain down or up)
+        Voice.resume()  (ondes.synth.voice)
+        TODO - be sure this is synchronized with
+            MonoMainMix.update()
+    VoiceTracker in OndeSynth.addVoice(Voice, int, int)  (ondes.synth)
+        HashSet.add(E)  (java.util)
+        - adds to channelPlaying (documented above)
+
+OndeSynth.sendChannelMessage(MidiMessage)  (ondes.synth)
+    VoiceTracker in OndeSynth.getChannelPlaying(int)  (ondes.synth)
+    - accesses channelPlaying
+    - TODO - be sure it's safe
+    Voice.processMidiMessage(MidiMessage)  (ondes.synth.voice)
+    - should be OK (see above under noteOFF)
+    - it's setting the controls for the static components, so no issue
+    ChannelVoicePool.updateState(MidiMessage)  (ondes.synth.voice)
+    - calls ChannelState.update()
+    - TODO - controllers, afterKeys cf. run() call tree

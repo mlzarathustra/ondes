@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
-import static java.lang.System.out;
 import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("rawtypes")
@@ -84,7 +83,7 @@ public abstract class MonoComponent implements ConfigHelper {
      *
      * Getting the output value is basically a depth-first walk.
      */
-    public List<WiredIntSupplier> inputs = new ArrayList<>();
+    protected List<WiredIntSupplier> inputs = new ArrayList<>();
 
     public HashMap<String, List<WiredIntSupplier>> namedInputs
         = new HashMap<>();
@@ -186,7 +185,7 @@ public abstract class MonoComponent implements ConfigHelper {
     public WiredIntSupplier getMainOutput() {
         if (mainOutput == null) {
             mainOutput = getVoice()
-                .getWiredIntSupplierMaker()
+                .getWiredIntSupplierPool()
                 .getWiredIntSupplier(this::currentValue);
         }
         return mainOutput;

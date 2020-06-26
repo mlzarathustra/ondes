@@ -1,7 +1,10 @@
 
+% the A values seem to be linear with the frequency
+% the B values look always logarithmic.
+
+
 freqs=[];
 %for n=0:9; freqs=[freqs, 27.5 * 2^n]; end
-
 %for n=1:1000; freqs=[freqs, 20*n]; end
 for n=1:100; freqs=[freqs, 200*n]; end
 

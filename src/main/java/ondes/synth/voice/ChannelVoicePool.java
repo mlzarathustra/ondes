@@ -26,8 +26,8 @@ public class ChannelVoicePool {
         channelState.update(msg);
     }
     
-    ArrayDeque<Voice> available=new ArrayDeque<>();
-    ArrayDeque<Voice> inUse = new ArrayDeque<>();
+    private final ArrayDeque<Voice> available=new ArrayDeque<>();
+    private final ArrayDeque<Voice> inUse = new ArrayDeque<>();
 
     /**
      * Ten voices seems like a good default.

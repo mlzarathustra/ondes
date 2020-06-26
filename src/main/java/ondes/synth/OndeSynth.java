@@ -12,7 +12,7 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.voice.ChannelVoicePool;
 import ondes.synth.voice.Voice;
-import ondes.synth.wire.WiredIntSupplierMaker;
+import ondes.synth.wire.WiredIntSupplierPool;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -36,9 +36,9 @@ public class OndeSynth extends Thread {
         //  16 MIDI channels x 128 Notes
         private final Voice [][]voices = new Voice[16][128];
         // track playing voices per channel
-        VoiceSet[] playing=new VoiceSet[16];
+        private final VoiceSet[] channelPlaying=new VoiceSet[16];
         {
-            for (int i=0; i<16; ++i) playing[i] = new VoiceSet();
+            for (int i=0; i<16; ++i) channelPlaying[i] = new VoiceSet();
         }
 
         Voice getVoice(int chan, int note) {
@@ -47,20 +47,20 @@ public class OndeSynth extends Thread {
 
         void forEach(Consumer<Voice> fn) {
             for (int chan=0; chan<16; ++chan) {
-                for (Voice v : playing[chan]) fn.accept(v);
+                for (Voice v : channelPlaying[chan]) fn.accept(v);
             }
         }
 
         void addVoice(Voice v, int chan, int note) {
             voices[chan][note]=v;
-            playing[chan].add(v);
+            channelPlaying[chan].add(v);
             v.midiNote = note;
         }
 
         void delVoice(int chan, int note) {
             if (voices[chan][note] == null) return;
             voices[chan][note].midiNote = -1;
-            playing[chan].remove(voices[chan][note]);
+            channelPlaying[chan].remove(voices[chan][note]);
             voices[chan][note] = null;
         }
 
@@ -69,7 +69,7 @@ public class OndeSynth extends Thread {
          * @return - the list of voices currently playing on this channel
          */
         VoiceSet getChannelPlaying(int chan) {
-            return playing[chan];
+            return channelPlaying[chan];
         }
     }
 
@@ -139,7 +139,7 @@ public class OndeSynth extends Thread {
                 err.println("Cannot open Main Limiter!");
                 System.exit(-1);
             }
-            mainLimiter.mainOutput = new WiredIntSupplierMaker()
+            mainLimiter.mainOutput = new WiredIntSupplierPool()
                 .getWiredIntSupplier(mainLimiter::currentValue);
             mainLimiter.configure(config, null);
         }
@@ -354,7 +354,8 @@ public class OndeSynth extends Thread {
         // preload class data
         double
             u1 = FreqTable.getFreq(0),
-            u2 =SineLookup.sineLookup(0);
+            u2 = SineLookup.sineLookup(0);
+        getMainLimiter();
 
         listen();
 

@@ -8,7 +8,7 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.OndeSynth;
 import ondes.synth.wire.Junction;
-import ondes.synth.wire.WiredIntSupplierMaker;
+import ondes.synth.wire.WiredIntSupplierPool;
 
 import static java.lang.System.err;
 import static ondes.mlz.Util.getList;
@@ -24,12 +24,12 @@ public class Voice {
 
     public int midiNote, midiChan;
 
-    private WiredIntSupplierMaker wiredIntSupplierMaker = new WiredIntSupplierMaker();
+    private WiredIntSupplierPool wiredIntSupplierPool = new WiredIntSupplierPool();
 
     private boolean DB=false;
 
-    public WiredIntSupplierMaker getWiredIntSupplierMaker() {
-        return wiredIntSupplierMaker;
+    public WiredIntSupplierPool getWiredIntSupplierPool() {
+        return wiredIntSupplierPool;
     }
 
     public Map getVoiceSpec() { return voiceSpec; }
@@ -105,7 +105,7 @@ public class Voice {
     }
 
     public void resetWires() {
-        wiredIntSupplierMaker.reset();
+        wiredIntSupplierPool.reset();
     }
 
     @SuppressWarnings("unchecked,rawtypes")
@@ -153,6 +153,7 @@ public class Voice {
 
         if (DB) {
             err.println("Voice.processMidiMessage "+ MlzMidi.toString(msg));
+            err.flush();
 //            err.println("Voice.processMidiMessage: listeners = " +
 //                Arrays.toString(midiListeners) + "; ");
         }

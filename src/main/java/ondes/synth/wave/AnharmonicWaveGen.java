@@ -37,7 +37,7 @@ class AnharmonicWaveGen extends CompositeWave {
      * The fundamental phase clock remains in WaveGen.
      * Additional anharmonic waves each need their own.
      */
-    List<Instant.PhaseClock> clocks = new ArrayList<>();
+    private final List<Instant.PhaseClock> clocks = new ArrayList<>();
     private double[] anharmonicWaves;
 
     /**

@@ -1,0 +1,43 @@
+
+
+
+osc1:
+  midi: note-on
+  offset: 12
+  type: wave
+  shape: sine
+  out: vca
+
+osc2: 
+  midi: note-on
+  type: wave
+  offset: 20
+  shape: noise
+  level-scale: .3
+  out: vca
+
+# since the waves are unsigned, this is now a 
+# ring modulator
+vca: 
+  type: op-amp
+  level-scale: .05
+  out: env
+
+env: 
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points: 
+    - 2000 100 re-trigger
+    - 800 75 hold
+    - 5000 0
+  out: lpf
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_6_10k
+  level-scale: 1
+  out: main
+
+

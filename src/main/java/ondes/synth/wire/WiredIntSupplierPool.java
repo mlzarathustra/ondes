@@ -8,9 +8,9 @@ import java.util.function.IntSupplier;
  * We need to keep the list because they all need to
  * have the 'visited' flag reset for every sample.
  */
-public class WiredIntSupplierMaker  {
+public class WiredIntSupplierPool {
 
-    List<WiredIntSupplier> wires = new ArrayList<>();
+    private final List<WiredIntSupplier> wires = new ArrayList<>();
 
     public WiredIntSupplier getWiredIntSupplier(IntSupplier iu) {
         WiredIntSupplier wire = new WiredIntSupplier() {

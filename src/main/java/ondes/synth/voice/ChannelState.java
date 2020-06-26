@@ -18,8 +18,8 @@ public class ChannelState {
 
     int channel;
     
-    HashMap<Integer,Integer> controllers = new HashMap<>();
-    HashMap<Integer,Integer> afterKeys = new HashMap<>();
+    private final HashMap<Integer,Integer> controllers = new HashMap<>();
+    private final HashMap<Integer,Integer> afterKeys = new HashMap<>();
     int channelPressure;
     int program;
     int pitchBend;

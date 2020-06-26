@@ -1,7 +1,11 @@
 # OndeSynth - to do
- 
 
-  
+
+ - tighten the synchronization if possible:
+    - phase clock activation
+    - add component output to main mix inputs
+
+---
   - LFO pitch mod (i.e. FM)
     - level-override: needs to allow for min and max, like out-level-amp: does for envelopes.
     

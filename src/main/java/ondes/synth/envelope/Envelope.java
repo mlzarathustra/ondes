@@ -288,7 +288,7 @@ public class Envelope extends MonoComponent {
     public WiredIntSupplier getLevelOutput() {
         if (levelOutput == null) {
             levelOutput = getVoice()
-                .getWiredIntSupplierMaker()
+                .getWiredIntSupplierPool()
                 .getWiredIntSupplier(this::currentLevel);
         }
         return levelOutput;
