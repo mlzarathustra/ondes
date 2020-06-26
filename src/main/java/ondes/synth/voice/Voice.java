@@ -100,8 +100,8 @@ public class Voice {
         synth.getMainOutput().addInput(voiceMix.getMainOutput());
     }
     public void pause() {
-        components.values().forEach(MonoComponent::pause);
         synth.getMainOutput().delInput(voiceMix.getMainOutput());
+        components.values().forEach(MonoComponent::pause);
     }
 
     public void resetWires() {

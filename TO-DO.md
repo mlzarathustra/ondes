@@ -1,7 +1,5 @@
 # OndeSynth - to do
 
---- 
- - Anharmonic (and all waves) - can we restart them before adding their output back to main? 
 
 ---
   - LFO pitch mod (i.e. FM)
@@ -24,7 +22,13 @@
      - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
      - which in turn, it passes to the Voice() constructor for the configure step.
    
- *****
+ 
+ --- 
+  - Anharmonic (and all waves) - can we restart them before adding their output back to main? 
+     it's hitting currentValue() before resume() sometimes... 
+     Swapping the lines of Voice.pause() may have fixed this. 
+
+ ---
 
  - (an)harmonic wave gen: 
     - force the data to be a list with 2 or 3 columns
