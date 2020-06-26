@@ -52,7 +52,7 @@ class AnharmonicWaveGen extends CompositeWave {
      * @param freq - frequency requested
      */
     @Override
-    public void setFreq(double freq) {
+    public synchronized void setFreq(double freq) {
         super.setFreq(freq);
         if (clocks.size() < anharmonicWaves.length/2) return; // got the LFO msg
 
@@ -133,7 +133,7 @@ class AnharmonicWaveGen extends CompositeWave {
     //         I'm betting the allocation and garbage collect are why.
 
     @Override
-    public void resume() {
+    public synchronized void resume() {
         super.resume();
         for (int i = 0; i< anharmonicWaves.length-1; i += 2) {
             clocks.add(synth.getInstant().addPhaseClock());
@@ -141,7 +141,7 @@ class AnharmonicWaveGen extends CompositeWave {
     }
 
     @Override
-    public void pause() {
+    public synchronized void pause() {
         super.pause();
         clocks.forEach( synth.getInstant()::delPhaseClock );
         clocks.clear();
@@ -151,7 +151,8 @@ class AnharmonicWaveGen extends CompositeWave {
      * @return component level at the instant of this sample.
      */
     @Override
-    public int currentValue() {
+    public synchronized int currentValue() {
+        if (clocks.isEmpty()) return 0;
         double sum=0;
         for (int ov = 0; ov< anharmonicWaves.length-1; ov+=2) {
             sum += sineLookup( clocks.get(ov/2).getPhase() * TAO )

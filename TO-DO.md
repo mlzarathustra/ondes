@@ -1,8 +1,12 @@
 # OndeSynth - to do
 
+--- 
+ - Anharmonic (and all waves) - can we restart them before adding their output back to main? 
+
 ---
   - LFO pitch mod (i.e. FM)
     - level-override: needs to allow for min and max, like out-level-amp: does for envelopes.
+    - input-amount for WaveGen : half-steps
     
  ----
  - sweep IIR filter by linear extrapolation between data points.      
