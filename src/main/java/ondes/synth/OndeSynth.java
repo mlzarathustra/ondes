@@ -40,6 +40,11 @@ public class OndeSynth extends Thread {
         {
             for (int i=0; i<16; ++i) channelPlaying[i] = new VoiceSet();
         }
+        final Object cpLock = new Object() {
+            public String toString() { return "VoiceTracker lock"; }
+        };
+
+        // /// // /// // /// // ///
 
         Voice getVoice(int chan, int note) {
             return voices[chan][note];
@@ -47,20 +52,26 @@ public class OndeSynth extends Thread {
 
         void forEach(Consumer<Voice> fn) {
             for (int chan=0; chan<16; ++chan) {
-                for (Voice v : channelPlaying[chan]) fn.accept(v);
+                synchronized (cpLock) {
+                    for (Voice v : channelPlaying[chan]) fn.accept(v);
+                }
             }
         }
 
         void addVoice(Voice v, int chan, int note) {
+            synchronized (cpLock) {
+                channelPlaying[chan].add(v);
+            }
             voices[chan][note]=v;
-            channelPlaying[chan].add(v);
             v.midiNote = note;
         }
 
         void delVoice(int chan, int note) {
             if (voices[chan][note] == null) return;
             voices[chan][note].midiNote = -1;
-            channelPlaying[chan].remove(voices[chan][note]);
+            synchronized (cpLock) {
+                channelPlaying[chan].remove(voices[chan][note]);
+            }
             voices[chan][note] = null;
         }
 
@@ -70,6 +81,13 @@ public class OndeSynth extends Thread {
          */
         VoiceSet getChannelPlaying(int chan) {
             return channelPlaying[chan];
+        }
+
+        void processMidiChannelMessage(int chan, MidiMessage msg) {
+            synchronized (cpLock) {
+                for (Voice v : getChannelPlaying(chan))
+                    v.processMidiMessage(msg);
+            }
         }
     }
 
@@ -260,9 +278,7 @@ public class OndeSynth extends Thread {
      */
     void sendChannelMessage(MidiMessage msg) {
         int chan = msg.getStatus() & 0xf;
-        for (Voice v : voiceTracker.getChannelPlaying(chan)) {
-            v.processMidiMessage(msg);
-        }
+        voiceTracker.processMidiChannelMessage(chan, msg);
         channelVoicePool[chan].updateState(msg);
     }
 
@@ -275,7 +291,7 @@ public class OndeSynth extends Thread {
 
         //  Note-ON messes with the phase clocks list
         //  so don't do it while incrementing them
-        synchronized(lock) {
+        //synchronized(lock) {
             int s = msg.getStatus() >> 4;
             switch (s) {
                 case 0x8:
@@ -289,7 +305,7 @@ public class OndeSynth extends Thread {
                 default:
                     sendChannelMessage(msg);
             }
-        }
+       //}
     }
 
     void listen() {
@@ -376,14 +392,14 @@ public class OndeSynth extends Thread {
         //
 
         for (;;) {
-            synchronized (lock){
+            //synchronized (lock){
                 resetWires();
                 instant.next();
                 monoMainMix.update();
 
                 endedNoteQueue.forEach( n -> noteEnded(n.get(0), n.get(1)));
                 endedNoteQueue.clear();
-            }
+            //}
 
             if (stop) return;
         }

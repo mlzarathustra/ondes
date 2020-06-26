@@ -50,8 +50,7 @@ public class IIRFilter extends Filter {
 
     @Override
     public int currentValue() {
-        int X_n = 0;
-        for (WiredIntSupplier in : inputs) X_n += in.getAsInt();
+        int X_n = inputSum();
 
         double Sigma = 0;
 

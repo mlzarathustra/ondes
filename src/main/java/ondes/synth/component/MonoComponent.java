@@ -83,10 +83,43 @@ public abstract class MonoComponent implements ConfigHelper {
      *
      * Getting the output value is basically a depth-first walk.
      */
-    protected List<WiredIntSupplier> inputs = new ArrayList<>();
+    private final List<WiredIntSupplier> inputs = new ArrayList<>();
 
-    public HashMap<String, List<WiredIntSupplier>> namedInputs
+    private final HashMap<String, List<WiredIntSupplier>> namedInputs
         = new HashMap<>();
+
+    protected synchronized int namedInputSum(String name) {
+        List<WiredIntSupplier> inp = namedInputs.get(name);
+        int rs=0;
+        if (inp != null) {
+            for (WiredIntSupplier input : inp) {
+                rs += input.getAsInt();
+            }
+        }
+        return rs;
+    }
+
+    /**
+     * for most inputs
+     * @return - the sum of all the inputs at this current sample
+     */
+    protected synchronized int inputSum() {
+        int sum=0;
+        for (WiredIntSupplier input : inputs) sum += input.getAsInt();
+        return sum;
+    }
+
+    /**
+     * for op amp
+     * @return - the product of all the inputs at this current sample
+     */
+    protected synchronized double inputProd() {
+        double rs = 1;
+        for (WiredIntSupplier input : inputs) rs *= input.getAsInt();
+        return rs;
+    }
+
+
 
     protected OndeSynth synth;
 
@@ -206,7 +239,7 @@ public abstract class MonoComponent implements ConfigHelper {
      *
      * @param input - the input to add.
      */
-    public void addInput(WiredIntSupplier input) {
+    public synchronized void addInput(WiredIntSupplier input) {
         inputs.add(input);
     }
 
@@ -225,7 +258,7 @@ public abstract class MonoComponent implements ConfigHelper {
      * @param input - the input to add.
      * @param select - the name of the input list to keep it in
      */
-    public void addInput(WiredIntSupplier input, String select) {
+    public synchronized void addInput(WiredIntSupplier input, String select) {
         List<WiredIntSupplier> inputs =
             namedInputs.computeIfAbsent(
                 select,
@@ -239,7 +272,7 @@ public abstract class MonoComponent implements ConfigHelper {
      * as the rest of the components we're connected to have the same
      * life cycle. The one exception is "main"
      */
-    public void delInput(WiredIntSupplier input) {
+    public synchronized void delInput(WiredIntSupplier input) {
         inputs.remove(input);
     }
 

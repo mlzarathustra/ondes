@@ -12,7 +12,7 @@ public class WiredIntSupplierPool {
 
     private final List<WiredIntSupplier> wires = new ArrayList<>();
 
-    public WiredIntSupplier getWiredIntSupplier(IntSupplier iu) {
+    public synchronized WiredIntSupplier getWiredIntSupplier(IntSupplier iu) {
         WiredIntSupplier wire = new WiredIntSupplier() {
             public int updateInputs() { return iu.getAsInt(); }
         };
@@ -20,7 +20,7 @@ public class WiredIntSupplierPool {
         return wire;
     }
 
-    public void reset() {
+    public synchronized void reset() {
         for (WiredIntSupplier wire : wires) {
             wire.setVisited(false);
         }

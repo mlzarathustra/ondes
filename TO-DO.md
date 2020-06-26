@@ -6,6 +6,9 @@
     - add component output to main mix inputs
 
 ---
+ - if an envelope is done and at zero but the voice isn't, return without looking at inputs. 
+
+---
   - LFO pitch mod (i.e. FM)
     - level-override: needs to allow for min and max, like out-level-amp: does for envelopes.
     

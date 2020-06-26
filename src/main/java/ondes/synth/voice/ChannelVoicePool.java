@@ -77,12 +77,19 @@ public class ChannelVoicePool {
 
     public Voice getVoice() {
         Voice voice;
-        if (available.size() > 0) voice = available.pop();
+
+        if (available.size() > 0) {
+            synchronized (this) {
+                voice = available.pop();
+            }
+        }
         else voice = VoiceMaker.getVoice(progName,synth);
 
         if (voice == null) return null;
 
-        inUse.push(voice);
+        synchronized (this) {
+            inUse.push(voice);
+        }
 
         // propagate channel state
         channelState.getMessages()
@@ -94,8 +101,10 @@ public class ChannelVoicePool {
 
     public void releaseVoice(Voice voice) {
         voice.pause();
-        inUse.remove(voice);
-        available.add(voice);
+        synchronized (this) {
+            inUse.remove(voice);
+            available.add(voice);
+        }
     }
     
     

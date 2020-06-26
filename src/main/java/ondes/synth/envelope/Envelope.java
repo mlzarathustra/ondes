@@ -51,7 +51,7 @@ public class Envelope extends MonoComponent {
     /**
      * These are all indexes into steps
      */
-    private int curStep = -1;
+    private int curStep = 0;
     private int reTrigger = -1;
     private int hold = -1;
     private int release = -1;
@@ -198,9 +198,7 @@ public class Envelope extends MonoComponent {
      */
     @Override
     public int currentValue() {
-        int signal=0;
-        for (WiredIntSupplier inp : inputs) signal += inp.getAsInt();
-        return (int)(currentLevel(0.0, 1.0) * signal);
+        return (int)(currentLevel(0.0, 1.0) * inputSum());
     }
 
 

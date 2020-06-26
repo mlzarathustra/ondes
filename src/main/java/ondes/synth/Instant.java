@@ -42,7 +42,7 @@ public class Instant  {
     private long sampleNumber;
     private double seconds;
 
-    private ArrayDeque<PhaseClock>
+    private final ArrayDeque<PhaseClock>
         clocks=new ArrayDeque<>(),
         phaseClockPool = new ArrayDeque<>();
 
@@ -64,7 +64,7 @@ public class Instant  {
 
     public PhaseClock addPhaseClock() { return addPhaseClock(0); }
 
-    public PhaseClock addPhaseClock(float frequency) {
+    public synchronized PhaseClock addPhaseClock(float frequency) {
         PhaseClock pc;
         if (phaseClockPool.isEmpty()) {
             pc=new PhaseClock();
@@ -75,7 +75,7 @@ public class Instant  {
         clocks.add(pc);
         return pc;
     }
-    public void delPhaseClock(PhaseClock pc) {
+    public synchronized void delPhaseClock(PhaseClock pc) {
         phaseClockPool.push(pc);
         clocks.remove(pc);
     }
@@ -87,7 +87,7 @@ public class Instant  {
 
     // // // // //
 
-    void next() {
+    public synchronized void next() {
         sampleNumber++;
         seconds = ((double)sampleNumber)/sampleRate;
         clocks.forEach(PhaseClock::update);

@@ -217,11 +217,7 @@ public class MonoMainMix extends MonoComponent {
     }
 
     public void update() {
-        int sum=0;
-        for (WiredIntSupplier input : inputs) sum += input.getAsInt();
-
-        outputBuffer[outPos++] = sum;
-
+        outputBuffer[outPos++] = inputSum();
         srcLineWrite();
     }
 

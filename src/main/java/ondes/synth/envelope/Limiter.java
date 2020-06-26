@@ -77,10 +77,8 @@ public class Limiter extends MonoComponent {
 
     @Override
     public int currentValue() {
-        int sum=0;
-        for (WiredIntSupplier input : inputs) {
-            sum += input.getAsInt();
-        }
+        int sum=inputSum();
+
         if ((bypass && sum < threshold) ||
             maxTracker == null) return sum;
 

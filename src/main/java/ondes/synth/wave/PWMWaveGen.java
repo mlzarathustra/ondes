@@ -49,17 +49,9 @@ class PwmWaveGen extends WaveGen {
 
     @Override
     public int currentValue() {
-        float inpSum=0;
-        List<WiredIntSupplier> pwmInputs = namedInputs.get("pwm");
-        if (pwmInputs != null) {
-            for (WiredIntSupplier input : pwmInputs) {
-                inpSum += input.getAsInt();
-            }
-        }
+        float inpSum=namedInputSum("pwm");
         float mod = inpSum * inputAmpInv;
-
         double modDutyCycle = dutyCycle + (modPercent/200.0) * mod;
-
         return  (
             (phaseClock.getPhase() > modDutyCycle) ?
                 getAmp() : -getAmp()

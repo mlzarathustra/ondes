@@ -128,26 +128,14 @@ public class SincFilter extends Filter {
 
     // the simplest filter: y[n] = x[n] + x[n-1]
     //
-    // I saw somewhere that it implements a cutoff up to the
+    // "moving average" implements a cutoff up to the
     // sampling frequency.
 
     int xn_1 = 0;
 
-//    @Override
-//    public int currentValue() {
-//        int xn=0;
-//        for (WiredIntSupplier input : inputs) xn += input.getAsInt();
-//        int rs = xn+xn_1;
-//        xn_1 = xn;
-//        return rs;
-//    }
-
     @Override
     public int currentValue() {
-        // a manual loop is slightly faster than the lambda.
-        int rs=0;
-        for (WiredIntSupplier input : inputs) rs += input.getAsInt();
-        return nextAverage((int)(levelScale * rs));
+        return nextAverage( (int)(levelScale * inputSum() ));
     }
 
 }

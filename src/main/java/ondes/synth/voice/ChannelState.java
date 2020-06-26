@@ -29,7 +29,7 @@ public class ChannelState {
         reset();
     }
 
-    void reset() {
+    synchronized void reset() {
         controllers.clear();
         afterKeys.clear();
         channelPressure = -1;
@@ -37,7 +37,7 @@ public class ChannelState {
         pitchBend = Integer.MIN_VALUE;
     }
 
-    public void update(MidiMessage msg) {
+    public synchronized void update(MidiMessage msg) {
         //out.println("ChannelState.update: "+ MlzMidi.toString(msg));
 
         // we only get messages for the whole channel,
@@ -66,7 +66,7 @@ public class ChannelState {
         }
     }
 
-    public List<MidiMessage> getMessages() {
+    public synchronized List<MidiMessage> getMessages() {
         ArrayList<MidiMessage> rs = new ArrayList<>();
         try {
             for (int k : afterKeys.keySet()) {

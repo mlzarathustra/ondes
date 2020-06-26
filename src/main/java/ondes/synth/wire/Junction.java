@@ -27,10 +27,7 @@ public class Junction extends MonoComponent {
 
     @Override
     public int currentValue() {
-        // a manual loop is slightly faster than the lambda.
-        int rs=0;
-        for (WiredIntSupplier input : inputs) rs += input.getAsInt();
-        return (int)(levelScale * rs);
+        return (int)(levelScale * inputSum());
     }
 
     // // // //

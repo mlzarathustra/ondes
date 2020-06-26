@@ -44,11 +44,8 @@ public class OpAmp extends MonoComponent {
 
     @Override
     public int currentValue() {
-        // a manual loop is slightly faster than the lambda.
-        double rs = 1;
-        for (WiredIntSupplier input : inputs) rs *= input.getAsInt();
         //out.println("OpAmp.currentValue(): "+scale*rs);
-        return (int)(scale * rs);
+        return (int)(scale * inputProd());
     }
 
     // // // //

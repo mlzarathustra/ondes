@@ -208,19 +208,9 @@ public class SweepingSincFilter extends Filter {
 
     @Override
     public int currentValue() {
-        float sweepAmt=0;
-        List<WiredIntSupplier> sweepInputs = namedInputs.get("sweep");
-        if (sweepInputs != null) {
-            for (WiredIntSupplier input : sweepInputs) {
-                sweepAmt += input.getAsInt();
-            }
-        }
+        float sweepAmt = namedInputSum("sweep");
         modFreq(sweepAmt);
-
-        int inputSum=0;
-        for (WiredIntSupplier input : inputs) inputSum += input.getAsInt();
-
-        return nextAverage((int)(levelScale * inputSum));
+        return nextAverage((int)(levelScale * inputSum()));
     }
 
 }
