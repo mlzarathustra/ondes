@@ -4,6 +4,7 @@ import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.Instant;
 import ondes.midi.FreqTable;
+import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
 import java.util.List;
@@ -103,6 +104,16 @@ public abstract class WaveGen extends MonoComponent {
      */
     private int ampOverride = -1;
 
+    private int logInputAmp = 0;
+
+    private float loginputSemitones = 0;
+
+
+    private int linearInputAmp = 0;
+
+    private float linearInputFreq = 0;
+
+
     /**
      * <p>
      *     range: 0-1; the scaling when velocity is zero.
@@ -171,14 +182,16 @@ public abstract class WaveGen extends MonoComponent {
      */
     double pitchScaleFactor = 10;
 
-    double freqMultiplier = 1;
+    Double freqMultiplier = 1.0;
     public double getFreqMultiplier() {
+        if (freqMultiplier != null) return freqMultiplier;
         if (detune == 0 && offset == 0) {
-            freqMultiplier=1;
-            return 1;
+            freqMultiplier=1.0;
         }
-        freqMultiplier =
-            pow(oneStep,offset) * pow(oneCent,detune);
+        else {
+            freqMultiplier =
+                pow(oneStep,offset) * pow(oneCent,detune);
+        }
         return freqMultiplier;
     }
 
@@ -200,6 +213,10 @@ public abstract class WaveGen extends MonoComponent {
      */
     void modFreq(double freq) {
         // todo - review freq logic (for future modulation)
+        double linearMod=namedInputSum("linear");
+
+
+
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
     }
 
@@ -256,9 +273,9 @@ public abstract class WaveGen extends MonoComponent {
     public void configure(Map config, Map components) {
         super.configure(config, components);
 
-        //  Do we give negative output? Doesn't work so well for LFO's.
-        Object blInp = config.get("signed");
-        if (blInp != null) signed = (boolean)blInp;
+        //  signed = ring mod  unsigned = op-amp
+        Object objInp = config.get("signed");
+        if (objInp != null) signed = (boolean)objInp;
 
         Float fltInp;
         fltInp = getFloat(config.get("detune"),
@@ -306,6 +323,43 @@ public abstract class WaveGen extends MonoComponent {
         intInp = getInt(config.get("level-override"),
             "'level-override' must be an integer.");
         if (intInp != null)  ampOverride = intInp;
+
+        //  LOG input
+
+        objInp = config.get("input-log");
+        if (objInp != null && !( objInp instanceof Map)) {
+            err.println("input-log must be a Map!");
+        }
+        else if (objInp != null) {
+            Map inputParams=(Map)objInp;
+            intInp = getInt(inputParams.get("amp"),
+                "'amp' must be an integer.");
+            if (intInp != null)  logInputAmp = intInp;
+
+            fltInp = getFloat(inputParams.get("semitones"),
+                "semitones must be a decimal number.");
+            if (fltInp != null) loginputSemitones = fltInp;
+        }
+
+        // LINEAR input
+
+        objInp = config.get("input-linear");
+        if (objInp != null && !( objInp instanceof Map)) {
+            err.println("input-linear must be a Map!");
+        }
+        else if (objInp != null) {
+            Map inputParams=(Map)objInp;
+            intInp = getInt(inputParams.get("amp"),
+                "'amp' must be an integer.");
+            if (intInp != null)  linearInputAmp = intInp;
+
+            fltInp = getFloat(inputParams.get("frequency"),
+                "frequency must be a decimal number.");
+            if (fltInp != null) linearInputFreq = fltInp;
+
+        }
+
+        //   Fixed frequency
 
         fltInp = getFloat(config.get("freq"),
             "freq must be a number. can be floating.");

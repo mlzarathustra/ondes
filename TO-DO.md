@@ -7,7 +7,22 @@
     - input-amount for WaveGen : half-steps
     
  ----
- - sweep IIR filter by linear extrapolation between data points.      
+ 
+  - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
+   
+ --- 
+  - allow for defaults in a properties(?) file or something
+ 
+ ---
+  
+ - sweep IIR filter by linear extrapolation between data points.     
+ 
+---
+ - straighten out the various level coefficients in WaveGen
+    - ambBase
+    - pitchScale
+    - velocityMultiplier
+    - levelScale    
     
  ----
  

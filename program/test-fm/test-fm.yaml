@@ -9,7 +9,7 @@ mod-osc6:
 
 
 osc7:
-  midi-note-on
+  midi: note-on
   type: wave
   shape: sine
   input-log:
@@ -20,6 +20,8 @@ osc7:
 
 env1:
   type: env
-  shape: organ
+  exit: true
+  midi: note-on, note-off, sustain
+  preset: organ
   out: main
 
