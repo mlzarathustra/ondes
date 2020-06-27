@@ -4,6 +4,7 @@ public class SawWaveGen extends WaveGen {
 
     @Override
     public int currentValue() {
+        modFreq();
         double phi = phaseClock.getPhase();
         int rs;
 

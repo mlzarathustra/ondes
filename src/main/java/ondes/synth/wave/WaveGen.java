@@ -104,14 +104,23 @@ public abstract class WaveGen extends MonoComponent {
      */
     private int ampOverride = -1;
 
+    //  LOG FM
+
     private int logInputAmp = 0;
-
     private float loginputSemitones = 0;
+    private float logModMaxExp = 0;
 
+
+
+    //  Linear FM
 
     private int linearInputAmp = 0;
 
     private float linearInputFreq = 0;
+
+    // FM in general
+
+    private boolean modulateFrequency=false;
 
 
     /**
@@ -208,16 +217,27 @@ public abstract class WaveGen extends MonoComponent {
      * <p>
      *     Not to be confused with the "rocker freq." :^)
      * </p>
-     *
-     * @param freq - the frequency to set the phaseClock to.
      */
-    void modFreq(double freq) {
-        // todo - review freq logic (for future modulation)
-        double linearMod=namedInputSum("linear");
+    protected void modFreq() {
+        if (!modulateFrequency) return;
+
+        double logInp=((double)namedInputSum("log"))/logInputAmp;
 
 
 
-        phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
+
+        //double linearMod=namedInputSum("linear");
+        // TODO - implement
+
+
+
+        // TODO define a global
+        //     offsetFrequency = baseFrequency * getFreqMultiplier()
+        //
+        phaseClock.setFrequency(
+            (float) (baseFrequency * getFreqMultiplier()) *
+                (float) pow(2,logInp * logModMaxExp)
+        );
     }
 
     /**
@@ -339,6 +359,9 @@ public abstract class WaveGen extends MonoComponent {
             fltInp = getFloat(inputParams.get("semitones"),
                 "semitones must be a decimal number.");
             if (fltInp != null) loginputSemitones = fltInp;
+
+            logModMaxExp = loginputSemitones/12f;
+            modulateFrequency = true;
         }
 
         // LINEAR input
@@ -357,6 +380,7 @@ public abstract class WaveGen extends MonoComponent {
                 "frequency must be a decimal number.");
             if (fltInp != null) linearInputFreq = fltInp;
 
+            modulateFrequency = true;
         }
 
         //   Fixed frequency

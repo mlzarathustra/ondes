@@ -12,6 +12,7 @@ class SineWaveGen extends WaveGen {
 
     @Override
     public int currentValue() {
+        modFreq();
         int rs = (int)(
             sineLookup(phaseClock.getPhase() * TAO) * getAmp()
         );

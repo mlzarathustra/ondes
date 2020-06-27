@@ -1,27 +1,72 @@
 
+mod-osc2:
+  freq: .05
+  type: wave
+  shape: saw
+  level-override: 1000
+  out: mod-osc1.log
 
-mod-osc6:
-  freq: 0.11
+
+
+mod-osc1:
+  freq: .2
   type: wave
   shape: sine
   level-override: 1000
   out: osc7.log  # to the logarithmic input for vibrato
+  input-log:
+    semitones: .01
+    amp: 1000
 
 
 osc7:
   midi: note-on
   type: wave
-  shape: sine
+  shape: saw
   input-log:
-    semitones: 12
+    semitones: .11
     amp: 1000
   out: env1
+  level-scale: 2
+
+osc8:
+  midi: note-on
+  type: wave
+  shape: saw
+  input-log:
+    semitones: -.03
+    amp: 1000
+  out: env1
+  level-scale: 2
+
+osc9:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 3 3
+    - 4 4
+    - 5 5
+    - 6 6
+    - 7 7
+    - 8 8
+    - 9 9
+    - 15 15
+    - 16 16
+  out: env1
+  level-scale: .2
 
 
 env1:
   type: env
   exit: true
   midi: note-on, note-off, sustain
-  preset: organ
+  points:
+    - 1000 100 re-trigger
+    - 0 100 hold
+    - 1000 0
+
   out: main
 

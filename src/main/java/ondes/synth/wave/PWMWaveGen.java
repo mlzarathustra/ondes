@@ -49,6 +49,7 @@ class PwmWaveGen extends WaveGen {
 
     @Override
     public int currentValue() {
+        modFreq();
         float inpSum=namedInputSum("pwm");
         float mod = inpSum * inputAmpInv;
         double modDutyCycle = dutyCycle + (modPercent/200.0) * mod;

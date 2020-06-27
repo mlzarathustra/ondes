@@ -127,6 +127,7 @@ class HarmonicWaveGen extends CompositeWave {
      */
     @Override
     public int currentValue() {
+        modFreq();
         return (int)(
             waveLookup.valueAt(phaseClock.getPhase()) * getAmp()
         );

@@ -153,6 +153,7 @@ class AnharmonicWaveGen extends CompositeWave {
     @Override
     public synchronized int currentValue() {
         if (clocks.isEmpty()) return 0;
+        modFreq();
         double sum=0;
         for (int ov = 0; ov< anharmonicWaves.length-1; ov+=2) {
             sum += sineLookup( clocks.get(ov/2).getPhase() * TAO )

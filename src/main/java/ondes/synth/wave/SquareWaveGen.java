@@ -12,6 +12,7 @@ class SquareWaveGen extends WaveGen {
 
     @Override
     public int currentValue() {
+        modFreq();
         if (signed) {
             return (phaseClock.getPhase() > dutyCycle) ?
                 getAmp() : -getAmp();
