@@ -215,9 +215,11 @@ public abstract class WaveGen extends MonoComponent {
     public void setFreq(double freq) {
         if (freqOverride > 0) {
             freq = freqOverride;
-            // noise has no frequency, but should not be scaled at infinity!
-            pitchScale = (float)getScaling(pitchScaleFactor, freq);
         }
+        // noise has no frequency, but should not be scaled at infinity!
+        // Note that the lowest note available in MIDI is 8.175 hz
+        if (freq > 8) pitchScale = (float)getScaling(pitchScaleFactor, freq);
+
         phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
         baseFrequency = freq;
     }

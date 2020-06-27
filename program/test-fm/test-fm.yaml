@@ -1,0 +1,25 @@
+
+
+mod-osc6:
+  freq: 0.11
+  type: wave
+  shape: sine
+  level-override: 1000
+  out: osc7.log  # to the logarithmic input for vibrato
+
+
+osc7:
+  midi-note-on
+  type: wave
+  shape: sine
+  input-log:
+    semitones: 12
+    amp: 1000
+  out: env1
+
+
+env1:
+  type: env
+  shape: organ
+  out: main
+

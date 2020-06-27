@@ -21,7 +21,7 @@ env1:
   type: env
   midi: note-on, note-off, control
   points:
-    - 0 100
+    - 7 100
     - 10 90 hold
     - 10 0
   out: main
@@ -42,13 +42,13 @@ env2:
   midi: note-on, note-off, control
   points:
     # columns: rate level [option]
-    - 500 100 hold
+    - 700 100 hold
     - 500 0
   out: lpf
 
 lpf:
   type: filter
   shape: iir
-  key: lp_4_10k
+  key: lp_4_440
   level-scale: 1
   out: main
