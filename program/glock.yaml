@@ -11,7 +11,7 @@ osc1:
   out: env2
   level-scale: 3
 
-env2:
+env:
   type: env
   midi: note-on
   points:

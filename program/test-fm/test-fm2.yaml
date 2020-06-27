@@ -26,12 +26,30 @@ osc7:
   out: env1
   level-scale: 2
 
+mod-osc3:
+  freq: 4.3
+  type: wave
+  shape: saw
+  level-override: 1000
+  out: env2
+
+env2:
+  type: env
+  midi: note-on
+  points:
+    - 500 0
+    - 250 100 re-trigger
+    - 500 25
+    - 10000 0
+  out: osc8.log
+
+
 osc8:
   midi: note-on
   type: wave
   shape: saw
   input-log:
-    semitones: -.03
+    semitones: .7
     amp: 1000
   out: env1
   level-scale: 2

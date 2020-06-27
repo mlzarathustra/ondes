@@ -7,6 +7,9 @@
     - input-amount for WaveGen : half-steps
     
  ----
+  add more threads to handle routeMidiMessage? 
+ 
+ ---
  
   - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
    

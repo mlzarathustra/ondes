@@ -191,7 +191,7 @@ public abstract class WaveGen extends MonoComponent {
      */
     double pitchScaleFactor = 10;
 
-    Double freqMultiplier = 1.0;
+    Double freqMultiplier = null;
     public double getFreqMultiplier() {
         if (freqMultiplier != null) return freqMultiplier;
         if (detune == 0 && offset == 0) {

@@ -56,6 +56,8 @@ public class Envelope extends MonoComponent {
     private int hold = -1;
     private int release = -1;
 
+    private float levelScale=1;
+
     // /// // /// // /// // /// // /// // /// // /// // /// // /// //
     private int altRelease = -1;
     /**
@@ -204,7 +206,7 @@ public class Envelope extends MonoComponent {
     @Override
     public int currentValue() {
         if (isComplete()) return 0;
-        return (int)(currentLevel(0.0, 1.0) * inputSum());
+        return (int)(currentLevel(0.0, 1.0) * inputSum() * levelScale);
     }
 
 
@@ -477,6 +479,17 @@ public class Envelope extends MonoComponent {
                 }
             }
         }
+        String levelScaleErr =
+            "'level-scale' must be between 0 and 11. (floating) " +
+                "Yes, it goes to 11! \n" +
+                "(but you probably want it much lower than that)";
+        Float fltInp = getFloat(config.get("level-scale"), levelScaleErr);
+        if (fltInp != null) {
+            if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
+            else
+                levelScale = fltInp;
+        }
+
         if (DB) show();
     }
 
