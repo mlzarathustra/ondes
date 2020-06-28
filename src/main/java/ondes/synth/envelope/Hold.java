@@ -33,12 +33,6 @@ public class Hold extends Step {
         if (curLevel != level) return super.nextVal(curLevel);
         stepResult.done = done();
         stepResult.level = level;
-//        if (Envelope.DB && stepResult.done) {
-//            // if it's at a hold step, this will repeat.
-//            out.println("HoldResult: DONE");
-//            out.println("start: "+start+" rate: "+rate);
-//        }
-
         return stepResult;
     }
 

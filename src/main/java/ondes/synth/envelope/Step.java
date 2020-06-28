@@ -112,11 +112,6 @@ class Step {
      * @return - the next signal level 0 <= rs <= 100
      */
     StepResult nextVal(double curLevel) {
-//        if (Envelope.DB && this instanceof Hold) {
-//            out.println("Hold called Step.nextVal()");
-//            out.println("rate: "+rate+" curLevel: "+curLevel+
-//                " level: "+level);
-//        }
         if (rate == 0 || curLevel == level) {
             stepResult.level = level;
             stepResult.done = true;
@@ -126,10 +121,6 @@ class Step {
         double delta = level - curLevel;
         double nextLevel = curLevel + (signum(delta)*k + delta*m);
 
-//        if (Envelope.DB && this instanceof Hold) {
-//            out.println("delta: "+delta+" nextLevel: "+nextLevel);
-//            out.println(" k="+k+" m="+m);
-//        }
         stepResult.done = false;
         if ( (curLevel > level && nextLevel <= level) ||
             (curLevel < level && nextLevel >= level) ) {
@@ -142,10 +133,6 @@ class Step {
         }
 
         stepResult.level = clip(nextLevel);
-//        if (rate > 10_000) {
-//            out.println("Step.nextVal("+curLevel+
-//                "): stepResult="+stepResult+" nextLevel="+nextLevel);
-//        }
         return stepResult;
     }
 }
