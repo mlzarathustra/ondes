@@ -6,7 +6,7 @@ osc1:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: lpf
+  out: main
 
 lfo1:
   freq: 0.2
@@ -14,28 +14,6 @@ lfo1:
   shape: saw
   level-override: 1000
   out: osc1.pwm
-
-osc2:
-  midi: note-on
-  detune: 8
-  type: wave
-  shape: pwm
-  mod-percent: 95
-  input-amp: 1000
-  velocity-amount: 150
-  out: main
-
-lfo2:
-  freq: 0.11
-  type: wave
-  shape: sine
-  level-override: 1000
-  out: osc2.pwm
-
-lpf:
-  type: filter
-  freq: 7000
-  out: main
 
 #  should be out: osc1.pwm
 #  so we can have a separate input for frequency

@@ -6,7 +6,7 @@ osc1:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: main
+  out: lpf
 
 lfo1:
   freq: 0.2
@@ -23,7 +23,7 @@ osc2:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: main
+  out: lpf
 
 lfo2:
   freq: 0.11
@@ -32,13 +32,12 @@ lfo2:
   level-override: 1000
   out: osc2.pwm
 
-#lpf:
-#  type: filter
-#  freq: 7000
-#  out: main
-
-#  should be out: osc1.pwm
-#  so we can have a separate input for frequency
+lpf:
+  type: filter
+  shape: iir
+  key: lp_1_22k
+  level-scale: 1
+  out: main
 
 
 

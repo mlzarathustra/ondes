@@ -96,7 +96,7 @@ public class OndeSynth extends Thread {
     /**
      * How many voices to preload on each channel.
      */
-    int voicePreloadCount = 10;
+    int voicePreloadCount = 20;
     /**
      * Each MIDI channel has its own voice pool.
      * Rather than creating the voice each time, we retrieve one

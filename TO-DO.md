@@ -4,7 +4,8 @@
  
   - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
    
- --- 
+ ---
+ 
   - allow for command-line defaults in a properties(?) file or something
  
  ---
@@ -95,6 +96,10 @@
  - manage ChannelVoicePool from a separate thread
 
 -----------
+
+aliasing - oversample and then downsample? 
+
+ ---
 
  - effects 
     - echo

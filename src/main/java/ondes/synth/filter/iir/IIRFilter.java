@@ -48,6 +48,22 @@ public class IIRFilter extends Filter {
         y = new double[1];
     }
 
+    /**
+     * <pre>
+     *     X_n - the input for this sample
+     *     x - a circular buffer for inputs
+     *     x0 - the pointer into x
+     *     y - a circular buffer for outputs
+     *     y0 - pointer into y
+     *
+     *     a - filter coefficients (poles)
+     *     b - filter coefficients (zeros)
+     *
+     *     Sigma - will be the next y signal
+     *     </pre>
+     *
+     * @return filtered output signal
+     */
     @Override
     public int currentValue() {
         int X_n = inputSum();

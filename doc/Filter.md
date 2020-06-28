@@ -42,11 +42,12 @@ So, **lp_6_1k** is a low-pass 6th order filter with a cutoff of 1,000 hz. For a 
 
 The higher-order filters are capable of sharper cutoffs, but also are prone to becoming unstable in lower frequencies (Meaning: loud unpleasant noise). They seem to run OK above about 2k.  
 
-Note: the Moog uses a 4-pole filter.
+Note: the Moog uses a 4-pole filter, however unlike the below it also has a resonance denoted by "Q."
 
 Below are the keys currently available:
 
 ``` 
+        // 6-pole filters
         lp_6_1k   // becomes unstable easily
         lp_6_2k
         lp_6_5k
@@ -54,8 +55,26 @@ Below are the keys currently available:
         lp_6_15k
         lp_6_20k
         
+        // 4-pole filters
+        lp_4_55
+        lp_4_110
+        lp_4_220
         lp_4_440
-        lp_4_1k
+        lp_4_880
+        lp_4_1000
+        lp_4_1600
+        lp_4_3200
+        lp_4_4000
+        lp_4_6400
+        lp_4_8000
+        lp_4_10k
+        lp_4_15k
+        lp_4_20k
+
+        //  1-pole filter
+        lp_1_22k
+    
+
 ```
 
 ## FIR filters 

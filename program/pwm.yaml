@@ -1,4 +1,13 @@
 
+
+lfo-freq:
+  type: wave
+  freq: 0.1
+  shape: saw
+  level-override: 1000
+  out: osc1.log
+
+
 osc1:
   midi: note-on
   type: wave
@@ -6,7 +15,10 @@ osc1:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: main
+  input-log:
+    semitones: -.03
+    amp: 1000
+  out: lpf
 
 lfo1:
   freq: 0.2
@@ -15,8 +27,44 @@ lfo1:
   level-override: 1000
   out: osc1.pwm
 
-#  should be out: osc1.pwm
-#  so we can have a separate input for frequency
+osc2:
+  midi: note-on
+  detune: 8
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: lpf
+
+lfo2:
+  freq: 0.11
+  type: wave
+  shape: sine
+  level-override: 1000
+  out: osc2.pwm
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_4_8000
+  level-scale: 1
+  out: env
+
+env:
+  type: env
+  exit: true
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 100 100 re-trigger
+    - 25 92 hold
+    - 700 0 release
+    - 20000 0 alt-release
+
+  out: main
+
+
 
 
 
