@@ -1,5 +1,8 @@
 # OndeSynthesizer
 (under construction)
+
+To hear what you can do so far:
+[OndeSynth demo on YouTube](https://www.youtube.com/playlist?list=PLk0M1i4FJYGJ04WGUqPTOEU0NjMNrJEqt)
  
 ![](doc/images/ondes-synth-architecture-diagram.png)
 

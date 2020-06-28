@@ -1,0 +1,72 @@
+
+
+# run -in 828 -out 'main o' -all-patches -ch1 linear-fm5 -ch2 linear-fm6
+
+
+mod-osc1:
+  midi: note-on
+  offset: -12
+  type: wave
+  shape: saw
+  level-override: 1000
+  out: osc1.linear
+
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: sine
+  input-linear:
+    frequency: 60
+    amp: 1000
+  out: env1
+  level-scale: 6
+
+osc2-mod:
+  type: wave
+  shape: sine
+  freq: .17
+  out: osc2.log
+  level-override: 1000
+
+osc2:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 3 3
+    - 4 4
+    - 6 6
+    - 8 8
+  input-log:
+    semitones: -.03
+    amp: 1000
+  out: env1
+
+osc3:
+  midi: note-on
+  type: wave
+  detune: 7
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 3 3
+    - 4 4
+    - 6 6
+    - 8 8
+  out: env1
+
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, sustain
+  points:
+    - 100 100 re-trigger
+    - 0 100 hold
+    - 1000 0
+
+  out: main

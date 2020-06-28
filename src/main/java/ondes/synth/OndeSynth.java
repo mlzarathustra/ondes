@@ -128,6 +128,7 @@ public class OndeSynth extends Thread {
 
     private final MidiDevice midiInDev;
     private final MidiListenerThread midiListener;
+    private final GrimReaperThread grimReaper;
 
     /**
      * <p>
@@ -201,6 +202,7 @@ public class OndeSynth extends Thread {
         super("OndeSynth - main thread");
         this.midiInDev = midiInDev;
         midiListener = new MidiListenerThread(this);
+        grimReaper = new GrimReaperThread(this);
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
@@ -264,13 +266,21 @@ public class OndeSynth extends Thread {
         }
         voiceTracker.delVoice(chan, note);
     }
-
+/*
     private List<List<Integer>> endedNoteQueue = new ArrayList<>();
 
     public void queueNoteEnd(int chan, int note) {
         endedNoteQueue.add(List.of(chan,note));
     }
 
+    public void endNotes() {
+        endedNoteQueue.forEach( n -> noteEnded(n.get(0), n.get(1)));
+        endedNoteQueue.clear();
+    }
+*/
+    public void queueNoteEnd(int chan, int note) {
+        grimReaper.queueNoteEnd(chan,note);
+    }
 
     /**
      * Send this message to all voices currently playing
@@ -335,6 +345,7 @@ public class OndeSynth extends Thread {
         }
 
         midiListener.start();
+        grimReaper.start();
     }
 
     /**
@@ -383,8 +394,8 @@ public class OndeSynth extends Thread {
         Thread.enumerate(ta);
         for (Thread t : ta) {
             if (t != null) {
-                if (t.toString().contains("Dispatcher")) t.setPriority(10);
-                else if (t.toString().contains("Ondes")) t.setPriority(1);
+//                if (t.toString().contains("Dispatcher")) t.setPriority(10);
+//                else if (t.toString().contains("Ondes")) t.setPriority(1);
                 out.println(t);
             }
         }
@@ -392,15 +403,9 @@ public class OndeSynth extends Thread {
         //
 
         for (;;) {
-            //synchronized (lock){
-                resetWires();
-                instant.next();
-                monoMainMix.update();
-
-                endedNoteQueue.forEach( n -> noteEnded(n.get(0), n.get(1)));
-                endedNoteQueue.clear();
-            //}
-
+            resetWires();
+            instant.next();
+            monoMainMix.update();
             if (stop) return;
         }
     }

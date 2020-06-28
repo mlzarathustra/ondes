@@ -1,20 +1,11 @@
 # OndeSynth - to do
 
-
----
-  - LFO pitch mod (i.e. FM)
-    - level-override: needs to allow for min and max, like out-level-amp: does for envelopes.
-    - input-amount for WaveGen : half-steps
-    
- ----
-  add more threads to handle routeMidiMessage? 
- 
  ---
  
   - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
    
  --- 
-  - allow for defaults in a properties(?) file or something
+  - allow for command-line defaults in a properties(?) file or something
  
  ---
   
@@ -42,9 +33,7 @@
    
  
  --- 
-  - Anharmonic (and all waves) - can we restart them before adding their output back to main? 
-     it's hitting currentValue() before resume() sometimes... 
-     Swapping the lines of Voice.pause() may have fixed this. 
+  - Anharmonic - adjust frequence of phase clocks. See TODO at WaveGen.modFreq()
 
  ---
 
