@@ -4,13 +4,10 @@ import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.Instant;
 import ondes.midi.FreqTable;
-import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
-import java.util.List;
 import java.util.Map;
 
-import static ondes.mlz.Util.getList;
 import static ondes.midi.MlzMidi.showBytes;
 import static ondes.mlz.PitchScaling.*;
 
@@ -66,6 +63,9 @@ public abstract class WaveGen extends MonoComponent {
      */
     protected double baseFrequency = -1;
 
+    private double offsetFrequency = -1;
+
+
     /**
      *  if positive, overrides MIDI
      */
@@ -107,8 +107,9 @@ public abstract class WaveGen extends MonoComponent {
     //  LOG FM
 
     private int logInputAmp = 0;
-    private float loginputSemitones = 0;
+    private float logInputSemitones = 0;
     private float logModMaxExp = 0;
+
 
 
 
@@ -120,7 +121,8 @@ public abstract class WaveGen extends MonoComponent {
 
     // FM in general
 
-    private boolean modulateFrequency=false;
+    private boolean modLinFrequency=false;
+    private boolean modLogFrequency=false;
 
 
     /**
@@ -213,31 +215,32 @@ public abstract class WaveGen extends MonoComponent {
      * <p>
      *     Waves with other phase clocks will need to override (calling this
      *     one first).
+     *
+     *     TODO - anharmonic, in particular
      * </p>
      * <p>
      *     Not to be confused with the "rocker freq." :^)
      * </p>
      */
     protected void modFreq() {
-        if (!modulateFrequency) return;
+        if (!modLinFrequency && !modLogFrequency) return;
 
-        double logInp=((double)namedInputSum("log"))/logInputAmp;
+        double logInp=0, linearInp=0, freq=offsetFrequency;
 
+        if (modLinFrequency) {
+            linearInp=((double)namedInputSum("linear"))/linearInputAmp
+                * linearInputFreq;
+            freq += linearInp;
+        }
+        if (modLogFrequency) {
+            logInp=((double)namedInputSum("log"))/logInputAmp
+                * logModMaxExp;
+            freq = freq * pow(2,logInp);
+        }
 
+//        out.print("...linearInp is "+linearInp);
 
-
-        //double linearMod=namedInputSum("linear");
-        // TODO - implement
-
-
-
-        // TODO define a global
-        //     offsetFrequency = baseFrequency * getFreqMultiplier()
-        //
-        phaseClock.setFrequency(
-            (float) (baseFrequency * getFreqMultiplier()) *
-                (float) pow(2,logInp * logModMaxExp)
-        );
+        phaseClock.setFrequency((float)freq);
     }
 
     /**
@@ -257,7 +260,8 @@ public abstract class WaveGen extends MonoComponent {
         // Note that the lowest note available in MIDI is 8.175 hz
         if (freq > 8) pitchScale = (float)getScaling(pitchScaleFactor, freq);
 
-        phaseClock.setFrequency((float) (freq * getFreqMultiplier()));
+        offsetFrequency = freq * getFreqMultiplier();
+        phaseClock.setFrequency((float) offsetFrequency);
         baseFrequency = freq;
     }
 
@@ -358,10 +362,10 @@ public abstract class WaveGen extends MonoComponent {
 
             fltInp = getFloat(inputParams.get("semitones"),
                 "semitones must be a decimal number.");
-            if (fltInp != null) loginputSemitones = fltInp;
+            if (fltInp != null) logInputSemitones = fltInp;
 
-            logModMaxExp = loginputSemitones/12f;
-            modulateFrequency = true;
+            logModMaxExp = logInputSemitones /12f;
+            modLogFrequency = true;
         }
 
         // LINEAR input
@@ -380,7 +384,7 @@ public abstract class WaveGen extends MonoComponent {
                 "frequency must be a decimal number.");
             if (fltInp != null) linearInputFreq = fltInp;
 
-            modulateFrequency = true;
+            modLinFrequency = true;
         }
 
         //   Fixed frequency

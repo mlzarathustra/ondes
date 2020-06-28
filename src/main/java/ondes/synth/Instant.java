@@ -2,6 +2,9 @@ package ondes.synth;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.System.out;
 
 
@@ -33,13 +36,14 @@ public class Instant  {
 
         public float getFrequency() { return frequency; }
         public void setFrequency(float freq) {
-            frequency = freq;
+            frequency = min(maxFreq,max(0,freq));
             setDelta();
         }
     }
 
     private int sampleRate;
     private long sampleNumber;
+    private int maxFreq;
     private double seconds;
 
     private final ArrayDeque<PhaseClock>
@@ -48,6 +52,7 @@ public class Instant  {
 
     Instant(int sr) {
         sampleRate = sr;
+        maxFreq = sr/2;
         reservePhaseClocks(100);
     }
 

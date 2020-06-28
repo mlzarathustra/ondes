@@ -137,11 +137,12 @@ public abstract class MonoComponent implements ConfigHelper {
      */
     public void configure(Map config, Map components) {
         Object compOut = config.get("out");
-        if (compOut == null) {
+        if (compOut == null && config.get("out-level") == null) {
             err.println("Missing out: key in " + this.getClass());
             err.println("WaveGen will not do much without output!");
             return;
         }
+        if (compOut == null) return;
         List compOutList = getList(compOut);
         setOutput(compOutList, components, getMainOutput());
     }

@@ -2,7 +2,7 @@ package ondes.synth.envelope;
 
 import ondes.synth.Instant;
 
-
+import static java.lang.System.out;
 
 /**
  * Like Step, but it implements a hold at this level
@@ -22,14 +22,23 @@ public class Hold extends Step {
 
     void reset() {
         start = instant.getSeconds();
+        if (Envelope.DB) out.println("Hold.reset(): start="+start);
     }
 
     boolean done() {
-        return instant.getSeconds() >= start + ((double)rate)/1000.0;
+        return instant.getSeconds() >= start + rate/1000.0;
     }
 
     StepResult nextVal(double curLevel) {
+        if (curLevel != level) return super.nextVal(curLevel);
         stepResult.done = done();
+        stepResult.level = level;
+//        if (Envelope.DB && stepResult.done) {
+//            // if it's at a hold step, this will repeat.
+//            out.println("HoldResult: DONE");
+//            out.println("start: "+start+" rate: "+rate);
+//        }
+
         return stepResult;
     }
 

@@ -1,0 +1,33 @@
+
+#   RAMP-UP through all audible freqs
+#   play and hold G4 to hear
+
+mod-osc1:
+  freq: .1
+  type: wave
+  shape: ramp-up
+  level-override: 1000
+  out: osc1.log
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: sine
+  input-log:
+    semitones: 50
+    amp: 1000
+  out: env1
+  level-scale: 2
+
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, sustain
+  points:
+    - 100 100 re-trigger
+    - 0 100 hold
+    - 1000 0
+
+  out: main
+

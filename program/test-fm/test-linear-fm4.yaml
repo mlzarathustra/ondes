@@ -1,0 +1,48 @@
+
+mod-osc1:
+  midi: note-on
+  offset: 0
+  type: wave
+  shape: sine
+  level-override: 1000
+  out: amp1
+
+env-mod:
+  type: env
+  midi: note-on, note-off, sustain
+  points:
+    - 1000 0
+    - 10000 100 hold
+    - 10000 100
+  out-level: amp1
+  out-level-amp: 1000
+
+
+amp1:
+  type: op-amp
+  out: osc1.linear
+  level-scale: .01
+
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: sine
+  input-linear:
+    frequency: 200
+    amp: 1000
+  out: env1
+  level-scale: 2
+
+
+env1:
+  type: env
+  exit: true
+  midi: note-on, note-off, sustain
+  points:
+    - 100 99 re-trigger
+    - 0 100 hold
+    - 2000 0
+
+  out: main
+

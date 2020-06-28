@@ -33,7 +33,7 @@ class Step {
     /**
      * level is floating point, 0 <= level <= 100
      */
-    double level;
+    final double level;
 
     /**
      * guarantee that level is within range.
@@ -95,12 +95,13 @@ class Step {
 
     boolean SHORT_STRING = true;
     public String toString() {
+        String type= (this instanceof Hold) ? "Hold" : "Step";
         if (SHORT_STRING) {
             return String.format(
-                "Step { rate=%8.1f level=%7.2f sampleRate=%3.0f -- " +
+                type+" { rate=%8.1f level=%7.2f sampleRate=%3.0f -- " +
                     "d=%6.3e k=%2.3e m=%2.3e", rate, level, sampleRate, d,k,m);
         }
-        return "Step { rate="+rate+"; level="+level+
+        return type+" { rate="+rate+"; level="+level+
             "; sampleRate="+sampleRate+
             "; d="+d+"; k="+k+"; m="+m+" } ";
     }
@@ -111,6 +112,11 @@ class Step {
      * @return - the next signal level 0 <= rs <= 100
      */
     StepResult nextVal(double curLevel) {
+//        if (Envelope.DB && this instanceof Hold) {
+//            out.println("Hold called Step.nextVal()");
+//            out.println("rate: "+rate+" curLevel: "+curLevel+
+//                " level: "+level);
+//        }
         if (rate == 0 || curLevel == level) {
             stepResult.level = level;
             stepResult.done = true;
@@ -120,6 +126,10 @@ class Step {
         double delta = level - curLevel;
         double nextLevel = curLevel + (signum(delta)*k + delta*m);
 
+//        if (Envelope.DB && this instanceof Hold) {
+//            out.println("delta: "+delta+" nextLevel: "+nextLevel);
+//            out.println(" k="+k+" m="+m);
+//        }
         stepResult.done = false;
         if ( (curLevel > level && nextLevel <= level) ||
             (curLevel < level && nextLevel >= level) ) {
