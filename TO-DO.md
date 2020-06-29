@@ -1,12 +1,22 @@
 # OndeSynth - to do
 
  ---
- 
   - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
    
  ---
  
   - allow for command-line defaults in a properties(?) file or something
+ 
+ ---
+ 
+  - error reporting: report on non-wavegen comps that don't have input?
+  - report on unknown properties given? 
+ 
+ ---
+ 
+  - distortion - use (2 * atan(y))/pi 
+     x > 0 (the slope is 1/(1+x^2), so it will be 1 at 0)
+     y will be asymptotic to 1.
  
  ---
   

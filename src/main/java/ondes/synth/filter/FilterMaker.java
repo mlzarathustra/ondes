@@ -1,5 +1,6 @@
 package ondes.synth.filter;
 
+import ondes.synth.filter.iir.BiQuadFilter;
 import ondes.synth.filter.iir.IIRFilter;
 import ondes.synth.wave.WaveGen;
 import ondes.synth.component.MonoComponent;
@@ -40,6 +41,9 @@ public class FilterMaker {
         }
         catch (Exception ex) {
             err.println("Can't find the filter class specified: "+shape);
+            err.println("The exception was: "+ex);
+            err.println("InvocationTargetException is Probably a null pointer\n" +
+                " in the constructor or class initialization (e.g. synth).");
             return new Junction();
         }
     }
@@ -48,6 +52,7 @@ public class FilterMaker {
         register("sinc", SincFilter.class);
         register("sweep-sinc", SweepingSincFilter.class);
         register("iir", IIRFilter.class);
+        register("biquad", BiQuadFilter.class);
     }
 
 }

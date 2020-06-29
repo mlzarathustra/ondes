@@ -1,0 +1,32 @@
+
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: ramp-up
+  level-scale: 4
+  out: lpf
+
+lpf:
+  type: filter
+  shape: biquad
+  #  input-freq:
+  #    amp: 1000
+  #    range: 10000 # hz
+  #  input-Q:
+  #    amp: 1000
+  #    range: 100  # .5 -> infinity
+
+  # this works OK in audacity.
+  # (lowpass2 *track* 440 5)
+
+  freq: 440
+  Q: 5   # they say "0-5 default 1"
+  level-scale: 1
+  out: main
+
+env:
+  type: env
+  midi: note-on, note-off, control
+  preset: organ
+  out: main

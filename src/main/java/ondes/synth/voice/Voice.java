@@ -142,6 +142,11 @@ public class Voice {
             MonoComponent comp=components.get(compKey);
             comp.setVoice(this);
             comp.configure(compSpec,components);
+            if (comp.mainOutput == null) {
+                err.println("component "+compKey+" mainOutput is null. " +
+                    "Did you call super.configure()?");
+                err.println("  class="+comp.getClass());
+            }
 
             addMidiListeners(comp, compSpec);
         }
