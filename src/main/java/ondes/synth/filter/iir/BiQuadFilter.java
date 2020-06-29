@@ -45,7 +45,51 @@ public class BiQuadFilter extends Filter {
 
         b[1] = 1 - cos(omega);
         b[0] = b[2] = 0.5 * b[1];
+
+        normalize();
     }
+
+    /**
+     * <p>
+     *     ported from nyq:biquad in dspprims.lsp
+     * </p>
+     * <p>
+     *     Normalize so that a[0]=1. However, a[0]
+     *     is never used, so we don't need to set it.
+     * </p>
+     * <p>
+     *     At this point biquad-m also negates the A parameters
+     *     because the Nyquist biquad function in biquadfilt.c
+     *     adds them. We are subtracting them, so we don't
+     *     do the negation here.
+     * </p>
+     */
+    void normalize() {
+        if (a[0] < 0) {
+            err.println("Unstable parameter a0 in biquad.");
+            setDefaults(); return;
+        }
+        double a0r = 1.0 / a[0];
+        a[0] = 1;
+        a[1] = a0r * a[1];
+        a[2] = a0r * a[2];
+
+//  translate to assuming a[2] is -a[2]
+//        if (a[2] <= -1.0 || (1 - a[2]) <= abs(a[1])) {
+        if (a[2] >= 1.0 || (1 + a[2]) <= abs(a[1])) {
+            err.println("Unstable parameter a2 in biquad.");
+            setDefaults(); return;
+        }
+
+        for (int i=0; i<b.length; ++i) b[i] *= a0r;
+    }
+
+    void setDefaults() {
+        // if everything is 1, there is no filtering.
+        Arrays.fill(a,1);
+        Arrays.fill(b,1);
+    }
+
 
     void showCoefficients() {
         out.println("freq: "+freq+" Q:"+Q);
@@ -56,18 +100,25 @@ public class BiQuadFilter extends Filter {
     }
 
     /**
-     * stolen from Nyquist (in the Audacity project)
-     * Only works for two poles. The generalized one
-     * for "n" poles is in IIRFilter.java
+     * <p>
+     *     Stolen from Nyquist (in the Audacity project) Only works for two
+     *     poles. The generalized one for "n" poles is in IIRFilter.java
+     * </p>
+     * <p>
+     *     /lib-src/libnyquist/nyquist/nyqstk/src/BiQuad.cpp
+     *     Direct Form 1, as opposed to the version in biquadfilt.c
+     *     which uses Direct Form 2 (and opposite-signed "a")
+     * </p>
      */
     @Override
     public int currentValue() {
         x[0] =  inputSum();
-        y[0] = b[0] * x[0] + b[1] * x[1] + b[2] * x[2];
-        y[0] -= a[2] * y[2] + a[1] * y[1];
-//        y[0] -= a[2] * y[2] + a[1] * y[1] + a[0] * y[0]; // ????
+        y[0] = b[0]*x[0] + b[1]*x[1] + b[2]*x[2];
+        y[0] -= a[2]*y[2] + a[1]*y[1];
+
         x[2] = x[1];
         x[1] = x[0];
+
         y[2] = y[1];
         y[1] = y[0];
 
@@ -129,7 +180,11 @@ public class BiQuadFilter extends Filter {
                      1000 - about the same
          */
 
-        new BiQuadFilter().setCoefficients(1000, 1000);
+        BiQuadFilter bq = new BiQuadFilter();
+        bq.sampleRate = 44100.0;
+
+        bq.setCoefficients(1000, 10000);
+        bq.showCoefficients();
     }
 }
 

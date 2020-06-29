@@ -40,7 +40,7 @@ From [dspprims.lsp](F:\shiva\Development\music\extermal\audacity\audacity\nyquis
     (nyq:biquad-m x b0 b1 b2 a0 a1 a2 source)))
 ```
 ```
-;  NOTE BELOW: they are negating a1 and a2... but NOT a0! 
+;  a0 gets normalized, and eventually ignored.
 ;
 (defun nyq:biquad-m (x b0 b1 b2 a0 a1 a2 &optional (source "BIQUAD-M"))
   (nyq:biquad x b0 b1 b2 a0 (- a1) (- a2)))
@@ -68,7 +68,10 @@ From [dspprims.lsp](F:\shiva\Development\music\extermal\audacity\audacity\nyquis
 ```
 ;  Above, biquadfilt.[ch] means the two files (~.c and ~.h)
 ;  in biquadfilt.c, we find the below. Note that, sure enough,
-;  they are ADDING the 'a' coefficients rather than subtracting. 
+;  they are ADDING the 'a' coefficients rather than subtracting.
+; 
+; Below is using direct form 2, but assuming that the "a" coefficients
+; are already negated. 
 ...
 	if (n) do { /* the inner sample computation loop */
             double z0;            z0 = *s_ptr_reg++ + a1_reg*z1_reg + a2_reg*z2_reg;

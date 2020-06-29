@@ -21,12 +21,13 @@ lpf:
   # (lowpass2 *track* 440 5)
 
   freq: 440
-  Q: 5   # they say "0-5 default 1"
+  Q: 10   # they say "0-5 default 1"
   level-scale: 1
-  out: main
+  out: env
 
 env:
   type: env
+  exit: true
   midi: note-on, note-off, control
   preset: organ
   out: main

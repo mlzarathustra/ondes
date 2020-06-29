@@ -19,6 +19,16 @@
      y will be asymptotic to 1.
  
  ---
+ 
+  - can we use 
+        arcsin( (y[0]-y[-1]) / (x[0]-x[-1]) ) 
+        
+    to limit the angular change?
+     
+    That should cause some kind of filtering. (probably requires
+    a lookup table, easier given that the denominator is constant)
+ 
+ ---
   
  - sweep IIR filter by linear extrapolation between data points.     
  
