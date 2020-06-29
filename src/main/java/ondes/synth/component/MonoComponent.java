@@ -5,12 +5,10 @@ import ondes.synth.voice.Voice;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.System.err;
+import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.getList;
 
 @SuppressWarnings("rawtypes")
@@ -146,6 +144,41 @@ public abstract class MonoComponent implements ConfigHelper {
         List compOutList = getList(compOut);
         setOutput(compOutList, components, getMainOutput());
     }
+
+    public double[] getMinMaxLevel(String minMaxStr) {
+        if (minMaxStr == null) {
+            return new double[2];
+        }
+
+        double[] rs = new double[2];
+
+        try {
+            List<Double> minMax = Arrays.stream(minMaxStr.split("[\\s,]+"))
+                .map( Double::parseDouble ).collect(toList());
+
+            if (minMax.size() == 1) minMax.add(0.0);
+
+            if (minMax.size() == 2) {
+                Collections.sort(minMax);
+                rs[0] = minMax.get(0);
+                rs[1] = minMax.get(1);
+            }
+            else {
+                err.println(
+                    "ERROR! Expected 1-2 decimal numbers, got: "+minMaxStr);
+                rs[0]=0; rs[1]=100;
+            }
+        }
+        catch (NumberFormatException ex) {
+            err.println(
+                "ERROR! Expected decimal numbers, got: "+minMaxStr);
+            rs[0]=0; rs[1]=100;
+
+        }
+        return rs;
+    }
+
+
 
     /**
      * <p>

@@ -2,6 +2,8 @@
 
  ---
   - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
+  - implement a boolean property "primary" to automatically configure those 4 things.
+  - if there is only one envelope, assume it is the primary. 
    
  ---
  

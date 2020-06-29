@@ -449,35 +449,11 @@ public class Envelope extends MonoComponent {
             List levelOutList = getList(levelOutObj);
             setOutput(levelOutList, components, getLevelOutput());
 
-            String minMaxStr = config.get("out-level-amp").toString();
-            if (minMaxStr == null) {
-                outLevelMin = 0; outLevelMax = 100;
-            }
-            else {
-                try {
-                    List<Double> minMax = Arrays.stream(minMaxStr.split("[\\s,]+"))
-                        .map( Double::parseDouble ).collect(toList());
+            double[] mm = getMinMaxLevel(config.get("out-level-amp").toString());
+            outLevelMin = mm[0];
+            outLevelMax = mm[1];
 
-                    if (minMax.size() == 1) minMax.add(0.0);
 
-                    if (minMax.size() == 2) {
-                        Collections.sort(minMax);
-                        outLevelMin = minMax.get(0);
-                        outLevelMax = minMax.get(1);
-                    }
-                    else {
-                        err.println(
-                            "ERROR! out-level-amp: if present, must be one or two numbers.");
-                        outLevelMin=0; outLevelMax=100;
-                    }
-                }
-                catch (NumberFormatException ex) {
-                    err.println("ERROR: Envelope: Invalid number in out-level-amp. "+
-                        minMaxStr);
-                    outLevelMin=0; outLevelMax=100;
-
-                }
-            }
         }
         String levelScaleErr =
             "'level-scale' must be between 0 and 11. (floating) " +

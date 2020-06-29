@@ -7,12 +7,23 @@ osc1:
   level-scale: 4
   out: lpf
 
+# Alesis  A   B   C   D
+# ctrl #  12  13  91  93
+#ctrl:
+#  type: controller
+#  number: 12
+#  amp: 1000
+#
+
+
+
+
 lpf:
   type: filter
   shape: biquad
-  #  input-freq:
-  #    amp: 1000
-  #    range: 10000 # hz
+  input-freq:
+    amp: 1000
+    range: 10000 # hz
   #  input-Q:
   #    amp: 1000
   #    range: 100  # .5 -> infinity
