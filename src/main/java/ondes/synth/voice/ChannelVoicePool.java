@@ -27,7 +27,7 @@ public class ChannelVoicePool {
     }
     
     private final ArrayDeque<Voice> available=new ArrayDeque<>();
-    private final ArrayDeque<Voice> inUse = new ArrayDeque<>();
+//    private final ArrayDeque<Voice> inUse = new ArrayDeque<>();
 
     /**
      * Ten voices seems like a good default.
@@ -87,9 +87,9 @@ public class ChannelVoicePool {
 
         if (voice == null) return null;
 
-        synchronized (this) {
-            inUse.push(voice);
-        }
+//        synchronized (this) {
+//            inUse.push(voice);
+//        }
 
         // propagate channel state
         channelState.getMessages()
@@ -102,7 +102,7 @@ public class ChannelVoicePool {
     public void releaseVoice(Voice voice) {
         voice.pause();
         synchronized (this) {
-            inUse.remove(voice);
+//            inUse.remove(voice);
             available.add(voice);
         }
     }

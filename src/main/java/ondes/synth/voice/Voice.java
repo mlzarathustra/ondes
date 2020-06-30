@@ -7,6 +7,7 @@ import ondes.midi.MlzMidi;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.OndeSynth;
+import ondes.synth.envelope.Envelope;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.WiredIntSupplierPool;
 
@@ -80,7 +81,7 @@ public class Voice {
     };
 
     @SuppressWarnings("rawtypes")
-    private void addMidiListeners(MonoComponent comp, Map compSpec) {
+    public void addMidiListeners(MonoComponent comp, Map compSpec) {
         Object obj = compSpec.get("midi");
         if (obj == null) return;
         for (Object val : getList(obj)) {
@@ -142,10 +143,14 @@ public class Voice {
             MonoComponent comp=components.get(compKey);
             comp.setVoice(this);
             comp.configure(compSpec,components);
-            if (comp.mainOutput == null) {
-                err.println("component "+compKey+" mainOutput is null. " +
-                    "Did you call super.configure()?");
-                err.println("  class="+comp.getClass());
+
+            if (comp.mainOutput == null &&
+                !( (comp instanceof Envelope) && ((Envelope)comp).levelOutput != null)
+            ) {
+                err.println("Component "+compKey+" mainOutput is null. ");
+                // more likely than the below: forgot the out: property
+                //"Did you call super.configure()?");
+                //err.println("  class="+comp.getClass());
             }
 
             addMidiListeners(comp, compSpec);

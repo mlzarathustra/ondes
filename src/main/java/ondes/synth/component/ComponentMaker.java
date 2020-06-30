@@ -5,6 +5,7 @@ import ondes.synth.envelope.Envelope;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.filter.FilterMaker;
 import ondes.synth.wave.WaveMaker;
+import ondes.synth.wire.Controller;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.OpAmp;
 
@@ -62,6 +63,10 @@ public class ComponentMaker {
 
             case "filter":
                 rs = FilterMaker.getFilter((String)specs.get("shape"));
+                break;
+
+            case "controller":
+                rs = new Controller();
                 break;
 
             default:

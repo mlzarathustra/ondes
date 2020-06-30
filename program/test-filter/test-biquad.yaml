@@ -9,14 +9,11 @@ osc1:
 
 # Alesis  A   B   C   D
 # ctrl #  12  13  91  93
-#ctrl:
-#  type: controller
-#  number: 12
-#  amp: 1000
-#
-
-
-
+ctrl:
+  type: controller
+  number: 12
+  amp: 1000
+  out: lpf.freq
 
 lpf:
   type: filter

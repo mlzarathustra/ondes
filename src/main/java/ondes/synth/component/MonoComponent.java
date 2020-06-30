@@ -10,9 +10,10 @@ import java.util.*;
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.getList;
+import static ondes.synth.component.ConfigHelper.*;
 
 @SuppressWarnings("rawtypes")
-public abstract class MonoComponent implements ConfigHelper {
+public abstract class MonoComponent {
 
     Voice voice;
     public Voice getVoice() { return voice; }
@@ -137,7 +138,7 @@ public abstract class MonoComponent implements ConfigHelper {
         Object compOut = config.get("out");
         if (compOut == null && config.get("out-level") == null) {
             err.println("Missing out: key in " + this.getClass());
-            err.println("WaveGen will not do much without output!");
+            err.println("A Component will not do much without output!");
             return;
         }
         if (compOut == null) return;
@@ -177,8 +178,6 @@ public abstract class MonoComponent implements ConfigHelper {
         }
         return rs;
     }
-
-
 
     /**
      * <p>

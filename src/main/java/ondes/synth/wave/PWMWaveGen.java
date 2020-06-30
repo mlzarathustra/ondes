@@ -1,12 +1,12 @@
 package ondes.synth.wave;
 
-import ondes.synth.wire.WiredIntSupplier;
 
-import java.util.List;
 import java.util.Map;
-
 import static java.lang.System.err;
 import static java.lang.System.out;
+
+import static ondes.synth.component.ConfigHelper.*;
+
 
 /**
  * Generate Pulse-Modulated Square wave.

@@ -10,6 +10,8 @@ import java.util.Map;
 
 import static ondes.midi.MlzMidi.showBytes;
 import static ondes.mlz.PitchScaling.*;
+import static ondes.synth.component.ConfigHelper.*;
+
 
 import static java.lang.Math.pow;
 import static java.lang.Math.min;
@@ -282,7 +284,6 @@ public abstract class WaveGen extends MonoComponent {
         }
     }
 
-
     /**
      * <p>
      *     Note that at this point the phase clock does not yet exist.
@@ -349,41 +350,19 @@ public abstract class WaveGen extends MonoComponent {
         if (intInp != null)  ampOverride = intInp;
 
         //  LOG input
-
-        objInp = config.get("input-log");
-        if (objInp != null && !( objInp instanceof Map)) {
-            err.println("input-log must be a Map!");
-        }
-        else if (objInp != null) {
-            Map inputParams=(Map)objInp;
-            intInp = getInt(inputParams.get("amp"),
-                "'amp' must be an integer.");
-            if (intInp != null)  logInputAmp = intInp;
-
-            fltInp = getFloat(inputParams.get("semitones"),
-                "semitones must be a decimal number.");
-            if (fltInp != null) logInputSemitones = fltInp;
-
-            logModMaxExp = logInputSemitones /12f;
+        Object[] prInp = getAmpPair(config, "input-log", "semitones");
+        if (prInp != null) {
+            logInputAmp = (int) prInp[0];
+            logModMaxExp = ((float) prInp[1])/12f;
             modLogFrequency = true;
         }
 
         // LINEAR input
 
-        objInp = config.get("input-linear");
-        if (objInp != null && !( objInp instanceof Map)) {
-            err.println("input-linear must be a Map!");
-        }
-        else if (objInp != null) {
-            Map inputParams=(Map)objInp;
-            intInp = getInt(inputParams.get("amp"),
-                "'amp' must be an integer.");
-            if (intInp != null)  linearInputAmp = intInp;
-
-            fltInp = getFloat(inputParams.get("frequency"),
-                "frequency must be a decimal number.");
-            if (fltInp != null) linearInputFreq = fltInp;
-
+        prInp = getAmpPair(config, "input-linear", "frequency");
+        if (prInp != null) {
+            linearInputAmp = (int) prInp[0];
+            linearInputFreq = (float) prInp[1];
             modLinFrequency = true;
         }
 

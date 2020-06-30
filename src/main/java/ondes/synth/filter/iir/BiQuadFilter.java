@@ -8,6 +8,8 @@ import java.util.Map;
 import static java.lang.Math.*;
 import static java.lang.System.err;
 import static java.lang.System.out;
+import static ondes.synth.component.ConfigHelper.*;
+
 
 public class BiQuadFilter extends Filter {
 

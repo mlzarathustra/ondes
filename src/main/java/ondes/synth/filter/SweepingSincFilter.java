@@ -1,16 +1,19 @@
 package ondes.synth.filter;
 
-import ondes.midi.FreqTable;
-import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
 import static java.lang.Math.*;
+
+import ondes.midi.FreqTable;
+import static ondes.synth.component.ConfigHelper.*;
+
+
+
 
 /**
  *  Output the running average over an array of size arraySize().

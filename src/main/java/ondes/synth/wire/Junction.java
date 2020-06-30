@@ -1,10 +1,10 @@
 package ondes.synth.wire;
 
-import ondes.synth.component.MonoComponent;
-
 import java.util.Map;
-
 import static java.lang.System.err;
+
+import ondes.synth.component.MonoComponent;
+import static ondes.synth.component.ConfigHelper.*;
 
 /**
  *

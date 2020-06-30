@@ -1,13 +1,14 @@
 package ondes.synth.filter.iir;
 
-import ondes.synth.filter.Filter;
-import ondes.synth.wire.WiredIntSupplier;
-
 import java.util.Arrays;
 import java.util.Map;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
+
+import ondes.synth.filter.Filter;
+import static ondes.synth.component.ConfigHelper.*;
+
 
 public class IIRFilter extends Filter {
 

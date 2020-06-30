@@ -10,7 +10,9 @@ import static java.lang.System.out;
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
 import static java.lang.Math.*;
+
 import static ondes.mlz.Util.getList;
+import static ondes.synth.component.ConfigHelper.*;
 
 /**
  * <p>

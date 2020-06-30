@@ -1,5 +1,7 @@
 package ondes.synth;
 
+import ondes.midi.MlzMidi;
+
 import javax.sound.midi.MidiMessage;
 import java.util.*;
 import static java.lang.System.out;
@@ -15,6 +17,7 @@ public class MidiListenerThread extends Thread {
     boolean stop=false;
 
     public synchronized void routeMidiMessage(MidiMessage msg) {
+        //out.println("MidiListenerThread.queue.add() "+ MlzMidi.toString(msg));
         queue.add(msg);
         this.notify();
     }

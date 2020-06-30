@@ -2,12 +2,11 @@ package ondes.synth.wire;
 
 import ondes.synth.component.MonoComponent;
 
-import java.util.List;
 import java.util.Map;
-import static java.lang.System.out;
+import static ondes.synth.component.ConfigHelper.*;
 
+import static java.lang.System.out;
 import static java.lang.System.err;
-import static ondes.mlz.Util.getList;
 
 /**
  *

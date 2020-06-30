@@ -22,6 +22,30 @@ The following parameters can be used for wave generators. Only certain ones may 
     
   - **mod-percent** - The percentage of modulation for a PWM wave. See `pwm.yaml` in the resources directory for examples. PWM stands for "Pulse Width Modulation" and refers to changing the duty cycle of a square wave, which gives a kind of combing effect.
   
+  - **input-log** - for analog-style frequency modulation, e.g. for vibrato. Requires two sub-properties: semitones and amp. Amp is the maximum (integer) amplitude expected from the modulator, specified as **level-override** from a WaveGen, or **out-level-amp** from an Envelope to correspond with **out-level**. 
+
+```  
+    input-log:
+      semitones: 2.1
+      amp: 1000
+```
+To reach this input, in the modulating component's properties, say 
+
+    out: <component-name>.log
+ 
+ - **input-linear** - for DX7-style FM. Its parameters are the amp (see **input-log**) and the frequency spread.  For example, if the frequency is given as 200, the modulation will be between (_<note-freq>_ - 200) and (_<note-freq>_ + 200).
+ 
+```
+  input-linear:
+    frequency: 200
+    amp: 1000
+``` 
+To reach this input, in the modulating component's properties, say 
+
+    out: <component-name>.linear
+ 
+You'll find examples in the program/test-fm directory. To load patches in subdirectories (like this one is), be sure to say **-all-patches** on the command line. 
+  
 ## amplitude
 
 The exact amplitude is the result of an equation that may change. To override this formula, use the **level-override** property to set a fixed (integer) amplitude.  
