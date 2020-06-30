@@ -7,8 +7,8 @@
 
 run -in  828 -out "main out" \
     -ch1 octave \
-    -ch2 "four sour" \
-    -ch3 "no fun" \
+    -ch2 four-sour \
+    -ch3 no-fundamental \
     -ch4 bell-organ \
     -ch5 bassoon \
     -ch6 fourths  \

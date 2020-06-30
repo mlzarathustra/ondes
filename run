@@ -1,4 +1,6 @@
 #!/bin/bash
 
-java -cp build/libs/ondes-all.jar ondes.App "$@"
+. ondes-args
+
+java -cp build/libs/ondes-all.jar ondes.App  "${ONDES_ARGS[@]}" "$@"
 

@@ -8,7 +8,7 @@ osc1:
 lpf:
   type: filter
   shape: iir
-  key: lp_4_1k
+  key: lp_4_1000
   level-scale: 1
   out: main
 

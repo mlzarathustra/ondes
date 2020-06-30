@@ -119,12 +119,7 @@ public class Voice {
         wiredIntSupplierPool.reset();
     }
 
-    @SuppressWarnings("unchecked,rawtypes")
-    Voice(Map voiceSpec, OndeSynth synth) {
-        this.synth = synth;
-        this.voiceSpec = voiceSpec;
-
-        // step 1 : construct components
+    void constructComponents(Map voiceSpec, OndeSynth synth) {
         for (Object key : voiceSpec.keySet()) {
             Object value=voiceSpec.get(key);
             if (!(value instanceof Map)) continue;
@@ -137,15 +132,31 @@ public class Voice {
             }
             components.put(key.toString(), c);
         }
+    }
 
-        // step 1a: Add the main mixer to the components.
-        //    Currently it is the only global component.
-        //    Note that any others like this must be filtered out
-        //    in the following loop.
+    /**
+     * <p>
+     *     Add the main mixer to the components.
+     * </p>
+     * <p>
+     *     Currently "main" is the only global component.
+     *     Other voice-level components should be filtered out
+     *     in the constructComponents() loop, or they
+     *     will be configured multiple times.
+     *
+     * </p>
+     */
+
+    void addMainOutput() {
+        if (! components.values().stream().anyMatch(c -> c instanceof Envelope)) {
+            err.println("Voice has no envelope.");
+
+        }
         components.put("main", voiceMix);
 
-        // step 2 : configure
-        //          (including: connect to other components)
+    }
+
+    void configure() {
         for (String compKey : components.keySet()) {
             if (compKey.equals("main")) continue;
 
@@ -154,6 +165,8 @@ public class Voice {
             comp.setVoice(this);
             comp.configure(compSpec,components);
 
+            //  (1) main output doesn't have a regular output
+            //  (2) an envelope might not either, if it's only sending a level out.
             if (comp.mainOutput == null &&
                 !( (comp instanceof Envelope) && ((Envelope)comp).levelOutput != null)
             ) {
@@ -162,9 +175,18 @@ public class Voice {
                 //"Did you call super.configure()?");
                 //err.println("  class="+comp.getClass());
             }
-
             addMidiListeners(comp, compSpec);
         }
+    }
+
+    @SuppressWarnings("unchecked,rawtypes")
+    Voice(Map voiceSpec, OndeSynth synth) {
+        this.synth = synth;
+        this.voiceSpec = voiceSpec;
+
+        constructComponents(voiceSpec, synth);
+        addMainOutput();
+        configure();  // calls configure for each component.
     }
 
     public void processMidiMessage(MidiMessage msg) {

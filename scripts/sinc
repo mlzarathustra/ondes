@@ -1,5 +1,8 @@
 #!/bin/bash
 
-run  -in 828 -out 'main o' \
+# play a scale using the sine wave to hear
+# which pitches get suppressed.
+#
+run  -in 828 -out 'main o' -all-patches \
         -ch1 filter-test 
 

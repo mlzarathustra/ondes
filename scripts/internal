@@ -3,9 +3,9 @@
 run -in 828 -out 'main o' \
 -ch1  bassoon \
 -ch2  buzz \
--ch3  'no fundamental' \
--ch4  'no fundamental plus ten' \
--ch5  'octave organ' \
+-ch3  no-fundamental \
+-ch4  no-fundamental-plus10 \
+-ch5  octave-organ \
 -ch6  ramp-down \
 -ch7  ramp-up \
 -ch8  saw \
