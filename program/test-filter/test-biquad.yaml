@@ -1,10 +1,28 @@
 
+lfo1:
+  type: wave
+  freq: .2
+  shape: sine
+  out: osc2.log
+  level-override: 1000
+
+
+osc2:
+  midi: note-on
+  detune: 0
+  type: wave
+  shape: ramp-up
+  level-scale: 1
+  input-log:
+    semitones: .15
+    amp: 1000
+  out: lpf
 
 osc1:
   midi: note-on
   type: wave
   shape: ramp-up
-  level-scale: 4
+  level-scale: 3
   out: lpf
 
 # Alesis  A   B   C   D
@@ -18,8 +36,21 @@ ctrl12:
 ctrl13:
   type: controller
   number: 13
-  amp: 1000
+  amp: 400
   out: lpf.Q
+
+env1:
+  type: env
+  midi: note-on, note-off, control
+  points:
+    # columns: rate level [option]
+    - 500 100 re-trigger
+    - 3000 25 hold
+    - 5000 0 release
+    - 20000 0 alt-release
+    -
+  out-level: lpf.freq
+  out-level-amp: 1000
 
 lpf:
   type: filter
@@ -32,10 +63,7 @@ lpf:
     amp: 1000
     range: 100  # .5 -> infinity
 
-  # this works OK in audacity.
-  # (lowpass2 *track* 440 5)
-
-  freq: 440
+  freq: 220
   Q: .5   # they say "0-5 default 1"
   level-scale: 1
   out: env
@@ -44,5 +72,11 @@ env:
   type: env
   exit: true
   midi: note-on, note-off, control
-  preset: organ
+  points:
+    # columns: rate level [option]
+    - 50 100 re-trigger
+    - 1000 50 hold
+    - 1000 25
+    - 5000 0 release
+    - 20000 0 alt-release
   out: main

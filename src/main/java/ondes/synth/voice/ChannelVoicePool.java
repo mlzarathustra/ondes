@@ -87,10 +87,6 @@ public class ChannelVoicePool {
 
         if (voice == null) return null;
 
-//        synchronized (this) {
-//            inUse.push(voice);
-//        }
-
         // propagate channel state
         channelState.getMessages()
             .forEach( voice::processMidiMessage );
@@ -102,7 +98,6 @@ public class ChannelVoicePool {
     public void releaseVoice(Voice voice) {
         voice.pause();
         synchronized (this) {
-//            inUse.remove(voice);
             available.add(voice);
         }
     }

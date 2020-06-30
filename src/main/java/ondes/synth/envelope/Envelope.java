@@ -327,6 +327,7 @@ public class Envelope extends MonoComponent {
     @SuppressWarnings("rawtypes")
     boolean setSteps(List lines) {
         for (Object line : lines) {
+            if (line == null) continue;
             StepParam sp = new StepParam(line.toString());
             if (!sp.ok) {
                 err.println("ERROR in envelope points: " + line);

@@ -27,8 +27,17 @@ public class GrimReaperThread extends Thread {
         this.notify();
     }
 
-    public synchronized void endNotes() {
-        endedNoteQueue.forEach( n -> synth.noteEnded(n.get(0), n.get(1)));
+    public void endNotes() {
+        int i=0;
+        for (;;) {
+            List<Integer> n;
+            synchronized(this) {
+                if (i >= endedNoteQueue.size()) break;
+                n = endedNoteQueue.get(i);
+                ++i;
+            }
+            synth.noteEnded(n.get(0), n.get(1));
+        }
         endedNoteQueue.clear();
     }
 

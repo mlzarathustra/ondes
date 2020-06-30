@@ -102,9 +102,16 @@ public abstract class MonoComponent {
      * for most inputs
      * @return - the sum of all the inputs at this current sample
      */
-    protected synchronized int inputSum() {
+    protected int inputSum() {
         int sum=0;
-        for (WiredIntSupplier input : inputs) sum += input.getAsInt();
+        int i=0;
+        for (;;) {
+            synchronized(this) {
+                if (i >= inputs.size()) break;
+                sum += inputs.get(i).getAsInt();
+                ++i;
+            }
+        }
         return sum;
     }
 
