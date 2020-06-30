@@ -21,6 +21,13 @@ public class BiQuadFilter extends Filter {
     double[] a = new double[3], b = new double[3];
     double [] x=new double[3], y=new double[3];
 
+    //
+    //
+
+    int freqInputAmp;
+    float freqInputRange, freqOffset=0;
+
+
     float levelScale = 1;
 
     double getSampleRate() {
@@ -35,13 +42,10 @@ public class BiQuadFilter extends Filter {
             but the middle term does not.
      */
     void setCoefficients(double freq, double Q) {
-        this.freq = freq;
-        this.Q = Q;
-
         double omega = 2 * PI * (freq / getSampleRate());
         double alpha = sin(omega) * sinh(0.5 / Q);
 
-        a[0] = 1.0 + alpha;  //  todo - normalize (see lisp code)
+        a[0] = 1.0 + alpha;
         a[1] = -2.0 * cos(omega);
         a[2] = 1.0 - alpha;
 
@@ -76,8 +80,6 @@ public class BiQuadFilter extends Filter {
         a[1] = a0r * a[1];
         a[2] = a0r * a[2];
 
-//  translate to assuming a[2] is -a[2]
-//        if (a[2] <= -1.0 || (1 - a[2]) <= abs(a[1])) {
         if (a[2] >= 1.0 || (1 + a[2]) <= abs(a[1])) {
             err.println("Unstable parameter a2 in biquad.");
             setDefaults(); return;
@@ -101,6 +103,15 @@ public class BiQuadFilter extends Filter {
 
     }
 
+    private void adjustFreq() {
+        float inp = namedInputSum("freq");
+        if (inp != freqOffset) {
+            freqOffset = freqInputRange * inp / freqInputAmp;
+            setCoefficients(freq + freqOffset, Q);
+        }
+
+    }
+
     /**
      * <p>
      *     Stolen from Nyquist (in the Audacity project) Only works for two
@@ -114,6 +125,8 @@ public class BiQuadFilter extends Filter {
      */
     @Override
     public int currentValue() {
+        adjustFreq();
+
         x[0] =  inputSum();
         y[0] = b[0]*x[0] + b[1]*x[1] + b[2]*x[2];
         y[0] -= a[2]*y[2] + a[1]*y[1];
@@ -139,6 +152,12 @@ public class BiQuadFilter extends Filter {
         dblInp = getDouble(config.get("Q"),
             "biquad Q needs to be a decimal number.");
         if (dblInp != null) Q = dblInp;
+
+        Object[] freqMod = getAmpPair(config, "input-freq", "range");
+        if (freqMod != null) {
+            freqInputAmp = (int) freqMod[0];
+            freqInputRange = (float) freqMod[1];
+        }
 
         //  Should levelScale be in MonoComponent?
         Float fltInp;

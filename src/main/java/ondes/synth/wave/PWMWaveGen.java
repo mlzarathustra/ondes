@@ -14,11 +14,9 @@ import static ondes.synth.component.ConfigHelper.*;
  */
 class PwmWaveGen extends WaveGen {
 
-    private double dutyCycle = 0.5;
-    private float inputAmp = 0, inputAmpInv = 0;
-    private float modPercent = 0, modMultiplier;
-
-    private double lfoPhase = 0;
+    private final double dutyCycle = 0.5;
+    private float inputAmpInv = 0;
+    private float modPercent = 0;
 
 
     @Override
@@ -30,7 +28,7 @@ class PwmWaveGen extends WaveGen {
             "'input-amp' must be a number, typically " +
                 "the same as the level-override of the sender.");
         if (dblInp != null) {
-            inputAmp =  dblInp.floatValue();
+            float inputAmp =  dblInp.floatValue();
             if (inputAmp != 0) inputAmpInv = 1.0f/inputAmp;
         }
 
@@ -42,10 +40,8 @@ class PwmWaveGen extends WaveGen {
                 err.println(modPctErr);
                 modPercent = 0;
             }
-            modMultiplier = modPercent / 100;
         }
     }
-
 
     @Override
     public int currentValue() {
