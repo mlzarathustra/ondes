@@ -51,6 +51,7 @@ For the lists of parameters available, see the following files:
  - [Filter parameters](Filter.md)  
  - [Envelope parameters](Envelope.md)
  - [OpAmp parameters](OpAmp.md)
+ - [Controller parameters](Controller.md)
     
  ----
  

@@ -1,26 +1,69 @@
 
 # Filter parameters
 
-A **filter** in audio circuitry alters the frequency response and phase of the sine waves that compose the sound. It turns out that filtering is one of the more mathematically complex aspects of synthesis. To fully grasp the details, you must be familiar with calculus and linear equations concepts such as convolution, poles and zeros, the Laplace transform and the Z-transform.   
+OndeSynth now has a variety of filters, including a two-pole filter with resonance that can be swept with a signal (LFO, envelope, controller)
 
-However, the IIR algorithm itself is fairly straightforward, and using MatLab it is fairly easy to design various types of filters. It generates coefficients that can be used as data (in the IIRSpecLib class, for example) to drive the IIR algorithm.  
+The filter types available currently are as follows. The keyword goes in the **shape** property as shown in the examples:
+ 
+ - **biquad** - sweeping filter with dynamic frequency and Q 
+ - **iir** - fixed resonance-free filters based on the Butterworth coefficients from MatLab
+ - **sinc** - an FIR filter based on a moving average with many zeros. It creates a series of notches in what's called a **sinc** wave form.
+ - **sweep-sinc** - the above sinc filter, but with the ability to sweep frequency by rather crudely by adding and subtracting zeros.  Use with caution.  It seems to display extreme variations in bias, and the sweep is kind of gritty. I may look into smoothing it out at some point in the future. 
+
+
+Eventually I would like a 4-pole sweeping VCF with Q like the Moog synthesizer, but one thing at a time. 
+
+## Biquad Filter
+For now, this is probably the most practical filter. It offers fairly clean variable Q and frequency. 
+
+```
+lpf:
+  type: filter
+  shape: biquad
+  input-freq:
+    amp: 1000
+    range: 10000 # hz
+
+  input-Q:
+    amp: 1000
+    range: 100  
+
+  freq: 220
+  Q: .5   # they say "0-5 default 1"
+  level-scale: 1
+  out: env
+```
+
+ - **freq** - the base frequency in hz
+ - **Q** - the amount of resonance.  
+ - **level-scale** - the standard multiplier
+ - **out** - output routing 
+
+The **input-freq** and **input-Q** sections are optional. The regulate modulation of the frequency and Q (resonance) as indicated.
+
+ - **amp** (integer) parameter gives the maximum value expected from the modulator (given by **level-override** from a WaveGen, or **out-level-amp** from an envelope)
+ - **range** - tells the range of the sweep.  For the frequency, it's in hertz. For the Q, it's a positive value, indicating the amount of resonance. Use your ears to adjust it.
+ 
+The coefficient algorithm for the biquad filter is borrowed from the Nyquist implementation of a biquad filter with Q.  For more details, see [filter notes](../notes/freq-sweep/BiQuad.md)
+
+## FIR and IIR Filters 
 
 There are two basic types of filters: 
  - **FIR** = Finite Impulse Response - Zeros only (no feedback) 
  - **IIR** = Infinite Impulse Response - Poles and Zeros
+ 
+The biquad filter above, for example, is a second-order IIR filter (using Direct Form 1 for stability)
 
-The FIR does have one Pole at `dc` ("Direct Current") which is another way of saying "frequency zero."
+The "IR" part means "Impulse Response," which essentially means the response of the filter to a brief spike (which thus contains all frequencies). For an FIR filter, that discrete response defines the coefficients used in the filter algorithm. 
 
-An impulse response is a wave generated when a filter is subjected to a brief impulse, essentially a 'spike.' For an FIR, the impulse response is the same as the set of 'b' parameters used in the filter. An IIR, however has a response of theoretically infinite length, because unlike the FIR filter it feeds back the output (and taps into the delay of the output) back into the signal. That feedback is dictated by the 'a' parameters.  
+The FIR filters (Finite Impulse Response) have a finite response, after which they settle to zero. The IIR (Infinite Impulse Response) filters, however, have a feedback circuit that causes the response to theoretically go on indefinitely. 
 
-**OndeSynth** currently features both IIR and FIR filters. 
-
-Of the two, the IIR filter is more flexible. Since OndeSynth provides a standard IIR engine, it's possible to generate the `a` and `b` coefficients using MatLab, and plug in the data to the `IIRSpecLib` class for it to be available via a **key:** element as shown below.  
-
-Eventually I would like a 4-pole sweeping VCF with Q like the Moog synthesizer, but one thing at a time. 
-
+In sound, the FIR filters will be a series of notch filters, whereas the IIR filters are capable of a wide variety of behaviors including low-pass, high-pass, and band-pass.  
+ 
+ 
 ## IIR filter - lowpass  
 
+The filters with the shape **iir** are fixed-cutoff filters. For example,
 Below is an IIR lowpass filter with a cutoff starting at 440 hz. 
 ```
 lpf:
@@ -31,9 +74,9 @@ lpf:
   out: main
 ```
 
-The IIR filters available so far are all Butterworth filters designed
-using MatLab. Butterworth filters are noted for their smooth **pass-band**, **transition**, and **stop-band** curves. Other filter types are capable of sharper cutoffs, by sacrificing the evenness of the frequency response in one or more of the aforementioned bands. 
+These are Butterworth filters, noted for their smooth **pass-band**, **transition**, and **stop-band** curves. Other filter types are capable of sharper cutoffs, by sacrificing the evenness of the frequency response in one or more of the aforementioned bands. 
  
+### key format  
 Available keys for filter types presently are mnemonically labelled:
 
     {type}_{order}_{frequency}
@@ -42,7 +85,9 @@ So, **lp_6_1k** is a low-pass 6th order filter with a cutoff of 1,000 hz. For a 
 
 The higher-order filters are capable of sharper cutoffs, but also are prone to becoming unstable in lower frequencies (Meaning: loud unpleasant noise). They seem to run OK above about 2k.  
 
-Note: the Moog uses a 4-pole filter, however unlike the below it also has a resonance denoted by "Q."
+The "frequency" part assumes that the sampleRate is 44,100 hz. If the sample rate changes, the cutoff frequency will shift proportionally. 
+
+## keys available
 
 Below are the keys currently available:
 
@@ -75,11 +120,12 @@ Below are the keys currently available:
         lp_1_22k
     
 
-```
+``` 
+
 
 ## FIR filters 
 
-These are both 'notch' filters, as that is what results from doing a running average. As mentioned previously, FIR filters only have zeros, which translate into notches in the frequency response graph. 
+The **sinc** and **sweep-sinc** filters are both 'notch' filters, as that is what results from doing a running average. As mentioned previously, FIR filters only have zeros, which translate into notches in the frequency response graph. 
 
 They draw what is known as a 'sinc' wave, which is a variation of the formula ((sin x) / x), only the lobes are folded over from the negative quadrant. 
 
@@ -102,10 +148,21 @@ lpf:
   out: main
 ```
 
+Here is the "bode plot" for a 50th-order FIR filter (with all coefficients = 1). This will be similar to the response of the above filter.  
 
-I tried sweeping the filter by adding and removing elements from the vector running the average. Which does work, though not very smoothly. It's pretty gritty in fact.  I believe the right way would be to adjust the coefficients of the filter rather than adding and subtracting them. 
+![](images/FIR-50.png)
 
-For now I am leaving it as-is in case it turns out to be useful, but I hope to replace it with a smooth sweep.
+And here is the literal "sinc" wave, in other words sin(x)/x
+
+![](images/sinc-wave.png)
+
+
+## Sweeping SINC 
+
+
+You can sweep the above filter by adding and removing elements from the vector running the average. Which does work, though not very smoothly. It's pretty gritty in fact.  
+
+For now I am leaving it as-is in case it turns out to be useful. It does sound kind of cool, and there may be a way to smooth it out some. 
 
 You can hear the current version in the `pwm-sweep` patch. 
 
@@ -130,3 +187,18 @@ The two components below are the LFO and the filter. See the patch YAML for the 
       input-amp: 1000
       out: main
 ```
+
+ 
+
+## About Filter Theory
+
+It turns out that filtering is one of the more mathematically complex aspects of synthesis. To fully grasp the details, you must be familiar with calculus and linear equations concepts such as convolution, poles and zeros, the Laplace transform and the Z-transform.   
+
+However, the IIR algorithm itself is fairly straightforward, and using MatLab it is fairly easy to design various types of filters. It generates coefficients that can be used as data (in the IIRSpecLib class, for example) to drive the IIR algorithm.  
+
+As mentioned above, the impulse response is a wave generated when a filter is subjected to a brief impulse, essentially a 'spike.' For an FIR, the impulse response is the same as the set of 'b' parameters used in the filter. An IIR, however has a response of theoretically infinite length, because unlike the FIR filter it feeds back the output (and taps into the delay of the output) back into the signal. That feedback is dictated by the 'a' parameters.  
+
+Of the two, the IIR filter is more flexible. Since OndeSynth provides a standard IIR engine, it's possible to generate the `a` and `b` coefficients using MatLab, and plug in the data to the `IIRSpecLib` class for it to be available via a **key:** element as shown previously.
+
+
+

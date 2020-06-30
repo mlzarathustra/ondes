@@ -1,6 +1,21 @@
 # OndeSynth - to do
 
  ---
+  - add keyboard follow to biquad 
+ ```    
+    #  A possible component:  
+    key-follow:
+      type: midi-key # the key number 0-128
+      linear: 
+        amp: 1000
+        out: env1.rate
+
+      log: 
+        amp: 1000
+        out: lpf.freq 
+ ```
+  
+ ---
   - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
   - implement a boolean property "primary" to automatically configure those 4 things.
   - if there is only one envelope, assume it is the primary. 
@@ -96,13 +111,7 @@
  
    - If there is no envelope, add a default one to taper off to avoid clicks at the end of sine waves.
   
-       ```    
-            #  A possible use case:  
-          
-          midi-key: 
-            type: midi-key # the key number 0-128
-            out: env1.rate 
-       ```
+
    ------
 
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
@@ -122,7 +131,6 @@
 aliasing - oversample and then downsample? 
 
  ---
-
  - effects 
     - echo
     - reverb
