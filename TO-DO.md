@@ -16,9 +16,8 @@
  ```
   
  ---
-  - make it easier to create default envelopes (e.g. have a shortcut for midi ON, OFF and control) plus exit: true
-  - implement a boolean property "primary" to automatically configure those 4 things.
-  - if there is only one envelope, assume it is the primary. 
+  - if there is only one envelope, assume it is the primary.
+  - change the keyword "exit" to "primary"? 
    
  ---
  
@@ -28,6 +27,10 @@
  
   - error reporting: report on non-wavegen comps that don't have input?
   - report on unknown properties given? 
+  
+ ---
+   try putting allocating the playing voices to various worker threads. 
+   MonoComponent.threadedInputSum()  
  
  ---
  

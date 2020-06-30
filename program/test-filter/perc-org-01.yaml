@@ -16,7 +16,6 @@ osc1:
 
 env1:
   type: env
-  midi: note-on, note-off, sustain
   points:
     - 0 100
     - 500 0

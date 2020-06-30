@@ -4,9 +4,9 @@ An Envelope has two outputs:
  - a signal attenuated by the envelope.
  - the envelope level itself 
 
-The latter gives the level of the envelope in a specified range, and the former is the result of a set of incoming signals attenuated by the envelope, in other words the mathematical product of a set of incoming signals and the envelope level.
+The latter gives the level of the envelope in a specified range, and the former is the result of a set of incoming signals attenuated by the envelope, in other words the mathematical product of a set of incoming signals and the envelope level.  The former is for audio output, the latter for modulating other components. 
 
-_Note - the latter has not been tested yet._  
+At this point, envelopes automatically listen to MIDI **note-on**, **note-off**, and **sustain**, as there is currently no other way to trigger them.  
   
 ## A few examples:
 
@@ -14,7 +14,7 @@ Very simple:
 ```yaml
 env1: 
   type: env
-  midi: note-on, note-off, sustain
+  exit: true
   preset: clavier
 ```
 The presets are more for getting a quick result than being flexible. 
@@ -27,7 +27,6 @@ A classic ADSR envelope can be as simple as a few elements:
 env2:
   type: env
   exit: true
-  midi: note-on, note-off, sustain
   points:
     # columns: rate level [option]
     - 30 100 
@@ -51,7 +50,6 @@ You can add as many points as you like:
 env2:
   type: env
   exit: true
-  midi: note-on, note-off, sustain
   points:
     # columns: rate level [option]
     - 7 100 
@@ -74,7 +72,6 @@ Here's an example showing all of the keywords, **re-trigger**, **hold**, **relea
 env3:
   type: env
   exit: true
-  midi: note-on, note-off, sustain
 
   points:
     # columns: rate level [option]
@@ -108,11 +105,6 @@ OndeSynth will not layer two notes at the same pitch on the same channel. If you
 
 ## The parameters:
   - **type** - for everything on this page, must be `env`
-  - **midi** - if this envelope is to do anything, it must be triggered. Typical triggers: 
-  
-    - **note-on** 
-    - **note-off**
-    - **sustain**
     
   - **exit** - If set, when this envelope finishes its cycle, it stops the voice from playing any longer. Default is false. Note that in YAML, the words 'on' and 'yes' also indicate 'true', as 'off' and 'no' indicate false.
     

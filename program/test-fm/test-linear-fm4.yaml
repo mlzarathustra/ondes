@@ -9,7 +9,6 @@ mod-osc1:
 
 env-mod:
   type: env
-  midi: note-on, note-off, sustain
   points:
     - 1000 0
     - 10000 100 hold
@@ -38,7 +37,6 @@ osc1:
 env1:
   type: env
   exit: true
-  midi: note-on, note-off, sustain
   points:
     - 100 99 re-trigger
     - 0 100 hold

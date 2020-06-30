@@ -8,7 +8,6 @@ osc1:
 env1:
   type: env
   exit: true
-  midi: note-on, note-off, control
 #  preset: clavier
   points:
     # columns: rate level [option]

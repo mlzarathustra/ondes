@@ -19,7 +19,6 @@ osc1:
 
 env1:
   type: env
-  midi: note-on, note-off, control
   points:
     - 7 100
     - 10 90 hold
@@ -39,7 +38,6 @@ osc2:
 env2:
   type: env
   exit: true
-  midi: note-on, note-off, control
   points:
     # columns: rate level [option]
     - 700 100 hold

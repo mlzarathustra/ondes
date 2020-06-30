@@ -23,7 +23,6 @@ lpf:
 env1:
   type: env
   exit: true
-  midi: note-on, note-off, control
   points:
     # columns: rate level [option]
     - 250 100

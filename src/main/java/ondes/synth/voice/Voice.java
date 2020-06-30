@@ -57,10 +57,10 @@ public class Voice {
      * Eight listeners, one for each message type (MIDI status >> 4)
      * @see #processMidiMessage(MidiMessage)
      */
-    private ArrayList<MonoComponent>[] midiListeners= new ArrayList[8];
+    private Set<MonoComponent>[] midiListeners= new HashSet[8];
     {
         for (int i=0; i<8; ++i) {
-            midiListeners[i] = new ArrayList<>();
+            midiListeners[i] = new HashSet<>();
         }
     }
 
@@ -80,19 +80,29 @@ public class Voice {
         {"system"}
     };
 
+    private void addEnvelopeListeners(MonoComponent comp) {
+        addListener("note-on", comp);
+        addListener("note-off", comp);
+        addListener("sustain", comp);
+    }
+
+    private void addListener(String valStr, MonoComponent comp) {
+        for (int i=0; i<midiMessageTypes.length; ++i) {
+            if (Arrays.asList(midiMessageTypes[i]).contains(valStr)) {
+                midiListeners[i].add(comp);
+                break;
+            }
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     public void addMidiListeners(MonoComponent comp, Map compSpec) {
+        if (comp instanceof Envelope) addEnvelopeListeners(comp);
         Object obj = compSpec.get("midi");
         if (obj == null) return;
         for (Object val : getList(obj)) {
             String valStr= val.toString();
-
-            for (int i=0; i<midiMessageTypes.length; ++i) {
-                if (Arrays.asList(midiMessageTypes[i]).contains(valStr)) {
-                    midiListeners[i].add(comp);
-                    break;
-                }
-            }
+            addListener(valStr, comp);
         }
     }
 
@@ -158,7 +168,7 @@ public class Voice {
     }
 
     public void processMidiMessage(MidiMessage msg) {
-        ArrayList<MonoComponent> listeners =
+        Set<MonoComponent> listeners =
             midiListeners[7 & (msg.getStatus()>>4)];
 
         if (DB) {

@@ -44,6 +44,9 @@ The **input-freq** and **input-Q** sections are optional. The regulate modulatio
  - **amp** (integer) parameter gives the maximum value expected from the modulator (given by **level-override** from a WaveGen, or **out-level-amp** from an envelope)
  - **range** - tells the range of the sweep.  For the frequency, it's in hertz. For the Q, it's a positive value, indicating the amount of resonance. Use your ears to adjust it.
  
+Here is the frequency response for the biquad filter with a cutoff of 1000. Note that the plot encompasses the range from zero to the sampling rate, typically 44100. 
+ ![](images/biquad-fc-1000.png)
+ 
 The coefficient algorithm for the biquad filter is borrowed from the Nyquist implementation of a biquad filter with Q.  For more details, see [filter notes](../notes/freq-sweep/BiQuad.md)
 
 ## FIR and IIR Filters 

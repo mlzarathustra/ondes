@@ -41,7 +41,6 @@ ctrl13:
 
 env1:
   type: env
-  midi: note-on, note-off, control
   points:
     # columns: rate level [option]
     - 500 100 re-trigger
@@ -61,7 +60,7 @@ lpf:
 
   input-Q:
     amp: 1000
-    range: 100  # .5 -> infinity
+    range: 50  # .5 -> infinity
 
   freq: 220
   Q: .5   # they say "0-5 default 1"
@@ -71,7 +70,6 @@ lpf:
 env:
   type: env
   exit: true
-  midi: note-on, note-off, control
   points:
     # columns: rate level [option]
     - 50 100 re-trigger

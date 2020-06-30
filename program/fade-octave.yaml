@@ -31,7 +31,6 @@ osc2:
 env2:
   type: env
   exit: true
-  midi: note-on, note-off, control
   points:
     # columns: rate level [option]
     - 2000 20

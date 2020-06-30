@@ -24,8 +24,7 @@ vca:
 env: 
   type: env
   exit: true
-  midi: note-on, note-off, control
-  points: 
+  points:
     - 7 100
     - 8 75 
     - 5000 0

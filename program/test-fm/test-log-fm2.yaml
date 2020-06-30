@@ -76,7 +76,6 @@ osc9:
 env1:
   type: env
   exit: true
-  midi: note-on, note-off, sustain
   points:
     - 1000 100 re-trigger
     - 0 100 hold
