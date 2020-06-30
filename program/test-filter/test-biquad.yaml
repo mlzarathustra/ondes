@@ -9,11 +9,17 @@ osc1:
 
 # Alesis  A   B   C   D
 # ctrl #  12  13  91  93
-ctrl:
+ctrl12:
   type: controller
   number: 12
   amp: 1000
   out: lpf.freq
+
+ctrl13:
+  type: controller
+  number: 13
+  amp: 1000
+  out: lpf.Q
 
 lpf:
   type: filter
@@ -21,15 +27,16 @@ lpf:
   input-freq:
     amp: 1000
     range: 10000 # hz
-  #  input-Q:
-  #    amp: 1000
-  #    range: 100  # .5 -> infinity
+
+  input-Q:
+    amp: 1000
+    range: 100  # .5 -> infinity
 
   # this works OK in audacity.
   # (lowpass2 *track* 440 5)
 
   freq: 440
-  Q: 10   # they say "0-5 default 1"
+  Q: .5   # they say "0-5 default 1"
   level-scale: 1
   out: env
 

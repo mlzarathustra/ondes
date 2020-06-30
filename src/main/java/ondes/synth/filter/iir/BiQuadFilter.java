@@ -24,8 +24,12 @@ public class BiQuadFilter extends Filter {
     //
     //
 
-    int freqInputAmp;
+    int freqInputAmp, QInputAmp;
     float freqInputRange, freqOffset=0;
+    float QInputRange, QOffset=0;
+
+
+    boolean modFreq, modQ;
 
 
     float levelScale = 1;
@@ -100,16 +104,32 @@ public class BiQuadFilter extends Filter {
         //out.println("omega: "+omega+" alpha: "+alpha);
         out.println("a="+ Arrays.toString(a));
         out.println("b="+ Arrays.toString(b));
-
     }
 
-    private void adjustFreq() {
+    /**
+     * update modulated frequency (but not coefficients)
+     * @return - did modulated frequency change?
+     */
+    private boolean adjustFreq() {
+        if (!modFreq) return false;
         float inp = namedInputSum("freq");
-        if (inp != freqOffset) {
-            freqOffset = freqInputRange * inp / freqInputAmp;
-            setCoefficients(freq + freqOffset, Q);
-        }
+        float newOffset = freqInputRange * inp / freqInputAmp;
+        if (freqOffset == newOffset) return false;
+        freqOffset = newOffset;
+        return true;
+    }
 
+    /**
+     * update modulated Q (but not coefficients)
+     * @return - did modulated Q change?
+     */
+    private boolean adjustQ() {
+        if (!modQ) return false;
+        float inp = namedInputSum("Q");
+        float newOffset = QInputRange * inp / QInputAmp;
+        if (QOffset == newOffset) return false;
+        QOffset = newOffset;
+        return true;
     }
 
     /**
@@ -125,7 +145,9 @@ public class BiQuadFilter extends Filter {
      */
     @Override
     public int currentValue() {
-        adjustFreq();
+        if (adjustFreq() || adjustQ()) {
+            setCoefficients(freq + freqOffset, Q + QOffset);
+        }
 
         x[0] =  inputSum();
         y[0] = b[0]*x[0] + b[1]*x[1] + b[2]*x[2];
@@ -153,11 +175,21 @@ public class BiQuadFilter extends Filter {
             "biquad Q needs to be a decimal number.");
         if (dblInp != null) Q = dblInp;
 
-        Object[] freqMod = getAmpPair(config, "input-freq", "range");
-        if (freqMod != null) {
-            freqInputAmp = (int) freqMod[0];
-            freqInputRange = (float) freqMod[1];
+        Object[] modInp = getAmpPair(config, "input-freq", "range");
+        if (modInp != null) {
+            freqInputAmp = (int) modInp[0];
+            freqInputRange = (float) modInp[1];
+            modFreq = true;
         }
+
+        modInp = getAmpPair(config, "input-Q", "range");
+        if (modInp != null) {
+            QInputAmp = (int) modInp[0];
+            QInputRange = (float) modInp[1];
+            modQ = true;
+        }
+
+
 
         //  Should levelScale be in MonoComponent?
         Float fltInp;
