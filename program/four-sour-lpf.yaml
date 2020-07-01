@@ -1,0 +1,86 @@
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: lpf
+
+osc2:
+  midi: note-on
+  type: wave
+  shape: square
+  out: lpf
+  detune: -12
+
+osc3:
+  midi: note-on
+  type: wave
+  shape: square
+  out: lpf
+  detune: 12
+
+osc4:
+  midi: note-on
+  type: wave
+  shape: sin
+  offset: 7
+  detune: 4
+  out: lpf
+  level-scale: .4
+
+
+  ## -- ## -- ## -- ## -- ## -- ## -- ##
+
+lpf:
+  type: filter
+  shape: biquad
+  input-freq:
+    amp: 1000
+    range: 10000 # hz
+
+  input-Q:
+    amp: 1000
+    range: 50  # .5 -> infinity
+
+  freq: 110
+  Q: 2  # they say "0-5 default 1"
+  level-scale: 1
+  out: env
+
+
+
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: lpf.freq
+
+ctrl13:
+  type: controller
+  number: 13
+  amp: 400
+  out: lpf.Q
+
+env1:
+  type: env
+  points:
+    # columns: rate level [option]
+    - 500 100 re-trigger
+    - 3000 25 hold
+    - 5000 0 release
+    - 20000 0 alt-release
+    -
+  out-level: lpf.freq
+  out-level-amp: 1000
+
+env:
+  type: env
+  exit: true
+  points:
+    # columns: rate level [option]
+    - 50 100 re-trigger
+    - 1000 50 hold
+    - 1000 25
+    - 5000 0 release
+    - 20000 0 alt-release
+  out: main

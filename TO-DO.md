@@ -21,10 +21,6 @@
    
  ---
  
-  - allow for command-line defaults in a properties(?) file or something
- 
- ---
- 
   - error reporting: report on non-wavegen comps that don't have input?
   - report on unknown properties given? 
   
