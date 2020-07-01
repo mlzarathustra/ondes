@@ -1,8 +1,13 @@
 # OndeSynthesizer
-(under construction)
 
-To hear what you can do so far:
+A synthesizer that lets you plug together arbitrary components, which can be configured using a plain text editor and YAML.
+
+Many key features are working now, including DX-7 style FM and a resonant sweeeping filter, though there is still a lot to explore.
+
+To hear some of what you can do so far:
 [OndeSynth demo on YouTube](https://www.youtube.com/playlist?list=PLk0M1i4FJYGJ04WGUqPTOEU0NjMNrJEqt)
+
+There is extensive documentation starting at [Voice.md](doc/Voice.md) and there are a number of example patches included.
  
 ![](doc/images/ondes-synth-architecture-diagram.png)
 
@@ -17,6 +22,9 @@ It currently works on my system by using the `run` script in the main directory 
         run -in 828 -out "main out" -ch1 octave -ch2 10
 
 You may need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `run` with no arguments for command line help.
+
+Once you settle upon inputs and outputs, you may want to put them in the file `ondes-args` so you don't have to keep typing them.
+
 See [JavaSoundNaming.md](doc/JavaSoundNaming.md) for an explanation of how JavaSound names inputs and outputs, which is distinctly confusing.
 
 (This is all assuming you ran Gradle to build the jar file. See below)

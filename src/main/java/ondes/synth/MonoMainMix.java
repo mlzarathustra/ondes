@@ -81,8 +81,11 @@ public class MonoMainMix extends MonoComponent {
             openOutputLine(line);
 
         } catch (Exception ex) {
-            out.println("Exception Caught: " + ex);
-            ex.printStackTrace();
+            err.println("Can't open AUDIO output. Did you specify -out correctly?");
+            err.println("Device is "+mixer);
+            System.exit(-1);
+            //err.println("Exception Caught: " + ex);
+            //ex.printStackTrace();
         }
     }
 

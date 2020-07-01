@@ -1,5 +1,6 @@
 package ondes.synth.envelope;
 
+import ondes.synth.OndeSynth;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.WiredIntSupplier;
 
@@ -88,6 +89,11 @@ public class Envelope extends MonoComponent {
     private double curLevel;
 
     public Envelope() { }
+
+    public Envelope(OndeSynth synth, String str) {
+        this.synth = synth;
+        setSteps(envs.get(str));
+    }
 
     @Override
     public void noteON(MidiMessage msg) {

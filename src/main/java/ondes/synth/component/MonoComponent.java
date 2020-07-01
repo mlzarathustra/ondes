@@ -64,6 +64,8 @@ public abstract class MonoComponent {
      * In some cases there may be more than one output
      * but all components will have at least one.
      *
+     * Used in 2 places. Would be better if it were private.
+     *
      */
     public WiredIntSupplier mainOutput = null;
 

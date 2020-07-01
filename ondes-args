@@ -1,1 +1,1 @@
-ONDES_ARGS=(-in 828 -out 'main o')
+ONDES_ARGS=(-in 828 -out 'main out')

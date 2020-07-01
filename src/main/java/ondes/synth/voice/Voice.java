@@ -149,10 +149,15 @@ public class Voice {
 
     void addMainOutput() {
         if (! components.values().stream().anyMatch(c -> c instanceof Envelope)) {
-            err.println("Voice has no envelope.");
-
+            //err.println("Voice has no envelope.");
+            Envelope env = new Envelope(synth, "organ");
+            env.setVoice(this);
+            env.setOutput(voiceMix);
+            addEnvelopeListeners(env);
+            setWaitForEnv(true);
+            components.put("main", env);
         }
-        components.put("main", voiceMix);
+        else components.put("main", voiceMix);
 
     }
 
