@@ -66,7 +66,7 @@ public class Envelope extends MonoComponent {
     /**
      * Do we return this voice to the pool when done?
      */
-    private boolean exit = false;
+    public boolean exit = false;
 
     /**
      * true if the last note message received was "ON"
@@ -461,9 +461,8 @@ public class Envelope extends MonoComponent {
             double[] mm = getMinMaxLevel(config.get("out-level-amp").toString());
             outLevelMin = mm[0];
             outLevelMax = mm[1];
-
-
         }
+
         String levelScaleErr =
             "'level-scale' must be between 0 and 11. (floating) " +
                 "Yes, it goes to 11! \n" +

@@ -155,6 +155,16 @@ public abstract class MonoComponent {
         setOutput(compOutList, components, getMainOutput());
     }
 
+    /**
+     * <p>
+     *     Two values: actually, the first and second values encountered.
+     *     If only one value is present, the first is assumed to be zero.
+     *     We do not sort, as that allows for inverted levels.
+     * </p>
+     * @param minMaxStr - a string containing two decimal numbers, separated
+     *                  by commas or spaces
+     * @return - the two numbers, or { 0, 100 } if there was an error.
+     */
     public double[] getMinMaxLevel(String minMaxStr) {
         if (minMaxStr == null) {
             return new double[2];
@@ -166,10 +176,9 @@ public abstract class MonoComponent {
             List<Double> minMax = Arrays.stream(minMaxStr.split("[\\s,]+"))
                 .map( Double::parseDouble ).collect(toList());
 
-            if (minMax.size() == 1) minMax.add(0.0);
+            if (minMax.size() == 1) minMax.add(0, 0.0);
 
             if (minMax.size() == 2) {
-                Collections.sort(minMax);
                 rs[0] = minMax.get(0);
                 rs[1] = minMax.get(1);
             }
@@ -183,7 +192,6 @@ public abstract class MonoComponent {
             err.println(
                 "ERROR! Expected decimal numbers, got: "+minMaxStr);
             rs[0]=0; rs[1]=100;
-
         }
         return rs;
     }

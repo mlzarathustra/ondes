@@ -175,14 +175,14 @@ public class BiQuadFilter extends Filter {
             "biquad Q needs to be a decimal number.");
         if (dblInp != null) Q = dblInp;
 
-        Object[] modInp = getAmpPair(config, "input-freq", "range");
+        Object[] modInp = getInAmpPair(config, "input-freq", "range");
         if (modInp != null) {
             freqInputAmp = (int) modInp[0];
             freqInputRange = (float) modInp[1];
             modFreq = true;
         }
 
-        modInp = getAmpPair(config, "input-Q", "range");
+        modInp = getInAmpPair(config, "input-Q", "range");
         if (modInp != null) {
             QInputAmp = (int) modInp[0];
             QInputRange = (float) modInp[1];

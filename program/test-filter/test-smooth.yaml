@@ -1,0 +1,14 @@
+
+osc2:
+  midi: note-on
+  detune: 0
+  type: wave
+  shape: square
+  out: smooth
+
+#  Nope.
+#
+smooth:
+  type: smooth
+  limit: .15
+  out: main

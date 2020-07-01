@@ -17,7 +17,10 @@
   
  ---
   - if there is only one envelope, assume it is the primary.
-  - change the keyword "exit" to "primary"? 
+  - change the keyword "exit" to "primary"?
+   
+ ---
+  - attach a slider to FM mod/freq
    
  ---
  
@@ -46,7 +49,8 @@
  
  ---
   
- - sweep IIR filter by linear extrapolation between data points.     
+ - sweep 4-pole IIR filter by linear extrapolation between data points.
+   Better - find a formula like we have for BiQuad     
  
 ---
  - straighten out the various level coefficients in WaveGen
@@ -70,7 +74,7 @@
    
  
  --- 
-  - Anharmonic - adjust frequence of phase clocks. See TODO at WaveGen.modFreq()
+  - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
 
  ---
 

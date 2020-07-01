@@ -37,6 +37,44 @@ public class ConfigHelper {
             }
     }
 
+
+    @SuppressWarnings("rawtypes")
+    public static Map getMap(Map config, String inputName) {
+        Object objInp =config.get(inputName);
+        if (objInp != null && !( objInp instanceof Map)) {
+            err.println(inputName+" must be a Map!");
+            return null;
+        }
+        return (Map)objInp;
+    }
+
+
+    /**
+     * We assume the two properties are "amp" and "out"
+     *
+     * @param config - the configuration map for this component
+     * @param outputName - the name of the input (with 2 properties,
+     *                     "amp" and "out")
+     * @return - two objects: Integer and String, containing the
+     *      values of the amp: and out: properties respectively.
+     */
+    public static Object[] getOutAmpPair(Map config, String outputName) {
+        Map inputParams = getMap(config, outputName);
+        if (inputParams == null) return null; // not necessarily an error
+
+        Integer intInp = getInt(inputParams.get("amp"),
+            "'amp' must be an integer.");
+
+        String outStr = (String)inputParams.get("out");
+        if (outStr == null) {
+            err.println("out: property missing for output "+outputName);
+        }
+        if (intInp == null || outStr == null) return null;
+        return new Object[] { intInp, outStr };
+    }
+
+
+
     /**
      * Inputs are often defined by a pair of numbers,
      * "amp" and something else (like "semitones")
@@ -45,15 +83,10 @@ public class ConfigHelper {
      * input map is null.
      */
     @SuppressWarnings("rawtypes")
-    public static Object[] getAmpPair(Map config, String inputName, String inputProp) {
-        Object objInp = config.get(inputName);
-        if (objInp != null && !( objInp instanceof Map)) {
-            err.println(inputName+" must be a Map!");
-            return null;
-        }
-        if (objInp == null) return null; // not necessarily an error
+    public static Object[] getInAmpPair(Map config, String inputName, String inputProp) {
+        Map inputParams = getMap(config, inputName);
+        if (inputParams == null) return null; // not necessarily an error
 
-        Map inputParams=(Map)objInp;
         Integer intInp = getInt(inputParams.get("amp"),
             "'amp' must be an integer.");
 

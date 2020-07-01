@@ -8,6 +8,7 @@ import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Controller;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.OpAmp;
+import ondes.synth.wire.Smooth;
 
 import java.util.Map;
 
@@ -67,6 +68,10 @@ public class ComponentMaker {
 
             case "controller":
                 rs = new Controller();
+                break;
+
+            case "smooth":
+                rs = new Smooth();
                 break;
 
             default:

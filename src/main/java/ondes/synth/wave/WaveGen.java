@@ -350,7 +350,7 @@ public abstract class WaveGen extends MonoComponent {
         if (intInp != null)  ampOverride = intInp;
 
         //  LOG input
-        Object[] prInp = getAmpPair(config, "input-log", "semitones");
+        Object[] prInp = getInAmpPair(config, "input-log", "semitones");
         if (prInp != null) {
             logInputAmp = (int) prInp[0];
             logModMaxExp = ((float) prInp[1])/12f;
@@ -359,7 +359,7 @@ public abstract class WaveGen extends MonoComponent {
 
         // LINEAR input
 
-        prInp = getAmpPair(config, "input-linear", "frequency");
+        prInp = getInAmpPair(config, "input-linear", "frequency");
         if (prInp != null) {
             linearInputAmp = (int) prInp[0];
             linearInputFreq = (float) prInp[1];

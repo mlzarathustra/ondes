@@ -9,6 +9,7 @@ import ondes.synth.component.ComponentMaker;
 import ondes.synth.OndeSynth;
 import ondes.synth.envelope.Envelope;
 import ondes.synth.wire.Junction;
+import ondes.synth.wire.MidiNoteNum;
 import ondes.synth.wire.WiredIntSupplierPool;
 
 import static java.lang.System.err;
@@ -134,6 +135,16 @@ public class Voice {
         }
     }
 
+    Envelope getDefaultEnv() {
+        Envelope env = new Envelope(synth, "organ");
+        env.setVoice(this);
+        env.setOutput(voiceMix);
+        env.exit = true;
+        addEnvelopeListeners(env);
+        setWaitForEnv(true);
+        return env;
+    }
+
     /**
      * <p>
      *     Add the main mixer to the components.
@@ -146,21 +157,16 @@ public class Voice {
      *
      * </p>
      */
-
     void addMainOutput() {
-        if (! components.values().stream().anyMatch(c -> c instanceof Envelope)) {
-            //err.println("Voice has no envelope.");
-            Envelope env = new Envelope(synth, "organ");
-            env.setVoice(this);
-            env.setOutput(voiceMix);
-            addEnvelopeListeners(env);
-            setWaitForEnv(true);
-            components.put("main", env);
+        if (components.values().stream().noneMatch(c -> c instanceof Envelope)) {
+            components.put("main", getDefaultEnv());
         }
-        else components.put("main", voiceMix);
-
+        else {
+            components.put("main", voiceMix);
+        }
     }
 
+    @SuppressWarnings("rawtypes")
     void configure() {
         for (String compKey : components.keySet()) {
             if (compKey.equals("main")) continue;
@@ -172,8 +178,11 @@ public class Voice {
 
             //  (1) main output doesn't have a regular output
             //  (2) an envelope might not either, if it's only sending a level out.
+            //  (3) MidiNoteNum has two level outputs, so we won't check.
             if (comp.mainOutput == null &&
-                !( (comp instanceof Envelope) && ((Envelope)comp).levelOutput != null)
+                ! (
+                    (comp instanceof Envelope) && ((Envelope)comp).levelOutput != null ) ||
+                    (comp instanceof MidiNoteNum)
             ) {
                 err.println("Component "+compKey+" mainOutput is null. ");
                 // more likely than the below: forgot the out: property
