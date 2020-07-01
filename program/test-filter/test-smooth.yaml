@@ -3,12 +3,13 @@ osc2:
   midi: note-on
   detune: 0
   type: wave
-  shape: square
+  shape: ramp-up
   out: smooth
+  level-scale: 8
 
 #  Nope.
 #
 smooth:
   type: smooth
-  limit: .15
+  k: .01
   out: main

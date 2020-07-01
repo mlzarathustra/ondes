@@ -36,11 +36,11 @@ public class Smooth extends MonoComponent {
     @Override
     public int currentValue() {
         int inp = inputSum();
-        if (wLimit == 0) return inp;
+        //if (wLimit == 0) return inp;
         return currentValue(inp);
     }
 
-    private int currentValue(int inp) {
+    private int currentValue1(int inp) {
         double w1 = atan(y1 - y2);
         double wInp = atan(inp - y1) - w1;
         if (abs(wInp) > wLimit) {
@@ -62,16 +62,40 @@ public class Smooth extends MonoComponent {
         return (int) y0;
     }
 
+    // // // //
+
+
+//    double rate = .001; // in ms
+//    double d = ( rate * 44100.0 / 1000.0) / 4.616;
+//    double k = 1.0/d;
+//    double m = k;
+//
+//    void showDKM() {
+//        err.println("d="+d+"  k="+k+"  m="+m);
+//    }
+
+    double k=.01;
+
+    private int currentValue(int inp) {
+        double delta = inp - y0;
+        y0 = y0 + (signum(delta)*k + delta*k);
+        if ((y0 < inp && delta<0) || (y0>inp && delta>0)) y0 = inp;
+
+        return (int)y0;
+    }
+
+
+
 
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         super.configure(config, components);
 
-        Double dblInp = getDouble(config.get("limit"),
+        Double dblInp = getDouble(config.get("k"),
             "Smooth: 'limit' must be a decimal number.");
 
-        if (dblInp != null) wLimit = abs(dblInp);
-        err.println("limit is "+wLimit);
+        if (dblInp != null) k = abs(dblInp);
+        err.println("k is "+k);
     }
 
 
@@ -90,6 +114,8 @@ public class Smooth extends MonoComponent {
         for (int i=0; i<input.length; ++i) {
             output[i] = smooth.currentValue(input[i]);
         }
+
+        //smooth.showDKM();
 
         out.println("input="+Arrays.toString(input)+";");
         out.println("output="+Arrays.toString(output)+";");
