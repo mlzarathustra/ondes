@@ -1,15 +1,25 @@
 
+#osc1:
+#  midi: note-on
+#  detune: 7
+#  type: wave
+#  shape: ramp-up
+#  out: main
+
+
 osc2:
   midi: note-on
   detune: 0
   type: wave
   shape: ramp-up
   out: smooth
-  level-scale: 8
+  level-scale: 1
 
-#  Nope.
+#  attach k to a Controller
+#  figure out the scaling
 #
 smooth:
   type: smooth
-  k: .01
+  amount: 200
+  level-scale: 10
   out: main

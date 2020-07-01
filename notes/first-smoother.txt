@@ -1,0 +1,42 @@
+
+
+The idea was to limit the change in angle (as if the pen drawing the line
+were an automobile with a limited turning radius).
+
+The algorithm wound up being very tricky to get right, and then it
+didn't sound very good.  Who knows, perhaps some variation on the theme
+will work.
+
+
+    double y0, y1, y2;
+    double wLimit;
+
+
+    @Override
+    public int currentValue() {
+        int inp = inputSum();
+        if (wLimit == 0) return inp;
+        return currentValue(inp);
+    }
+
+    private int currentValue1(int inp) {
+        double w1 = atan(y1 - y2);
+        double wInp = atan(inp - y1) - w1;
+        if (abs(wInp) > wLimit) {
+            if (inp == y1) {
+                y0 = y1 + tan(w1 - signum(w1) * wLimit);
+            }
+            else {
+                y0 = y1 + tan(w1 + (wLimit * signum(inp - y1)));
+            }
+        }
+        else y0 = inp;
+
+        out.print(String.format("inp=%4d  w1=%8.4f  wInp=%8.4f  wLimit=%8.4f  ", inp, w1, wInp, wLimit));
+        out.println(String.format("     y0=%8.4f y1=%8.4f y2=%8.4f", y0, y1, y2));
+
+        y2 = y1;
+        y1 = y0;
+
+        return (int) y0;
+    }
