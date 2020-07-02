@@ -36,7 +36,7 @@ public abstract class CompositeWave extends WaveGen {
     protected String[] listToTokenAry(List waveConfig) {
         String str = ""+(waveConfig)
             .stream()
-            .map(Object::toString)
+            .map(obj-> obj==null?"":obj.toString())
             .collect(joining(" "));
         return str.split("[\\s,]+");
     }

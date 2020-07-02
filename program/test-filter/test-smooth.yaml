@@ -1,10 +1,12 @@
 
-#osc1:
-#  midi: note-on
-#  detune: 7
-#  type: wave
-#  shape: ramp-up
-#  out: main
+# Use the A controller to adjust the
+# amount. Watch for overload.
+#
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: smooth.range
 
 
 osc2:
@@ -15,11 +17,12 @@ osc2:
   out: smooth
   level-scale: 1
 
-#  attach k to a Controller
-#  figure out the scaling
-#
 smooth:
   type: smooth
-  amount: 200
-  level-scale: 10
+  amount:
+  input-amount:
+    amp: 1000
+    range: 20
+
+  level-scale: .6
   out: main

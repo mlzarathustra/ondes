@@ -1,0 +1,130 @@
+
+lfo1:
+  type: wave
+  freq: .2
+  shape: sine
+  out: osc1.log
+  level-override: 1000
+
+env-mod:
+  type: env
+  points:
+    - 1 100 re-trigger
+    - 75 0
+  out-level: osc1.linear
+  out-level-amp: 1000
+
+osc1:
+  midi: note-on
+  detune: 7
+  type: wave
+  input-linear:
+    frequency: 25
+    amp: 1000
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 3 3
+    - 4 4
+    - 5 5
+    - 12 2
+    - 16 2
+    - 24 3
+  input-log:
+    semitones: .15
+    amp: 1000
+  out: env1
+  level-scale: .6
+
+osc1a:
+  midi: note-on
+  detune: 3
+  type: wave
+  shape: harmonic
+  waves:
+    - 1 1
+    - 2 2
+    - 3 3
+    - 4 4
+    - 5 5
+    - 12 2
+    - 16 2
+    - 24 3
+  out: env1
+  level-scale: .6
+
+env1:
+  type: env
+  points:
+    - 8 100
+    - 10 85 hold
+    - 90 0
+    - 5000 0 alt-release
+  out: main
+
+
+
+# Use the A controller to adjust the
+# amount. Watch for overload.
+#
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: smooth.range
+
+
+osc2:
+  midi: note-on
+  detune: 0
+  type: wave
+  shape: ramp-up
+  out: smooth
+  level-scale: 1
+
+
+lfo3:
+  type: wave
+  freq: .14
+  shape: sine
+  level-override: 1000
+  out: osc3.log
+
+osc3:
+  midi: note-on
+  type: wave
+  shape: square
+  input-log:
+    semitones: .08
+    amp: 1000
+  level-scale: .7
+  out: lpf
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_4_440
+  level-scale: 1
+  out: env2
+
+smooth:
+  type: smooth
+  amount: 7
+  input-amount:
+    amp: 1000
+    range: 20
+
+  level-scale: .4
+  out: env2
+
+env2:
+  type: env
+  exit: true
+  points:
+    - 100 100
+    - 50 95 hold
+    - 100 20
+    - 700 0
+    - 5000 0 alt-release
+  out: main

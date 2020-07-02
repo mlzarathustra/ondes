@@ -76,8 +76,13 @@ public class ConfigHelper {
 
 
     /**
-     * Inputs are often defined by a pair of numbers,
-     * "amp" and something else (like "semitones")
+     * <p>
+     *     Inputs are often defined by a pair of numbers,
+     *     "amp" and something else (like "semitones")
+     * </p>
+     * <p>
+     *     TODO - return a range for the "inputProp" e.g. -100, 100
+     * </p>
      *
      * @return an Integer and a Float, or null if the
      * input map is null.
