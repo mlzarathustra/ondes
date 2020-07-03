@@ -7,7 +7,9 @@ import ondes.synth.voice.VoiceMaker;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -66,8 +68,27 @@ public class App {
 
         //out.println(list);
         if (list.isEmpty()) return null;
+        out.println(list.size() + " items match "+outDevStr);
 
-        return AudioSystem.getMixer(list.get(0));
+        // if more than one item matches, make sure we can
+        // open the source data line.
+
+        Mixer rs = null;
+        for (Mixer.Info srcInfo : list) {
+            try {
+                rs = AudioSystem.getMixer(srcInfo);
+                Line.Info[] lineInfo = rs.getSourceLineInfo();
+                out.println("lineInfo is "+lineInfo.length+" items.");
+                //SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[0]);
+                SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[lineInfo.length - 1]);
+                sdl.open();
+                sdl.start();
+                break; // if no exception
+            }
+            catch (Exception ignore) { }
+        }
+
+        return rs;
     }
 
     static MidiDevice getMidiDev(String inDevStr) {
@@ -122,7 +143,7 @@ public class App {
         String[] progNames = new String[16];
         for (int i=0; i<16; ++i) progNames[i]="";
 
-        if (Arrays.asList(args).contains("-all-patches")) {
+        if (Arrays.asList(args).contains("-all")) {
             out.println("load all patches");
             VoiceMaker.setRecurseSubdirs(true);
         }
@@ -145,7 +166,7 @@ public class App {
                 continue;
 
                 case "-hold": hold=true; continue;
-                case "-all-patches": continue;
+                case "-all": continue;
             }
 
             // options with following args - if we get here
@@ -159,10 +180,6 @@ public class App {
             switch(args[i]) {
                 case "-in": inDevStr = args[++i]; continue;
                 case "-out": outDevStr = args[++i]; continue;
-                case "-all":
-                    ++i;
-                    for (int ch=0; ch<16; ch++) progNames[ch] = args[i];
-                    continue;
 
                 case "-show-patch":
                 case "-show-program":

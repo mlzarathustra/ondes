@@ -181,8 +181,9 @@ public class Voice {
             //  (3) MidiNoteNum has two level outputs, so we won't check.
             if (comp.mainOutput == null &&
                 ! (
-                    (comp instanceof Envelope) && ((Envelope)comp).levelOutput != null ) ||
+                    (comp instanceof Envelope) && ((Envelope)comp).levelOutput != null ||
                     (comp instanceof MidiNoteNum)
+                )
             ) {
                 err.println("Component "+compKey+" mainOutput is null. ");
                 // more likely than the below: forgot the out: property

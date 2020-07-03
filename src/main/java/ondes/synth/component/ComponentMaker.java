@@ -7,8 +7,9 @@ import ondes.synth.filter.FilterMaker;
 import ondes.synth.wave.WaveMaker;
 import ondes.synth.wire.Controller;
 import ondes.synth.wire.Junction;
+import ondes.synth.wire.MidiNoteNum;
 import ondes.synth.wire.OpAmp;
-import ondes.synth.wire.Smooth;
+import ondes.synth.filter.Smooth;
 
 import java.util.Map;
 
@@ -46,33 +47,18 @@ public class ComponentMaker {
                 rs = WaveMaker.getWaveGen((String)specs.get("shape"));
                 break;
 
-            case "env":
-                rs = new Envelope();
-                break;
-
-            case "mix":
-                rs = new Junction();
-                break;
-
-            case "limiter":
-                rs = new Limiter();
-                break;
-
-            case "op-amp":
-                rs = new OpAmp();
-                break;
+            case "env": rs = new Envelope(); break;
+            case "mix": rs = new Junction(); break;
+            case "limiter": rs = new Limiter(); break;
+            case "op-amp": rs = new OpAmp(); break;
 
             case "filter":
                 rs = FilterMaker.getFilter((String)specs.get("shape"));
                 break;
 
-            case "controller":
-                rs = new Controller();
-                break;
-
-            case "smooth":
-                rs = new Smooth();
-                break;
+            case "controller": rs = new Controller(); break;
+            case "smooth": rs = new Smooth(); break;
+            case "midi-note": rs = new MidiNoteNum(); break;
 
             default:
                 return null;

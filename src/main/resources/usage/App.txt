@@ -29,19 +29,18 @@
                  A patch is identified by either its name or the
                  index as given by this command.
 
-            -all-patches -show-patches
+            -all -show-patches
                 Same as the above, but recursively traverses into
                 subdirectories of the filesystem 'program' directory.
 
-                Index numbers will change when -all-patches is set.
+                Index numbers will change when -all is set.
 
             -show-patch <patch name | index>
-            -all-patches -show-patch <patch name | index>
+            -all -show-patch <patch name | index>
 
         Select:
-            -all | -patch <(patch name | index) for all channels>
-            -ch1 <patch for channel 1>
-            -ch2 < "     "    "     2>
+            -ch1 <{patch name | index} for channel 1>
+            -ch2 <{patch name | index} for channel 2>
             ...
 
        Patches can be supplied as YAML files in the directory

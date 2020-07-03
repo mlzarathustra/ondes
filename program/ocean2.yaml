@@ -1,0 +1,77 @@
+
+
+noise1:
+  midi: note-on
+  type: wave
+  shape: pink
+  level-scale: 1
+  out: env1
+
+env1: 
+  type: env
+  points:
+  - 2000 100 re-trigger
+  - 1000 99 hold
+  - 3000 0
+  out: lpf1  
+
+lpf1:
+  type: filter
+  midi: note-on
+#   freq: 440
+  out: main
+  level-scale: 1.5
+
+  ## -- ## -- ## -- ## -- ## 
+
+  
+
+osc1:
+  midi: note-on
+  offset: 12
+  type: wave
+  shape: sine
+  out: vca
+
+osc2: 
+  midi: note-on
+  type: wave
+  offset: 20
+  shape: noise
+  level-scale: .3
+  out: vca
+
+# since the waves are unsigned, this is now a 
+# ring modulator
+vca: 
+  type: op-amp
+  level-scale: .05
+  out: env2
+
+env2: 
+  type: env
+  exit: true
+  points:
+    - 4000 100 re-trigger
+    - 2000 85 hold
+    - 7000 0
+  out: lpf2
+
+lpf2:
+  type: filter
+  shape: iir
+  key: lp_6_10k
+  level-scale: .5
+  out: smooth
+
+smooth:
+  type: smooth
+  amount: 4
+  input-amount:
+    amp: 1000
+    range: 20
+
+  level-scale: .6
+  out: main
+  
+

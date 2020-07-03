@@ -1,4 +1,4 @@
-package ondes.synth.wire;
+package ondes.synth.filter;
 
 import static java.lang.Math.*;
 
