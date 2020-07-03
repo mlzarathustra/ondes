@@ -1,5 +1,6 @@
 package ondes.synth.effect;
 
+import ondes.synth.component.ModParam;
 import ondes.synth.component.MonoComponent;
 
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class Echo extends MonoComponent {
         setMaxDelay(1000);
     }
 
-    int howManySamples(float ms) {
+    int howManySamples(double ms) {
         return (int)ceil(
             (ms / 1000) * synth.getSampleRate()
         );
@@ -51,7 +52,17 @@ public class Echo extends MonoComponent {
     void setCurDelay(float ms) {
         ms = min(abs(ms), maxDelay);
         curDelay = (int) ms;
-        offset = howManySamples(ms);
+        int newOffset = howManySamples(ms);
+        if (newOffset > offset) {
+
+            //  TODO - finish zeroing out
+            //      ( < won't work for the circular buffer )
+
+//            for (int i = (t0 + offset) % tape.length; i < (t0 + newOffset) % tape.length; ++i) {
+//                tape[i] = 0;
+//            }
+        }
+        offset = newOffset;
     }
 
     void modAmt() {
@@ -81,10 +92,17 @@ public class Echo extends MonoComponent {
 
     // // // //
 
+    ModParam amtParam, timeParam;
+
     @Override
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         super.configure(config, components); // set outputs
+
+        amtParam = new ModParam(config, "amount", "percent", 0);
+        timeParam = new ModParam(config, "time", "ms", 1000,
+            this::setCurDelay);
+
 
         //  set amount (percentage) and time (ms)
         Float fltInp = getFloat(config.get("amount"),
