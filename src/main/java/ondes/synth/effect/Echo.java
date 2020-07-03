@@ -26,12 +26,12 @@ public class Echo extends MonoComponent {
     float curDelay; // for modulation
     int offset; // curDelay's offset into tape
 
-    float amount = 0;  // feedback must be < 1.0 !!
-
-    int amtAmp, timeAmp;
-    float amtRange, timeRange;
-    float amtBase, timeBase;
-    boolean modAmt, modTime;
+//    float amount = 0;  // feedback must be < 1.0 !!
+//
+//    int amtAmp, timeAmp;
+//    float amtRange, timeRange;
+//    float amtBase, timeBase;
+//    boolean modAmt, modTime;
 
     public Echo() {
         super();
@@ -56,7 +56,7 @@ public class Echo extends MonoComponent {
         if (newOffset > offset) {
 
             //  TODO - finish zeroing out
-            //      ( < won't work for the circular buffer )
+            //      ( a simple '<' won't work for the circular buffer )
 
 //            for (int i = (t0 + offset) % tape.length; i < (t0 + newOffset) % tape.length; ++i) {
 //                tape[i] = 0;
@@ -65,26 +65,26 @@ public class Echo extends MonoComponent {
         offset = newOffset;
     }
 
-    void modAmt() {
-        if (!modAmt) return;
-        float amt = amtRange * namedInputSum("amount") / amtAmp;
-        if (amt + amtBase == amount) return;
-        amount = amt + amtBase;
-    }
-
-    void modTime() {
-        if (!modTime) return;
-        float time = timeRange * namedInputSum("time") / timeAmp;
-        if (time + timeBase == curDelay) return;
-        setCurDelay(time + timeBase);
-    }
+//    void modAmt() {
+//        if (!modAmt) return;
+//        float amt = amtRange * namedInputSum("amount") / amtAmp;
+//        if (amt + amtBase == amount) return;
+//        amount = amt + amtBase;
+//    }
+//
+//    void modTime() {
+//        if (!modTime) return;
+//        float time = timeRange * namedInputSum("time") / timeAmp;
+//        if (time + timeBase == curDelay) return;
+//        setCurDelay(time + timeBase);
+//    }
 
     @Override
     public int currentValue() {
-        modAmt(); modTime();
+        amtParam.mod(); timeParam.mod();
 
         int x0 = inputSum();
-        int y0 = (int)(x0 + tape[t0]*amount);
+        int y0 = (int)(x0 + tape[t0]*amtParam.getCurrent());
         tape[(t0 + offset) % tape.length] = y0;
         t0 = (t0 + 1) % tape.length;
         return (int)(levelScale * y0);
@@ -99,45 +99,20 @@ public class Echo extends MonoComponent {
     public void configure(Map config, Map components) {
         super.configure(config, components); // set outputs
 
-        amtParam = new ModParam(config, "amount", "percent", 0);
+        amtParam = new ModParam(config, "amount", "percent", 0,
+            this::namedInputSum);
+
         timeParam = new ModParam(config, "time", "ms", 1000,
+            this::namedInputSum,
             this::setCurDelay);
 
-
-        //  set amount (percentage) and time (ms)
-        Float fltInp = getFloat(config.get("amount"),
-            "Echo amount must be a decimal number.");
-        if (fltInp != null) amtBase = fltInp;
-
-        //  Max delay is the sum of the "time" input  plus
-        //  the "input-time" modulation below
-
-        fltInp = getFloat(config.get("time"),
-            "Echo time must be a decimal number");
-        if (fltInp != null) timeBase = fltInp;
-        else timeBase = 1000; // default: 1 sec
-
-        Object[] modInp = getInAmpPair(config, "input-amount", "percent");
-        if (modInp != null) {
-            amtAmp = (int) modInp[0];
-            amtRange = (float) modInp[1];
-            modAmt = true;
-        }
-        modInp = getInAmpPair(config, "input-time", "ms");
-        if (modInp != null) {
-            timeAmp = (int) modInp[0];
-            timeRange = (float) modInp[1];
-            modTime = true;
-        }
-
-        setMaxDelay( timeBase + timeRange );
-
+        setMaxDelay( timeParam.getBase() + timeParam.getRange() );
 
         String levelScaleErr =
             "'level-scale' must be between 0 and 11. (floating) " +
                 "Yes, it goes to 11! \n" +
                 "(but you probably want it much lower than that)";
-        fltInp = getFloat(config.get("level-scale"), levelScaleErr);
+        Float fltInp = getFloat(config.get("level-scale"), levelScaleErr);
         if (fltInp != null) {
             if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
             else levelScale = fltInp;

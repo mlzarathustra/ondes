@@ -1,13 +1,15 @@
-package ondes.mlz;
+package ondes.function;
 
 import java.util.Objects;
+
+//  Why does Java fail to define this one?
 
 @FunctionalInterface
 public interface FloatConsumer {
 
     void accept(float value);
 
-    default ondes.mlz.FloatConsumer andThen(
+    default FloatConsumer andThen(
         java.util.function.DoubleConsumer after
     ) {
             Objects.requireNonNull(after);

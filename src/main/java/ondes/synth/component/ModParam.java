@@ -1,9 +1,9 @@
 package ondes.synth.component;
 
-import ondes.mlz.FloatConsumer;
+import ondes.function.FloatConsumer;
 
 import java.util.Map;
-import java.util.function.*;
+import java.util.function.Function;
 
 import static ondes.synth.component.ConfigHelper.getFloat;
 import static ondes.synth.component.ConfigHelper.getInAmpPair;
@@ -11,24 +11,30 @@ import static ondes.synth.component.ConfigHelper.getInAmpPair;
 @SuppressWarnings("rawtypes")
 public class ModParam {
 
-    float base, range, current;
+    private float base;
+    private float range;
+    private float current;
     int amp;
     boolean mod;
     FloatConsumer post;
+    String label;
+    Function<String,Integer> getInput;
 
     public ModParam(Map config,
-             String label,
-             String measure,
-             float defaultVal
-             ) {
+                    String label,
+                    String measure,
+                    float defaultVal,
+                    Function<String,Integer> getInput
+    ) {
 
-        this(config,label,measure,defaultVal, null);
+        this(config,label,measure,defaultVal, getInput, null);
     }
 
     public ModParam(Map config,
              String label,
              String measure,
              float defaultVal,
+             Function<String,Integer> getInput,
              FloatConsumer post) {
 
         Float fltInp = getFloat(config.get(label),
@@ -43,11 +49,14 @@ public class ModParam {
             mod = true;
         }
 
+        this.label = label;
+        this.getInput = getInput;
         this.post = post;
     }
 
     // inp was namedInputSum("time")
-    boolean mod(int inp) {
+    public boolean mod() {
+        int inp = getInput.apply(label);
         if (!mod) return false;
         float delta = range * inp / amp;
         if (delta + base == current) return false;
@@ -55,9 +64,17 @@ public class ModParam {
 
         if (post != null) post.accept(current);
         return true;
-
     }
 
-    float currentValue() { return current; }
+    public float getBase() {
+        return base;
+    }
 
+    public float getRange() {
+        return range;
+    }
+
+    public float getCurrent() {
+        return current;
+    }
 }
