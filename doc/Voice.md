@@ -46,12 +46,14 @@ What a component will do is defined by a series of properties listed below the n
    
 For the lists of parameters available, see the following files:
 
- - [Common parameters](Common.md)
- - [WaveGen parameters](WaveGen.md)
- - [Filter parameters](Filter.md)  
- - [Envelope parameters](Envelope.md)
- - [OpAmp parameters](OpAmp.md)
- - [Controller parameters](Controller.md)
+ - [Common](Common.md)
+ - [WaveGen](WaveGen.md)
+ - [Filter](Filter.md)  
+ - [Envelope](Envelope.md)
+ - [OpAmp](OpAmp.md)
+ - [Controller](Controller.md)
+ - [MidiNote](MidiNote.md)
+ - [Mix](Mix.md)
     
  ----
  

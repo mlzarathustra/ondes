@@ -1,21 +1,6 @@
 # OndeSynth - to do
 
  ---
-  - add keyboard follow to biquad 
- ```    
-    #  A possible component:  
-    key-follow:
-      type: midi-key # the key number 0-128
-      linear: 
-        amp: 1000
-        out: env1.rate
-
-      log: 
-        amp: 1000
-        out: lpf.freq 
- ```
-  
- ---
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
    
@@ -23,11 +8,7 @@
   - attach a slider to FM mod/freq
    
  ---
- 
-  - error reporting: report on non-wavegen comps that don't have input?
-  - report on unknown properties given? 
-  
- ---
+
    try putting allocating the playing voices to various worker threads. 
    MonoComponent.threadedInputSum()  
  
@@ -38,17 +19,7 @@
      y will be asymptotic to 1.
  
  ---
- 
-  - can we use 
-        arcsin( (y[0]-y[-1]) / (x[0]-x[-1]) ) 
-        
-    to limit the angular change?
-     
-    That should cause some kind of filtering. (probably requires
-    a lookup table, easier given that the denominator is constant)
- 
- ---
-  
+
  - sweep 4-pole IIR filter by linear extrapolation between data points.
    Better - find a formula like we have for BiQuad     
  
@@ -130,6 +101,11 @@
  - manage ChannelVoicePool from a separate thread
 
 -----------
+ 
+  - error reporting: report on non-wavegen comps that don't have input?
+  - report on unknown properties given? 
+  
+ ---
 
 aliasing - oversample and then downsample? 
 
