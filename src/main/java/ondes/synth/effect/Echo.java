@@ -35,7 +35,6 @@ public class Echo extends MonoComponent {
 
     public Echo() {
         super();
-        setMaxDelay(1000);
     }
 
     int howManySamples(double ms) {
@@ -51,20 +50,14 @@ public class Echo extends MonoComponent {
 
     // zero out everything from end to t0
     void zeroUnused() {
-        int end = (t0 + offset) % tape.length;
-
-//        if (end < t0) {
-//            for (int i=end; )
-//        }
-//
-//        //  TODO - finish zeroing out
-//        //      ( a simple '<' won't work for the circular buffer )
-//
-////            for (int i = (t0 + offset) % tape.length; i < (t0 + newOffset) % tape.length; ++i) {
-////                tape[i] = 0;
-////            }
-//    }
-
+        int end = (t0 + offset + 1) % tape.length;
+        if (end < t0) {
+            for (int i=end; i<t0; ++i) tape[i] = 0;
+        }
+        else {
+            for (int i=end; i<tape.length; ++i) tape[i] = 0;
+            for (int i=0; i<t0; ++i) tape[i] = 0;
+        }
     }
 
     void setCurDelay(float ms) {
@@ -76,26 +69,12 @@ public class Echo extends MonoComponent {
 
     }
 
-//    void modAmt() {
-//        if (!modAmt) return;
-//        float amt = amtRange * namedInputSum("amount") / amtAmp;
-//        if (amt + amtBase == amount) return;
-//        amount = amt + amtBase;
-//    }
-//
-//    void modTime() {
-//        if (!modTime) return;
-//        float time = timeRange * namedInputSum("time") / timeAmp;
-//        if (time + timeBase == curDelay) return;
-//        setCurDelay(time + timeBase);
-//    }
-
     @Override
     public int currentValue() {
         amtParam.mod(); timeParam.mod();
 
         int x0 = inputSum();
-        int y0 = (int)(x0 + tape[t0]*amtParam.getCurrent());
+        int y0 = (int)(x0 + tape[t0]* (amtParam.getCurrent() / 100.0));
         tape[(t0 + offset) % tape.length] = y0;
         t0 = (t0 + 1) % tape.length;
         return (int)(levelScale * y0);
@@ -109,6 +88,7 @@ public class Echo extends MonoComponent {
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         super.configure(config, components); // set outputs
+        //setMaxDelay(1000); // default shouldn't be needed
 
         amtParam = new ModParam(config, "amount", "percent", 0,
             this::namedInputSum);

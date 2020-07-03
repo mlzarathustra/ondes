@@ -78,7 +78,7 @@ public class App {
             try {
                 rs = AudioSystem.getMixer(srcInfo);
                 Line.Info[] lineInfo = rs.getSourceLineInfo();
-                out.println("lineInfo is "+lineInfo.length+" items.");
+                //out.println("lineInfo is "+lineInfo.length+" items.");
                 //SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[0]);
                 SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[lineInfo.length - 1]);
                 sdl.open();
@@ -143,7 +143,9 @@ public class App {
         String[] progNames = new String[16];
         for (int i=0; i<16; ++i) progNames[i]="";
 
-        if (Arrays.asList(args).contains("-all")) {
+        List<String>argList = Arrays.asList(args);
+
+        if (argList.contains("-all") || argList.contains("-all-patches")) {
             out.println("load all patches");
             VoiceMaker.setRecurseSubdirs(true);
         }
