@@ -49,20 +49,31 @@ public class Echo extends MonoComponent {
         tape = new int[howManySamples(ms)];
     }
 
+    // zero out everything from end to t0
+    void zeroUnused() {
+        int end = (t0 + offset) % tape.length;
+
+//        if (end < t0) {
+//            for (int i=end; )
+//        }
+//
+//        //  TODO - finish zeroing out
+//        //      ( a simple '<' won't work for the circular buffer )
+//
+////            for (int i = (t0 + offset) % tape.length; i < (t0 + newOffset) % tape.length; ++i) {
+////                tape[i] = 0;
+////            }
+//    }
+
+    }
+
     void setCurDelay(float ms) {
         ms = min(abs(ms), maxDelay);
         curDelay = (int) ms;
         int newOffset = howManySamples(ms);
-        if (newOffset > offset) {
-
-            //  TODO - finish zeroing out
-            //      ( a simple '<' won't work for the circular buffer )
-
-//            for (int i = (t0 + offset) % tape.length; i < (t0 + newOffset) % tape.length; ++i) {
-//                tape[i] = 0;
-//            }
-        }
+        if (newOffset > offset) zeroUnused();
         offset = newOffset;
+
     }
 
 //    void modAmt() {
