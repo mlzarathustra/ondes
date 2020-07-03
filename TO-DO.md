@@ -9,7 +9,7 @@
    
  ---
 
-   try putting allocating the playing voices to various worker threads. 
+   try allocating the playing voices to various worker threads. 
    MonoComponent.threadedInputSum()  
  
  ---
@@ -18,6 +18,8 @@
      x > 0 (the slope is 1/(1+x^2), so it will be 1 at 0)
      y will be asymptotic to 1.
  
+ ---
+  - an Echo effect ought to be pretty simple! 
  ---
 
  - sweep 4-pole IIR filter by linear extrapolation between data points.
