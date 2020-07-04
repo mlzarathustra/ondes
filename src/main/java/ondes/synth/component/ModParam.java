@@ -14,6 +14,7 @@ public class ModParam {
     private float base;
     private float range;
     private float current;
+    private float scale = 1;
     int amp;
     boolean mod;
     FloatConsumer post;
@@ -60,21 +61,15 @@ public class ModParam {
         if (!mod) return false;
         float delta = range * inp / amp;
         if (delta + base == current) return false;
-        current = delta + base;
+        current = (delta + base) * scale;
 
         if (post != null) post.accept(current);
         return true;
     }
 
-    public float getBase() {
-        return base;
-    }
+    public float getBase() { return base; }
+    public float getRange() { return range; }
+    public float getCurrent() { return current; }
 
-    public float getRange() {
-        return range;
-    }
-
-    public float getCurrent() {
-        return current;
-    }
+    public void setScale( float val) { scale = val; }
 }

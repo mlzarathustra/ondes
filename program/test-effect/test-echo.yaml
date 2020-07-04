@@ -1,0 +1,107 @@
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  out: lpf
+
+osc2:
+  midi: note-on
+  detune: 10
+  type: wave
+  shape: saw
+  out: lpf
+
+ctrl91:
+  type: controller
+  number: 91
+  amp: 1000
+  out: lpf.freq
+
+ctrl93:
+  type: controller
+  number: 93
+  amp: 400
+  out: lpf.Q
+
+
+
+env:
+  type: env
+  points:
+    # columns: rate level [option]
+    - 500 100 re-trigger
+    - 3000 25 hold
+    - 5000 0 release
+    - 20000 0 alt-release
+    -
+  out-level: lpf.freq
+  out-level-amp: 1000
+
+lpf:
+  type: filter
+  shape: biquad
+  input-freq:
+    amp: 1000
+    range: 10000 # hz
+
+  input-Q:
+    amp: 1000
+    range: 50  # .5 -> infinity
+
+  freq: 55
+  Q: .5   # they say "0-5 default 1"
+  level-scale: 1
+  out: env1
+
+
+env1:
+  type: env
+  points:
+    - 10 100
+    - 200 75 hold
+    - 500 0
+  out: echo
+
+
+# Alesis  A   B   C   D
+# ctrl #  12  13  91  93
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: echo.amount
+
+ctrl13:
+  type: controller
+  number: 13
+  amp: 400
+  out: echo.time
+
+
+echo:
+  type: echo
+  amount: 40
+  time: 250
+
+  input-amount:
+    amp: 1000
+    percent: 50
+
+  input-time:
+    amp: 1000
+    ms: 3000
+
+  out: env2
+
+env2:
+  type: env
+  exit: true
+  points:
+    - 100 100 re-trigger
+    - 500 100 hold
+    - 5000 0
+  out: main
+
+
+
