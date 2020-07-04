@@ -62,8 +62,8 @@ public class ModParam {
         if (!mod) return false;
         float delta = range * inp / amp;
         if ((delta + base) * scale == current) return false;
-        //out.println(label+".mod(): setting current");
         current = (delta + base) * scale;
+        //out.println(label+".mod(): setting current to "+current);
 
         if (post != null) post.accept(current);
         return true;

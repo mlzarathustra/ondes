@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static java.lang.Math.*;
 import static java.lang.System.err;
+import static java.lang.System.out;
 import static ondes.synth.component.ConfigHelper.*;
 
 /**
@@ -26,13 +27,6 @@ public class Echo extends MonoComponent {
     float curDelay; // for modulation
     int offset; // curDelay's offset into tape
 
-//    float amount = 0;  // feedback must be < 1.0 !!
-//
-//    int amtAmp, timeAmp;
-//    float amtRange, timeRange;
-//    float amtBase, timeBase;
-//    boolean modAmt, modTime;
-
     public Echo() {
         super();
     }
@@ -49,12 +43,14 @@ public class Echo extends MonoComponent {
     }
 
     /**
-     * Set the delay to "ms" milliseconds,
-     * and zero out the delay memory.
-     *
-     * It would be nice to avoid the "click"
-     * but doing so without zippering when
-     * there are a series of calls is tricky.
+     * <p>
+     *     Set the delay to "ms" milliseconds, and queue
+     *     the "tape" to be cleared after it fades out.
+     * </p>
+     * <p>
+     *     IMPORTANT: you MUST set maxDelay before
+     *     calling this.
+     * </p>
      *
      * @param ms - milliseconds of delay to set up
      */
@@ -62,6 +58,7 @@ public class Echo extends MonoComponent {
         ms = min(abs(ms), maxDelay);
         curDelay = (int) ms;
         offset = howManySamples(ms); // wait until after fade.
+        //out.println("offset is "+offset);
 
         if (first) { first = false; return; }
         first = false;
@@ -125,9 +122,11 @@ public class Echo extends MonoComponent {
             this::namedInputSum,
             this::setCurDelay);
 
-        timeParam.mod();
-
         setMaxDelay( timeParam.getBase() + timeParam.getRange() );
+
+        // important! MUST set maxDelay first,
+        // because timeParam.mod() requires it.
+        timeParam.mod();
 
         String levelScaleErr =
             "'level-scale' must be between 0 and 11. (floating) " +

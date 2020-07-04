@@ -33,13 +33,11 @@ ctrl93:
   amp: 400
   out: lpf.Q
 
-
-
 env:
   type: env
   points:
     # columns: rate level [option]
-    - 500 100 re-trigger
+    - 10 100 re-trigger
     - 3000 25 hold
     - 5000 0 release
     - 20000 0 alt-release
@@ -47,9 +45,23 @@ env:
   out-level: lpf.freq
   out-level-amp: 1000
 
+
+midi-note:
+  type: midi-note
+  linear-out:
+    amp: 1000
+    out: lpf.freq
+    #
+    # scaling both here and on the input?
+
+
 lpf:
   type: filter
   shape: biquad
+
+  freq: 55
+  Q: 5   # they say "0-5 default 1"
+
   input-freq:
     amp: 1000
     range: 10000 # hz
@@ -58,8 +70,6 @@ lpf:
     amp: 1000
     range: 50  # .5 -> infinity
 
-  freq: 55
-  Q: .5   # they say "0-5 default 1"
   level-scale: 1
   out: env1
 
@@ -67,7 +77,7 @@ lpf:
 env1:
   type: env
   points:
-    - 10 100 re-trigger
+    - 850 100 re-trigger
     - 200 75 hold
     - 500 0
   out: echo
@@ -90,12 +100,12 @@ ctrl13:
 
 echo:
   type: echo
-  amount: 40
+  amount: 80
   time: 250
 
   input-amount:
     amp: 1000
-    percent: 50
+    percent: 20
 
   input-time:
     amp: 1000
