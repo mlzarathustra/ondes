@@ -53,7 +53,7 @@ public class Instant  {
     Instant(int sr) {
         sampleRate = sr;
         maxFreq = sr/2;
-        reservePhaseClocks(100);
+        reservePhaseClocks(1000);
     }
 
             // // // // //

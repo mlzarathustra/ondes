@@ -4,6 +4,7 @@ import ondes.function.FloatConsumer;
 
 import java.util.Map;
 import java.util.function.Function;
+import static java.lang.System.out;
 
 import static ondes.synth.component.ConfigHelper.getFloat;
 import static ondes.synth.component.ConfigHelper.getInAmpPair;
@@ -60,7 +61,8 @@ public class ModParam {
         int inp = getInput.apply(label);
         if (!mod) return false;
         float delta = range * inp / amp;
-        if (delta + base == current) return false;
+        if ((delta + base) * scale == current) return false;
+        //out.println(label+".mod(): setting current");
         current = (delta + base) * scale;
 
         if (post != null) post.accept(current);

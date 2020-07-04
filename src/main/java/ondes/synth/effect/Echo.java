@@ -47,29 +47,6 @@ public class Echo extends MonoComponent {
         maxDelay = ms;
         tape = new int[howManySamples(ms)];
     }
-/*
-    // zero out everything from end to t0
-    void zeroUnused() {
-        int end = (t0 + offset + 1) % tape.length;
-        if (end < t0) {
-            for (int i=end; i<t0; ++i) tape[i] = 0;
-        }
-        else {
-            for (int i=end; i<tape.length; ++i) tape[i] = 0;
-            for (int i=0; i<t0; ++i) tape[i] = 0;
-        }
-    }
-
-    void fillUnused(int newOffset) {
-        float u = newOffset - offset;
-        for (int i = 0; i < u; ++i) {
-            float fade = (u-i)/u;
-
-            tape[(t0 + offset +i + 1) % tape.length] =
-                (int)(fade * tape[(t0 + i) % tape.length]);
-        }
-    }
-*/
 
     /**
      * Set the delay to "ms" milliseconds,
@@ -84,15 +61,44 @@ public class Echo extends MonoComponent {
     void setCurDelay(float ms) {
         ms = min(abs(ms), maxDelay);
         curDelay = (int) ms;
-        int newOffset = howManySamples(ms);
-        //if (newOffset > offset) fillUnused(newOffset);
-        Arrays.fill(tape, 0);
-        offset = newOffset;
+        offset = howManySamples(ms); // wait until after fade.
+
+        if (first) { first = false; return; }
+        first = false;
+
+        if (fadeUntil == 0) fadeAmount = 1;
+        fadeUntil = synth.getInstant().getSeconds() + changeDecay;
+    }
+
+    //  To avoid the click, we fade out the existing effect
+    //  signal then zero the buffer.
+    double changeDecay = .05; // seconds
+    double changeDecrement; // need sample rate, so set in config.
+    double fadeUntil = 0;
+    double fadeAmount = 0;
+
+    boolean first; // if the buffer was just cleared, no fade.
+
+    int fadeEffect() {
+        if (synth.getInstant().getSeconds() > fadeUntil) {
+            fadeUntil = 0;
+            Arrays.fill(tape,0);
+            offset = howManySamples(curDelay);
+            return inputSum();
+        }
+        if (fadeAmount > 0) fadeAmount -= changeDecrement;
+        if (fadeAmount < 0) fadeAmount = 0;
+
+        int x0 = inputSum();
+        int y0 = (int)(x0 + tape[t0] * amtParam.getCurrent() * fadeAmount);
+        t0 = (t0 + 1) % tape.length;
+        return (int)(levelScale * y0);
     }
 
     @Override
     public int currentValue() {
         amtParam.mod(); timeParam.mod();
+        if (fadeUntil > 0) return fadeEffect();
 
         int x0 = inputSum();
         int y0 = (int)(x0 + tape[t0]* amtParam.getCurrent());
@@ -119,6 +125,8 @@ public class Echo extends MonoComponent {
             this::namedInputSum,
             this::setCurDelay);
 
+        timeParam.mod();
+
         setMaxDelay( timeParam.getBase() + timeParam.getRange() );
 
         String levelScaleErr =
@@ -130,6 +138,8 @@ public class Echo extends MonoComponent {
             if (fltInp < 0 || fltInp >11) err.println(levelScaleErr);
             else levelScale = fltInp;
         }
+
+        changeDecrement = 1.0 / (changeDecay * synth.getSampleRate());
     }
 
     @Override
@@ -138,6 +148,7 @@ public class Echo extends MonoComponent {
     @Override
     public void resume() {
         Arrays.fill(tape,0);
+        first = true;
     }
 
 }
