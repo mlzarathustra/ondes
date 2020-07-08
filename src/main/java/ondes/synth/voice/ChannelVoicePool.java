@@ -1,9 +1,12 @@
 package ondes.synth.voice;
 
 import ondes.synth.OndeSynth;
+import ondes.synth.component.MonoComponent;
 
 import javax.sound.midi.MidiMessage;
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -19,6 +22,17 @@ public class ChannelVoicePool {
     String progName;
     OndeSynth synth;
     int chan;
+    private Map<String, MonoComponent> components=new HashMap<>();
+
+
+    // TODO - manage
+    //    #ChannelComponent
+    public void addComponent(String key, MonoComponent comp) {
+        components.put(key, comp);
+    }
+    public Map<String, MonoComponent> getComponents() { return components; }
+    public MonoComponent getComponent(String key) { return components.get(key); }
+
 
     ChannelState channelState;
 
@@ -56,7 +70,7 @@ public class ChannelVoicePool {
         channelState = new ChannelState(chan);
         
         while (count-- > 0) {
-            Voice voice = VoiceMaker.getVoice(progName,synth);
+            Voice voice = VoiceMaker.getVoice(progName,synth, this);
             if (voice == null) return; // getVoice should give an error.
             voice.midiChan = chan;
             available.add(voice);
@@ -70,7 +84,7 @@ public class ChannelVoicePool {
     public Voice peekVoice() {
         Voice voice;
         if (available.size() > 0) voice = available.peek();
-        else voice = VoiceMaker.getVoice(progName,synth);
+        else voice = VoiceMaker.getVoice(progName,synth, this);
 
         return voice;
     }
@@ -83,7 +97,7 @@ public class ChannelVoicePool {
                 voice = available.pop();
             }
         }
-        else voice = VoiceMaker.getVoice(progName,synth);
+        else voice = VoiceMaker.getVoice(progName,synth, this);
 
         if (voice == null) return null;
 
@@ -91,12 +105,20 @@ public class ChannelVoicePool {
         channelState.getMessages()
             .forEach( voice::processMidiMessage );
 
+        //  todo - restore connections between "voice" and
+        //   channel-level components
+        //     #ChannelComponent
+
         voice.resume();
         return voice;
     }
 
     public void releaseVoice(Voice voice) {
         voice.pause();
+
+        // todo - disconnect from channel-level components
+        //     #ChannelComponent
+
         synchronized (this) {
             available.add(voice);
         }

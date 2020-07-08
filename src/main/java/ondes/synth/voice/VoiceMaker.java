@@ -175,10 +175,14 @@ public class VoiceMaker {
      * @param synth - the OndesSynth this voice will be associated with
      * @return - a new voice constructed from the specifications given
      */
-    public static Voice getVoice(String progName, OndeSynth synth) {
+    public static Voice getVoice(
+        String progName,
+        OndeSynth synth,
+        ChannelVoicePool channelVoicePool) {
+
         Map m = getVoiceMap(progName);
         if (m == null) return null; // getVoiceMap will show an error
-        return new Voice(m, synth);
+        return new Voice(m, synth, channelVoicePool);
     }
 
     public static void showPrograms() {

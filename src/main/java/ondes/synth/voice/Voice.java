@@ -4,6 +4,7 @@ import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import ondes.midi.MlzMidi;
+import ondes.synth.component.ComponentContext;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.OndeSynth;
@@ -14,6 +15,7 @@ import ondes.synth.wire.WiredIntSupplierPool;
 
 import static java.lang.System.err;
 import static ondes.mlz.Util.getList;
+import static ondes.synth.component.ComponentContext.*;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked")
 public class Voice {
@@ -21,6 +23,7 @@ public class Voice {
     private OndeSynth synth;
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private boolean waitForEnv = false;
+    private ChannelVoicePool channelVoicePool;
 
     public void setWaitForEnv(boolean v) { waitForEnv = v; }
 
@@ -120,18 +123,29 @@ public class Voice {
         wiredIntSupplierPool.reset();
     }
 
+    @SuppressWarnings("rawtypes")
     void constructComponents(Map voiceSpec, OndeSynth synth) {
         for (Object key : voiceSpec.keySet()) {
             Object value=voiceSpec.get(key);
             if (!(value instanceof Map)) continue;
             Map valMap=(Map)voiceSpec.get(key);
+            ComponentContext context = VOICE;
+            Object contextObj = valMap.get("context");
+            if (contextObj != null && contextObj.equals("channel")) {
+                context = CHANNEL;
+                if (channelVoicePool.getComponent(key.toString()) != null) return;
+            }
             MonoComponent c= ComponentMaker.getMonoComponent(valMap, synth);
             if (c == null) {
                 err.println("ERROR - could not load component "+key);
                 err.println("  --> "+voiceSpec.get(key));
                 System.exit(-1);
             }
-            components.put(key.toString(), c);
+            if (context == VOICE) components.put(key.toString(), c);
+            else {
+                c.context = CHANNEL;
+                channelVoicePool.addComponent(key.toString(), c);
+            }
         }
     }
 
@@ -171,6 +185,18 @@ public class Voice {
         for (String compKey : components.keySet()) {
             if (compKey.equals("main")) continue;
 
+            //  todo - #ChannelComponent
+            //      We want to configure most of it only once,
+            //      but be sure to include all of the outputs for each target,
+            //      i.e by putting our output into the inputs vector of the target.
+            //      Those can stay when the voice is paused, as they won't be used.
+            //  todo -
+            //      However, the outputs from other components (i.e. this component's
+            //      input vector) need to be removed when the voice is paused,
+            //      and added back again when it starts playing again.
+            //      So they need to be somehow kept in their own place (per voice)
+            //
+
             Map compSpec=(Map)voiceSpec.get(compKey);
             MonoComponent comp=components.get(compKey);
             comp.setVoice(this);
@@ -195,12 +221,17 @@ public class Voice {
     }
 
     @SuppressWarnings("unchecked,rawtypes")
-    Voice(Map voiceSpec, OndeSynth synth) {
+    Voice(Map voiceSpec, OndeSynth synth, ChannelVoicePool channelVoicePool) {
         this.synth = synth;
         this.voiceSpec = voiceSpec;
+        this.channelVoicePool = channelVoicePool;
 
         constructComponents(voiceSpec, synth);
+
         addMainOutput();
+        //   TODO - Add channel level components
+        //      #ChannelComponent
+
         configure();  // calls configure for each component.
     }
 

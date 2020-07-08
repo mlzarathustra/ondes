@@ -10,6 +10,7 @@ import java.util.*;
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.getList;
+import static ondes.synth.component.ComponentContext.VOICE;
 import static ondes.synth.component.ConfigHelper.*;
 
 @SuppressWarnings("rawtypes")
@@ -18,6 +19,8 @@ public abstract class MonoComponent {
     Voice voice;
     public Voice getVoice() { return voice; }
     public void setVoice(Voice v) { voice = v; }
+
+    public ComponentContext context = VOICE;
 
     /**
      * <p>

@@ -6,6 +6,7 @@ import javax.sound.sampled.Mixer;
 import ondes.App;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
+import ondes.synth.component.ComponentContext;
 import ondes.synth.wave.lookup.SineLookup;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 import static java.lang.System.err;
 import static java.lang.System.out;
 import static ondes.mlz.YamlLoader.*;
+import static ondes.synth.component.ComponentContext.GLOBAL;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class OndeSynth extends Thread {
@@ -160,6 +162,7 @@ public class OndeSynth extends Thread {
             }
             mainLimiter.mainOutput = new WiredIntSupplierPool()
                 .getWiredIntSupplier(mainLimiter::currentValue);
+            mainLimiter.context = GLOBAL;
             mainLimiter.configure(config, null);
         }
         return mainLimiter;
@@ -208,6 +211,7 @@ public class OndeSynth extends Thread {
         //            rather than only accepting the default.
 //        monoMainMix = new MonoMainMix(outDev, bufSize);
         monoMainMix = new MonoMainMix(outDev, bufSize);
+        monoMainMix.context = GLOBAL;
         this.sampleRate = monoMainMix.getSampleRate();
         mainLimiter  = getMainLimiter();
         instant = new Instant(sampleRate);

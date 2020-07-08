@@ -158,6 +158,7 @@ public class App {
                 case "-show-programs":
                 case "-list-patches":
                 case "-list-programs":
+                case "-list":
                     VoiceMaker.loadPrograms();
                     showPrograms(); // exits
 

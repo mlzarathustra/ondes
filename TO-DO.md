@@ -3,28 +3,26 @@
  ---
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
-   
+ ---  
+ - Channel components e.g. LFO
+    Add a channel-global: on/off flag to components
+    - Keep them in ChannelVoicePool
+    - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
+    - which in turn, it passes to the Voice() constructor for the configure step.
+      
  ---
   - attach a slider to FM mod/freq
-   
- ---
 
-   try allocating the playing voices to various worker threads. 
-   MonoComponent.threadedInputSum()  
- 
  ---
  
   - distortion - use (2 * atan(y))/pi 
      x > 0 (the slope is 1/(1+x^2), so it will be 1 at 0)
      y will be asymptotic to 1.
- 
- ---
-  - an Echo effect ought to be pretty simple! 
- ---
 
- - sweep 4-pole IIR filter by linear extrapolation between data points.
-   Better - find a formula like we have for BiQuad     
+
  
+ --- 
+  - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
 ---
  - straighten out the various level coefficients in WaveGen
     - ambBase
@@ -38,16 +36,6 @@
     - control with lfo(s)
     - control with envelope
     
----  
-  - Channel components e.g. LFO
- Add a channel-global: on/off flag to components
-     - Keep them in ChannelVoicePool
-     - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
-     - which in turn, it passes to the Voice() constructor for the configure step.
-   
- 
- --- 
-  - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
 
  ---
 
@@ -79,6 +67,8 @@
   
  - try Helmholtz as oscillator / resonator   
  
+ 
+ 
  -----------
    - EnvGen
  
@@ -95,6 +85,12 @@
  - Multi-channel (e.g. Stereo) components
    The input and output would be an int array 
    or a `long` for just two channels.
+
+ 
+ --- 
+ - sweep 4-pole IIR filter by linear extrapolation between data points.
+   Better - find a formula like we have for BiQuad     
+ 
 
 ----------------
 
@@ -118,3 +114,13 @@ aliasing - oversample and then downsample?
     - flange / phase
     - distortion 
  
+   
+ ---
+
+   try allocating the playing voices to various worker threads. 
+   MonoComponent.threadedInputSum()
+   
+   ~~ ~~
+
+   NOPE! About 7x the latency.   
+  

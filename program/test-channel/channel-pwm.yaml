@@ -1,0 +1,47 @@
+
+lfo-freq:
+  type: wave
+  context: channel
+  freq: 0.1
+  shape: saw
+  level-override: 1000
+  out: osc1.log
+
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  input-log:
+    semitones: -.03
+    amp: 1000
+  out: main
+
+lfo1:
+  freq: 0.2
+  context: channel
+  type: wave
+  shape: saw
+  level-override: 1000
+  out: osc1.pwm
+
+osc2:
+  midi: note-on
+  detune: 8
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  out: main
+
+lfo2:
+  freq: 0.11
+  context: channel
+  type: wave
+  shape: sine
+  level-override: 1000
+  out: osc2.pwm
