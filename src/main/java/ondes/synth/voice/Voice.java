@@ -9,6 +9,7 @@ import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.OndeSynth;
 import ondes.synth.envelope.Envelope;
+import ondes.synth.wire.ChannelInput;
 import ondes.synth.wire.Junction;
 import ondes.synth.wire.MidiNoteNum;
 import ondes.synth.wire.WiredIntSupplierPool;
@@ -17,13 +18,16 @@ import static java.lang.System.err;
 import static ondes.mlz.Util.getList;
 import static ondes.synth.component.ComponentContext.*;
 
-@SuppressWarnings("FieldMayBeFinal,unchecked")
+@SuppressWarnings("FieldMayBeFinal,unchecked,rawtypes")
 public class Voice {
+    private boolean DB=false;
+
     private Map voiceSpec;
     private OndeSynth synth;
     private HashMap<String, MonoComponent> components=new HashMap<>();
     private boolean waitForEnv = false;
     private ChannelVoicePool channelVoicePool;
+    private List<ChannelInput> channelInputs = new ArrayList<>();
 
     public void setWaitForEnv(boolean v) { waitForEnv = v; }
 
@@ -31,7 +35,8 @@ public class Voice {
 
     private WiredIntSupplierPool wiredIntSupplierPool = new WiredIntSupplierPool();
 
-    private boolean DB=false;
+
+
 
     public WiredIntSupplierPool getWiredIntSupplierPool() {
         return wiredIntSupplierPool;
@@ -112,11 +117,22 @@ public class Voice {
 
     public void resume() {
         components.values().forEach(MonoComponent::resume);
+        for (int i=0; i<channelInputs.size(); ++i) {
+            channelInputs.get(i).connect();
+        }
         synth.getMainOutput().addInput(voiceMix.getMainOutput());
     }
     public void pause() {
         synth.getMainOutput().delInput(voiceMix.getMainOutput());
-        components.values().forEach(MonoComponent::pause);
+
+        List<MonoComponent> list = new ArrayList(components.values());
+        for (int i=0; i<list.size(); ++i) {
+            MonoComponent comp = list.get(i);
+            if (comp.context == VOICE) comp.pause();
+        }
+        for (int i=0; i<channelInputs.size(); ++i) {
+            channelInputs.get(i).disconnect();
+        }
     }
 
     public void resetWires() {

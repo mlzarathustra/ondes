@@ -23,16 +23,29 @@ public abstract class MonoComponent {
     public ComponentContext context = VOICE;
 
     /**
-     * <p>
-     *     We "set our output" to comp by adding it
-     *     to comp's list of inputs.
-     * </p>
      * @param comp - the component whose input list
-     *             will receive our output.
+     *             will receive our MAIN output.
+     * @see #setOutput(MonoComponent)
      */
     public void setOutput(MonoComponent comp) {
         comp.addInput(this.getMainOutput());
     }
+
+    /**
+     * <p>
+     *     We "set our output" to comp by adding it
+     *     to comp's list of inputs.
+     * </p>
+     * <p>
+     *     This happens at the configure step, only.
+     *     Subsequently, GLOBAL and CHANNEL context
+     *     inputs will be connected or disconnected
+     *     on pause() and resume()
+     * </p>
+     *
+     * @param comp - the component to send our output to
+     * @param output - the output we are sending
+     */
     public static void setOutput(MonoComponent comp, WiredIntSupplier output) {
         comp.addInput(output);
     }
@@ -326,6 +339,11 @@ public abstract class MonoComponent {
      * life cycle. The one exception is "main"
      */
     public synchronized void delInput(WiredIntSupplier input) {
+        inputs.remove(input);
+    }
+
+    public synchronized void delInput(WiredIntSupplier input, String select) {
+        List<WiredIntSupplier> inputs = namedInputs.get(select);
         inputs.remove(input);
     }
 

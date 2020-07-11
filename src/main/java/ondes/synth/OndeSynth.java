@@ -270,18 +270,7 @@ public class OndeSynth extends Thread {
         }
         voiceTracker.delVoice(chan, note);
     }
-/*
-    private List<List<Integer>> endedNoteQueue = new ArrayList<>();
 
-    public void queueNoteEnd(int chan, int note) {
-        endedNoteQueue.add(List.of(chan,note));
-    }
-
-    public void endNotes() {
-        endedNoteQueue.forEach( n -> noteEnded(n.get(0), n.get(1)));
-        endedNoteQueue.clear();
-    }
-*/
     public void queueNoteEnd(int chan, int note) {
         grimReaper.queueNoteEnd(chan,note);
     }
