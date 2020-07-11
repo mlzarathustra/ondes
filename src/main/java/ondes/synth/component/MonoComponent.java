@@ -2,6 +2,7 @@ package ondes.synth.component;
 
 import ondes.synth.OndeSynth;
 import ondes.synth.voice.Voice;
+import ondes.synth.wire.ChannelInput;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
@@ -28,7 +29,8 @@ public abstract class MonoComponent {
      * @see #setOutput(MonoComponent)
      */
     public void setOutput(MonoComponent comp) {
-        comp.addInput(this.getMainOutput());
+        setOutput(comp, getMainOutput());
+
     }
 
     /**
@@ -46,8 +48,15 @@ public abstract class MonoComponent {
      * @param comp - the component to send our output to
      * @param output - the output we are sending
      */
-    public static void setOutput(MonoComponent comp, WiredIntSupplier output) {
-        comp.addInput(output);
+    public void setOutput(MonoComponent comp,
+                          WiredIntSupplier output) {
+
+        if (comp.context == VOICE) {
+            comp.addInput(output);
+        }
+        else {
+            voice.addChannelInput(new ChannelInput(comp, output));
+        }
     }
 
     /**
@@ -68,8 +77,16 @@ public abstract class MonoComponent {
         setOutput(comp, select, this.getMainOutput());
     }
 
-    public static void setOutput(MonoComponent comp, String select, WiredIntSupplier output) {
-        comp.addInput(output, select);
+    public void setOutput(MonoComponent comp,
+                                 String select,
+                                 WiredIntSupplier output) {
+
+        if (comp.context == VOICE) {
+            comp.addInput(output, select);
+        }
+        else {
+            voice.addChannelInput(new ChannelInput(comp, output, select));
+        }
     }
 
 
@@ -114,6 +131,15 @@ public abstract class MonoComponent {
             }
         }
         return rs;
+    }
+
+    protected int namedInputSize(String name) {
+        List<WiredIntSupplier> inp = namedInputs.get(name);
+        return inp == null ? 0 : inp.size();
+    }
+
+    protected List<WiredIntSupplier> getNamedInputs(String name) {
+        return namedInputs.get(name);
     }
 
     /**
@@ -224,7 +250,7 @@ public abstract class MonoComponent {
      * @param output - which output to connect (i.e. to add to the other component's
      *               input list)
      */
-    public static void setOutput(List compOutList, Map components, WiredIntSupplier output) {
+    public void setOutput(List compOutList, Map components, WiredIntSupplier output) {
         for (Object oneOut : compOutList) {
             String label = oneOut.toString();
             if (label.contains(".")) {

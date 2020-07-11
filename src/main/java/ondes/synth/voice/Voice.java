@@ -15,6 +15,7 @@ import ondes.synth.wire.MidiNoteNum;
 import ondes.synth.wire.WiredIntSupplierPool;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 import static ondes.mlz.Util.getList;
 import static ondes.synth.component.ComponentContext.*;
 
@@ -35,14 +36,15 @@ public class Voice {
 
     private WiredIntSupplierPool wiredIntSupplierPool = new WiredIntSupplierPool();
 
-
-
-
     public WiredIntSupplierPool getWiredIntSupplierPool() {
         return wiredIntSupplierPool;
     }
 
     public Map getVoiceSpec() { return voiceSpec; }
+
+    public void addChannelInput(ChannelInput ci) {
+        channelInputs.add(ci);
+    }
 
     /**
      * Components connect to our junction rather than the main mix
@@ -136,6 +138,7 @@ public class Voice {
     }
 
     public void resetWires() {
+        out.println("wiredIntSupplierPool: "+wiredIntSupplierPool);
         wiredIntSupplierPool.reset();
     }
 
@@ -145,22 +148,27 @@ public class Voice {
             Object value=voiceSpec.get(key);
             if (!(value instanceof Map)) continue;
             Map valMap=(Map)voiceSpec.get(key);
+
+            MonoComponent C = null;
             ComponentContext context = VOICE;
             Object contextObj = valMap.get("context");
             if (contextObj != null && contextObj.equals("channel")) {
                 context = CHANNEL;
-                if (channelVoicePool.getComponent(key.toString()) != null) return;
+                C = channelVoicePool.getComponent(key.toString());
             }
-            MonoComponent c= ComponentMaker.getMonoComponent(valMap, synth);
-            if (c == null) {
+            if (C == null) {
+                C= ComponentMaker.getMonoComponent(valMap, synth);
+            }
+            if (C == null) {
                 err.println("ERROR - could not load component "+key);
                 err.println("  --> "+voiceSpec.get(key));
                 System.exit(-1);
             }
-            if (context == VOICE) components.put(key.toString(), c);
+
+            if (context == VOICE) components.put(key.toString(), C);
             else {
-                c.context = CHANNEL;
-                channelVoicePool.addComponent(key.toString(), c);
+                C.context = CHANNEL;
+                channelVoicePool.addComponent(key.toString(), C);
             }
         }
     }
@@ -196,23 +204,22 @@ public class Voice {
         }
     }
 
+    void addChannelComponents() {
+        for (String compKey : channelVoicePool.getComponents().keySet()) {
+            components.put(compKey, channelVoicePool.getComponents().get(compKey));
+        }
+    }
+
+    void removeChannelComponents() {
+        for (String compKey : channelVoicePool.getComponents().keySet()) {
+            components.remove(compKey);
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     void configure() {
         for (String compKey : components.keySet()) {
             if (compKey.equals("main")) continue;
-
-            //  todo - #ChannelComponent
-            //      We want to configure most of it only once,
-            //      but be sure to include all of the outputs for each target,
-            //      i.e by putting our output into the inputs vector of the target.
-            //      Those can stay when the voice is paused, as they won't be used.
-            //  todo -
-            //      However, the outputs from other components (i.e. this component's
-            //      input vector) need to be removed when the voice is paused,
-            //      and added back again when it starts playing again.
-            //      So they need to be somehow kept in their own place (per voice)
-            //
-
             Map compSpec=(Map)voiceSpec.get(compKey);
             MonoComponent comp=components.get(compKey);
             comp.setVoice(this);
@@ -245,10 +252,11 @@ public class Voice {
         constructComponents(voiceSpec, synth);
 
         addMainOutput();
-        //   TODO - Add channel level components
-        //      #ChannelComponent
+        addChannelComponents();
 
         configure();  // calls configure for each component.
+
+        removeChannelComponents();
     }
 
     public void processMidiMessage(MidiMessage msg) {

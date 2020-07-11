@@ -26,4 +26,8 @@ public class WiredIntSupplierPool {
         }
     }
 
+    public String toString() {
+        return "WiredIntSupplierPool { wires.size(): "+wires.size()+" } ";
+    }
+
 }

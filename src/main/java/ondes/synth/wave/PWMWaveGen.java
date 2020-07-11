@@ -46,7 +46,13 @@ class PwmWaveGen extends WaveGen {
     @Override
     public int currentValue() {
         modFreq();
+        out.println("");
+        out.println("PWM named input[0].visited "+getNamedInputs("pwm").get(0).isVisited());
+
         float inpSum=namedInputSum("pwm");
+        out.println("PWM inpSum: "+inpSum);
+        out.println("PWM named input size: "+namedInputSize("pwm"));
+
         float mod = inpSum * inputAmpInv;
         double modDutyCycle = dutyCycle + (modPercent/200.0) * mod;
         return  (

@@ -18,7 +18,7 @@ osc1:
   input-log:
     semitones: -.03
     amp: 1000
-  out: echo
+  out: main
 
 lfo1:
   freq: 0.2
@@ -64,6 +64,7 @@ ctrl13:
 
 echo:
   type: echo
+  context: channel
   amount: 40
   time: 250
 

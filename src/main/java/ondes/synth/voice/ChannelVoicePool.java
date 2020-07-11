@@ -24,9 +24,6 @@ public class ChannelVoicePool {
     int chan;
     private Map<String, MonoComponent> components=new HashMap<>();
 
-
-    // TODO - manage
-    //    #ChannelComponent
     public void addComponent(String key, MonoComponent comp) {
         components.put(key, comp);
     }
@@ -75,6 +72,7 @@ public class ChannelVoicePool {
             voice.midiChan = chan;
             available.add(voice);
         }
+        components.values().forEach( MonoComponent::resume );
     }
 
     /**
@@ -105,19 +103,12 @@ public class ChannelVoicePool {
         channelState.getMessages()
             .forEach( voice::processMidiMessage );
 
-        //  todo - restore connections between "voice" and
-        //   channel-level components
-        //     #ChannelComponent
-
         voice.resume();
         return voice;
     }
 
     public void releaseVoice(Voice voice) {
         voice.pause();
-
-        // todo - disconnect from channel-level components
-        //     #ChannelComponent
 
         synchronized (this) {
             available.add(voice);

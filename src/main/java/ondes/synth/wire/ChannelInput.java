@@ -17,10 +17,10 @@ public class ChannelInput {
     public WiredIntSupplier input;
     public String name;
 
-    ChannelInput(MonoComponent c, WiredIntSupplier i) {
+    public ChannelInput(MonoComponent c, WiredIntSupplier i) {
         this(c, i, null);
     }
-    ChannelInput(MonoComponent c, WiredIntSupplier i, String n) {
+    public ChannelInput(MonoComponent c, WiredIntSupplier i, String n) {
         component = c; input = i; name = n;
     }
 
