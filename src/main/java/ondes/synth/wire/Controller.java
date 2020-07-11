@@ -86,7 +86,7 @@ public class Controller extends MonoComponent {
 
         Map <String,String>spoof = new HashMap<>();
         spoof.put("midi","control");
-        getVoice().addMidiListeners(this, spoof);
+        getOwner().addMidiListeners(this, spoof);
     }
 }
 

@@ -301,7 +301,7 @@ public class Envelope extends MonoComponent {
 
     public WiredIntSupplier getLevelOutput() {
         if (levelOutput == null) {
-            levelOutput = getVoice()
+            levelOutput = getOwner()
                 .getWiredIntSupplierPool()
                 .getWiredIntSupplier(this::currentLevel);
         }
@@ -419,7 +419,7 @@ public class Envelope extends MonoComponent {
             err.println("Envelope: exit property was specified but is not boolean.");
         }
         // don't set it if it's false, because another envelope might.
-        if (exit) getVoice().setWaitForEnv(exit);
+        if (exit) getOwner().setWaitForEnv(exit);
 
         Object preset = config.get("preset");
         Object points = config.get("points");

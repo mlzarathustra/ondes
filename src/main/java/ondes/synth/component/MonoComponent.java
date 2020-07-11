@@ -1,7 +1,7 @@
 package ondes.synth.component;
 
+import ondes.synth.ComponentOwner;
 import ondes.synth.OndeSynth;
-import ondes.synth.voice.Voice;
 import ondes.synth.wire.ChannelInput;
 import ondes.synth.wire.WiredIntSupplier;
 
@@ -11,15 +11,19 @@ import java.util.*;
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.getList;
-import static ondes.synth.component.ComponentContext.VOICE;
-import static ondes.synth.component.ConfigHelper.*;
+import static ondes.synth.component.ComponentContext.*;
 
 @SuppressWarnings("rawtypes")
 public abstract class MonoComponent {
 
-    Voice voice;
-    public Voice getVoice() { return voice; }
-    public void setVoice(Voice v) { voice = v; }
+//    Voice voice;
+//    public Voice getVoice() { return voice; }
+//    public void setVoice(Voice v) { voice = v; }
+
+    ComponentOwner owner;
+    public ComponentOwner getOwner() { return owner; }
+    public void setOwner(ComponentOwner o) { owner = o; }
+
 
     public ComponentContext context = VOICE;
 
@@ -51,12 +55,18 @@ public abstract class MonoComponent {
     public void setOutput(MonoComponent comp,
                           WiredIntSupplier output) {
 
-        if (comp.context == VOICE) {
-            comp.addInput(output);
+        comp.owner.addInput(output);
+        if (comp.context == CHANNEL) {
+            owner.addChannelInput(new ChannelInput(comp, output));
         }
-        else {
-            voice.addChannelInput(new ChannelInput(comp, output));
-        }
+
+//                                          todo - del comments
+//        if (comp.context == VOICE) {
+//            comp.addInput(output);
+//        }
+//        else {
+//            voice.addChannelInput(new ChannelInput(comp, output));
+//        }
     }
 
     /**
@@ -81,12 +91,21 @@ public abstract class MonoComponent {
                                  String select,
                                  WiredIntSupplier output) {
 
-        if (comp.context == VOICE) {
-            comp.addInput(output, select);
+        owner.addInput(output, select);
+        if (comp.context == CHANNEL) {
+            owner.addChannelInput(new ChannelInput(comp, output, select));
         }
-        else {
-            voice.addChannelInput(new ChannelInput(comp, output, select));
-        }
+
+        //  todo - the ChannelInput goes in the Voice in specific, so maybe
+        //     generic owner isn't right here?
+
+//                                          todo - del comments
+//        if (comp.context == VOICE) {
+//            comp.addInput(output, select);
+//        }
+//        else {
+//            voice.addChannelInput(new ChannelInput(comp, output, select));
+//        }
     }
 
 
@@ -309,7 +328,7 @@ public abstract class MonoComponent {
      */
     public WiredIntSupplier getMainOutput() {
         if (mainOutput == null) {
-            mainOutput = getVoice()
+            mainOutput = getOwner()
                 .getWiredIntSupplierPool()
                 .getWiredIntSupplier(this::currentValue);
         }

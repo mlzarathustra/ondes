@@ -15,6 +15,10 @@
 
  ---
  
+  - try smoothing gaps in controller sweep using "smooth" algorithm.
+     
+ ---
+ 
   - distortion - use (2 * atan(y))/pi 
      x > 0 (the slope is 1/(1+x^2), so it will be 1 at 0)
      y will be asymptotic to 1.

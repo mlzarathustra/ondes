@@ -15,7 +15,7 @@ public class MidiNoteNum extends MonoComponent {
 
     public WiredIntSupplier getLinearOutput() {
         if (linearOutput == null) {
-            linearOutput = getVoice()
+            linearOutput = getOwner()
                 .getWiredIntSupplierPool()
                 .getWiredIntSupplier(this::currentLinear);
         }
@@ -24,7 +24,7 @@ public class MidiNoteNum extends MonoComponent {
 
     public WiredIntSupplier getLogOutput() {
         if (logOutput == null) {
-            logOutput = getVoice()
+            logOutput = getOwner()
                 .getWiredIntSupplierPool()
                 .getWiredIntSupplier(this::currentLog);
         }

@@ -4,15 +4,13 @@ import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import ondes.midi.MlzMidi;
+import ondes.synth.ComponentOwner;
 import ondes.synth.component.ComponentContext;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.OndeSynth;
 import ondes.synth.envelope.Envelope;
-import ondes.synth.wire.ChannelInput;
-import ondes.synth.wire.Junction;
-import ondes.synth.wire.MidiNoteNum;
-import ondes.synth.wire.WiredIntSupplierPool;
+import ondes.synth.wire.*;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -20,7 +18,7 @@ import static ondes.mlz.Util.getList;
 import static ondes.synth.component.ComponentContext.*;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked,rawtypes")
-public class Voice {
+public class Voice implements ComponentOwner {
     private boolean DB=false;
 
     private Map voiceSpec;
@@ -31,6 +29,16 @@ public class Voice {
     private List<ChannelInput> channelInputs = new ArrayList<>();
 
     public void setWaitForEnv(boolean v) { waitForEnv = v; }
+
+    @Override
+    public void addInput(WiredIntSupplier output) {
+        // todo implement
+    }
+
+    @Override
+    public void addInput(WiredIntSupplier output, String select) {
+        // todo implement
+    }
 
     public int midiNote, midiChan;
 
@@ -60,7 +68,7 @@ public class Voice {
             err.println("Could not get a Junction for voice!");
         }
         else {
-            voiceMix.setVoice(this);
+            voiceMix.setOwner(this);
         }
     }
 
@@ -175,7 +183,7 @@ public class Voice {
 
     Envelope getDefaultEnv() {
         Envelope env = new Envelope(synth, "organ");
-        env.setVoice(this);
+        env.setOwner(this);
         env.setOutput(voiceMix);
         env.exit = true;
         addEnvelopeListeners(env);
@@ -222,7 +230,10 @@ public class Voice {
             if (compKey.equals("main")) continue;
             Map compSpec=(Map)voiceSpec.get(compKey);
             MonoComponent comp=components.get(compKey);
-            comp.setVoice(this);
+
+            if (comp.context == VOICE) comp.setOwner(this);
+            else if (comp.context == CHANNEL) comp.setOwner(channelVoicePool);
+
             comp.configure(compSpec,components);
 
             //  (1) main output doesn't have a regular output

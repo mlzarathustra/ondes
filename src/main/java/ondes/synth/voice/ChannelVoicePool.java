@@ -1,7 +1,11 @@
 package ondes.synth.voice;
 
+import ondes.synth.ComponentOwner;
 import ondes.synth.OndeSynth;
 import ondes.synth.component.MonoComponent;
+import ondes.synth.wire.ChannelInput;
+import ondes.synth.wire.WiredIntSupplier;
+import ondes.synth.wire.WiredIntSupplierPool;
 
 import javax.sound.midi.MidiMessage;
 import java.util.ArrayDeque;
@@ -18,17 +22,68 @@ import java.util.Map;
  * </p>
  *
  */
-public class ChannelVoicePool {
+public class ChannelVoicePool implements ComponentOwner {
     String progName;
     OndeSynth synth;
     int chan;
-    private Map<String, MonoComponent> components=new HashMap<>();
+    private final Map<String, MonoComponent> components=new HashMap<>();
 
     public void addComponent(String key, MonoComponent comp) {
         components.put(key, comp);
     }
     public Map<String, MonoComponent> getComponents() { return components; }
     public MonoComponent getComponent(String key) { return components.get(key); }
+
+    private final WiredIntSupplierPool wiredIntSupplierPool = new WiredIntSupplierPool();
+
+    public WiredIntSupplierPool getWiredIntSupplierPool() {
+        return wiredIntSupplierPool;
+    }
+
+                                                                                     /*
+                  .      .       .                 .      .
+           .. ... .. ... .. ...      .. ... .. ... .. ..      ... .. ..    // ///
+         ** . *** . ** . ***    **   . . . . . . . .    . . .  . .   . . ** *** **
+      //  ... // ...                                                   ///  //
+                                 ComponentOwner functions
+    */
+
+
+
+
+    @Override
+    public void setWaitForEnv(boolean exit) {
+
+    }
+
+    @Override
+    public void addInput(WiredIntSupplier output) {
+
+    }
+
+    @Override
+    public void addInput(WiredIntSupplier output, String select) {
+
+    }
+
+    @Override
+    public void addChannelInput(ChannelInput ci) {
+
+    }
+
+    @Override
+    public void addMidiListeners(MonoComponent comp, Map compSpec) {
+
+    }
+
+                                                                                     /*
+                  .      .       .                 .      .
+           .. ... .. ... .. ...      .. ... .. ... .. ..      ... .. ..    // ///
+         ** . *** . ** . ***    **   . . . . . . . .    . . .  . .   . . ** *** **
+      //  ... // ...                                                   ///  //
+
+    */
+
 
 
     ChannelState channelState;
