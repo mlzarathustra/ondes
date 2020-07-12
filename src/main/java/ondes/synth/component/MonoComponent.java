@@ -27,6 +27,25 @@ public abstract class MonoComponent {
 
     public ComponentContext context = VOICE;
 
+
+    /**
+     * <p>
+     *     For the '.' notation. e.g. "osc1.pwm"
+     *     would create an input in osc1 labeled pwm.
+     *     Or more precisely, add our output to
+     *     an input list with the key of "pwm"
+     * </p>
+     * <p>
+     *     In that case, "pwm" would be the "select."
+     * </p>
+     *
+     * @param comp - the component whose input list
+     *             will receive our output.
+     */
+    public void setOutput(MonoComponent comp, String select) {
+        setOutput(comp, select, this.getMainOutput());
+    }
+
     /**
      * @param comp - the component whose input list
      *             will receive our MAIN output.
@@ -49,63 +68,32 @@ public abstract class MonoComponent {
      *     to or from each voice on pause() and resume()
      * </p>
      *
-     * @param comp - the component to send our output to
+     * @param trg - the component to send our output to
      * @param output - the output we are sending
      */
-    public void setOutput(MonoComponent comp,
+    public void setOutput(MonoComponent trg,
                           WiredIntSupplier output) {
 
-        comp.owner.addInput(output);
-        if (comp.context == CHANNEL) {
-            owner.addChannelInput(new ChannelInput(comp, output));
+        if (trg.context == CHANNEL && context == VOICE) {
+            owner.addChannelInput(new ChannelInput(trg, output));
         }
-
-//                                          todo - del comments
-//        if (comp.context == VOICE) {
-//            comp.addInput(output);
-//        }
-//        else {
-//            voice.addChannelInput(new ChannelInput(comp, output));
-//        }
+        else {
+            trg.addInput(output);
+        }
     }
 
-    /**
-     * <p>
-     *     For the '.' notation. e.g. "osc1.pwm"
-     *     would create an input in osc1 labeled pwm.
-     *     Or more precisely, add our output to
-     *     an input list with the key of "pwm"
-     * </p>
-     * <p>
-     *     In that case, "pwm" would be the "select."
-     * </p>
-     *
-     * @param comp - the component whose input list
-     *             will receive our output.
-     */
-    public void setOutput(MonoComponent comp, String select) {
-        setOutput(comp, select, this.getMainOutput());
-    }
 
-    public void setOutput(MonoComponent comp,
+    public void setOutput(MonoComponent trg,
                                  String select,
                                  WiredIntSupplier output) {
 
-        owner.addInput(output, select);
-        if (comp.context == CHANNEL) {
-            owner.addChannelInput(new ChannelInput(comp, output, select));
+        if (trg.context == CHANNEL && context == VOICE) {
+            owner.addChannelInput(new ChannelInput(trg, output, select));
+        }
+        else {
+            trg.addInput(output, select);
         }
 
-        //  todo - the ChannelInput goes in the Voice in specific, so maybe
-        //     generic owner isn't right here?
-
-//                                          todo - del comments
-//        if (comp.context == VOICE) {
-//            comp.addInput(output, select);
-//        }
-//        else {
-//            voice.addChannelInput(new ChannelInput(comp, output, select));
-//        }
     }
 
 

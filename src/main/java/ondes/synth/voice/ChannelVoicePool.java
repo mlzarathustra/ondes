@@ -24,7 +24,7 @@ import static java.lang.System.out;
  * </p>
  *
  */
-public class ChannelVoicePool implements ComponentOwner {
+public class ChannelVoicePool extends ComponentOwner {
     String progName;
     OndeSynth synth;
     int chan;
@@ -43,7 +43,6 @@ public class ChannelVoicePool implements ComponentOwner {
     }
 
     public void resetWires() {
-        out.println("wiredIntSupplierPool: "+wiredIntSupplierPool);
         wiredIntSupplierPool.reset();
     }
 
@@ -63,27 +62,17 @@ public class ChannelVoicePool implements ComponentOwner {
     @Override
     public void setWaitForEnv(boolean exit) { }
 
+
+    /**
+     * A no-op here.... only Voice-level components need to worry about
+     * connecting and disconnecting.
+     * @param ci
+     */
     @Override
-    public void addInput(WiredIntSupplier output) {
+    public void addChannelInput(ChannelInput ci) { }
 
-    }
 
-    @Override
-    public void addInput(WiredIntSupplier output, String select) {
-
-    }
-
-    @Override
-    public void addChannelInput(ChannelInput ci) {
-
-    }
-
-    @Override
-    public void addMidiListeners(MonoComponent comp, Map compSpec) {
-
-    }
-
-                                                                                     /*
+                                                                                    /*
                   .      .       .                 .      .     //
            .. ... .. ... .. ...      .. ... .. ... .. ..      ... .. ..    // ///
          ** . *** . ** . ***    **   . . . . . . . .    . . .  . .   . . ** *** **

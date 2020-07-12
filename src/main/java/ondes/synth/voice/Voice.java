@@ -18,12 +18,11 @@ import static ondes.mlz.Util.getList;
 import static ondes.synth.component.ComponentContext.*;
 
 @SuppressWarnings("FieldMayBeFinal,unchecked,rawtypes")
-public class Voice implements ComponentOwner {
+public class Voice extends ComponentOwner {
     private boolean DB=false;
 
     private Map voiceSpec;
     private OndeSynth synth;
-    private HashMap<String, MonoComponent> components=new HashMap<>();
     private boolean waitForEnv = false;
     private ChannelVoicePool channelVoicePool;
     private List<ChannelInput> channelInputs = new ArrayList<>();
@@ -31,16 +30,6 @@ public class Voice implements ComponentOwner {
     private MonoComponent mainMix;
 
     public void setWaitForEnv(boolean v) { waitForEnv = v; }
-
-    @Override
-    public void addInput(WiredIntSupplier output) {
-        // todo implement
-    }
-
-    @Override
-    public void addInput(WiredIntSupplier output, String select) {
-        // todo implement
-    }
 
     public int midiNote, midiChan;
 
@@ -74,59 +63,6 @@ public class Voice implements ComponentOwner {
         }
     }
 
-    /**
-     * Eight listeners, one for each message type (MIDI status >> 4)
-     * @see #processMidiMessage(MidiMessage)
-     */
-    private Set<MonoComponent>[] midiListeners= new HashSet[8];
-    {
-        for (int i=0; i<8; ++i) {
-            midiListeners[i] = new HashSet<>();
-        }
-    }
-
-    /**
-     * Midi Message types by index (starting with 0x8, note-OFF)
-     * For controllers, it's all or nothing. To simplify the code.
-     */
-    public static final String[][] midiMessageTypes = {
-        {"note-off"},
-        {"note-on"},
-        {"after"},
-        {"control", "bank-msb", "mod-wheel", "volume", "pan",
-            "bank-lsb", "sustain"},
-        {"program"},
-        {"pressure"},
-        {"bend"},
-        {"system"}
-    };
-
-    private void addEnvelopeListeners(MonoComponent comp) {
-        addListener("note-on", comp);
-        addListener("note-off", comp);
-        addListener("sustain", comp);
-    }
-
-    private  void addListener(String valStr, MonoComponent comp) {
-        for (int i=0; i<midiMessageTypes.length; ++i) {
-            if (Arrays.asList(midiMessageTypes[i]).contains(valStr)) {
-                midiListeners[i].add(comp);
-                break;
-            }
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void addMidiListeners(MonoComponent comp, Map compSpec) {
-        if (comp instanceof Envelope) addEnvelopeListeners(comp);
-        Object obj = compSpec.get("midi");
-        if (obj == null) return;
-        for (Object val : getList(obj)) {
-            String valStr= val.toString();
-            addListener(valStr, comp);
-        }
-    }
-
     public void resume() {
         components.values().forEach(MonoComponent::resume);
         for (int i=0; i<channelInputs.size(); ++i) {
@@ -148,7 +84,6 @@ public class Voice implements ComponentOwner {
     }
 
     public void resetWires() {
-        out.println("wiredIntSupplierPool: "+wiredIntSupplierPool);
         wiredIntSupplierPool.reset();
     }
 
@@ -250,6 +185,8 @@ public class Voice implements ComponentOwner {
 
     @SuppressWarnings("rawtypes")
     void configure() {
+        addMainOutput(VOICE); // avoid concurrent mod exception below
+
         for (String compKey : components.keySet()) {
             if (compKey.equals("main")) continue;
             Map compSpec=(Map)voiceSpec.get(compKey);
@@ -295,30 +232,9 @@ public class Voice implements ComponentOwner {
         removeChannelComponents();
     }
 
+    @Override
     public void processMidiMessage(MidiMessage msg) {
-        Set<MonoComponent> listeners =
-            midiListeners[7 & (msg.getStatus()>>4)];
-
-        if (DB) {
-            err.println("Voice.processMidiMessage "+ MlzMidi.toString(msg));
-            err.flush();
-//            err.println("Voice.processMidiMessage: listeners = " +
-//                Arrays.toString(midiListeners) + "; ");
-        }
-
-        for (MonoComponent comp : listeners) {
-            switch (msg.getStatus() >> 4) {
-                case 0x8: comp.noteOFF(msg); break;
-                case 0x9: comp.noteON(msg); break;
-                case 0xa: comp.midiAfter(msg); break;
-                case 0xb: comp.midiControl(msg); break;
-                case 0xc: comp.midiProgram(msg); break;
-                case 0xd: comp.midiPressure(msg); break;
-                case 0xe: comp.midiBend(msg); break;
-                case 0xf: comp.midiSystem(msg); break;
-            }
-        }
-
+        super.processMidiMessage(msg);
         if (msg.getStatus()>>4 == 8 && !waitForEnv) {  // Note-OFF
             synth.noteEnded(msg);
         }
