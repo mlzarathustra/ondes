@@ -8,7 +8,6 @@ public class SawWaveGen extends WaveGen {
     public int currentValue() {
         modFreq();
         double phi = phaseClock.getPhase();
-//        out.println("PWM phase = "+phi);
         int rs;
 
         if (phi < 0.5) {

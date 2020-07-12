@@ -267,16 +267,19 @@ public abstract class MonoComponent {
                 if (outComp == null) {
                     err.println("ERROR! Attempting to connect to non-existent " +
                         "component '"+outCompStr+"'.'"+outSelect+"'");
+                    continue;
                 }
-                else setOutput(outComp, outSelect, output);
+
+                setOutput(outComp, outSelect, output);
             }
             else {
                 MonoComponent comp = (MonoComponent) components.get(oneOut);
                 if (comp == null) {
                     err.println("ERROR! Attempting to connect to non-existent " +
                         "component '"+oneOut+"'");
-                    return;
+                    continue;
                 }
+
                 setOutput(comp, output);
             }
         }
@@ -339,7 +342,7 @@ public abstract class MonoComponent {
      * @param input - the input to add.
      */
     public synchronized void addInput(WiredIntSupplier input) {
-        inputs.add(input);
+        if (!inputs.contains(input)) inputs.add(input);
     }
 
     /**
@@ -363,7 +366,7 @@ public abstract class MonoComponent {
                 select,
                 k->new ArrayList<>());
 
-        inputs.add(input);
+        if (!inputs.contains(input)) inputs.add(input);
     }
 
     /**

@@ -1,0 +1,52 @@
+
+
+lfo-freq:
+  type: wave
+  context: channel
+  freq: 0.1
+  shape: saw
+  level-override: 1000
+  out: osc1.pwm
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: pwm
+  mod-percent: 95
+  input-amp: 1000
+  velocity-amount: 150
+  input-log:
+    semitones: -.03
+    amp: 1000
+  out: echo
+
+# Alesis  A   B   C   D
+# ctrl #  12  13  91  93
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: echo.amount
+
+ctrl13:
+  type: controller
+  number: 13
+  amp: 400
+  out: echo.time
+
+
+echo:
+  type: echo
+  context: channel
+  amount: 40
+  time: 250
+
+  input-amount:
+    amp: 1000
+    percent: 50
+
+  input-time:
+    amp: 1000
+    ms: 3000
+
+  out: main
