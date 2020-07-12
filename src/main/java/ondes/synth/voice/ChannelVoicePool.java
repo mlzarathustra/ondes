@@ -12,6 +12,8 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.System.out;
+
 /**
  * <p>
  *     The Sirens were voices on an island.
@@ -38,6 +40,11 @@ public class ChannelVoicePool implements ComponentOwner {
 
     public WiredIntSupplierPool getWiredIntSupplierPool() {
         return wiredIntSupplierPool;
+    }
+
+    public void resetWires() {
+        out.println("wiredIntSupplierPool: "+wiredIntSupplierPool);
+        wiredIntSupplierPool.reset();
     }
 
                                                                                      /*
@@ -77,10 +84,10 @@ public class ChannelVoicePool implements ComponentOwner {
     }
 
                                                                                      /*
-                  .      .       .                 .      .
+                  .      .       .                 .      .     //
            .. ... .. ... .. ...      .. ... .. ... .. ..      ... .. ..    // ///
          ** . *** . ** . ***    **   . . . . . . . .    . . .  . .   . . ** *** **
-      //  ... // ...                                                   ///  //
+      //  ... // ...                    *                              ///  //
 
     */
 
@@ -90,20 +97,15 @@ public class ChannelVoicePool implements ComponentOwner {
 
     public void updateState(MidiMessage msg) {
         channelState.update(msg);
+
+        //  todo - loop through listeners (components) and send msg
+        //         to each that should get it.
+        //             Look at how Voice handles midiListeners.
+
     }
     
     private final ArrayDeque<Voice> available=new ArrayDeque<>();
 //    private final ArrayDeque<Voice> inUse = new ArrayDeque<>();
-
-    /**
-     * Ten voices seems like a good default.
-     *
-     * @param progName - which program to load
-     * @param synth - what synth will be playing them
-     */
-    public ChannelVoicePool(String progName, OndeSynth synth, int chan) {
-        this(progName,synth,chan,10);
-    }
 
     /**
      * Ten voices seems like a good default.

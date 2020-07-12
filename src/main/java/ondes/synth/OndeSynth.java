@@ -292,23 +292,19 @@ public class OndeSynth extends Thread {
                 MlzMidi.toString(msg));
         }
 
-        //  Note-ON messes with the phase clocks list
-        //  so don't do it while incrementing them
-        //synchronized(lock) {
-            int s = msg.getStatus() >> 4;
-            switch (s) {
-                case 0x8:
-                    noteOFF(msg);
-                    break;
+        int s = msg.getStatus() >> 4;
+        switch (s) {
+            case 0x8:
+                noteOFF(msg);
+                break;
 
-                case 0x9:
-                    noteON(msg);
-                    break;
+            case 0x9:
+                noteON(msg);
+                break;
 
-                default:
-                    sendChannelMessage(msg);
-            }
-       //}
+            default:
+                sendChannelMessage(msg);
+        }
     }
 
     void listen() {
@@ -358,6 +354,7 @@ public class OndeSynth extends Thread {
         //  resetWires sets the "visited" flag "false" for each output
         //  in each Voice.
         voiceTracker.forEach(Voice::resetWires);
+        for (ChannelVoicePool channel : channelVoicePool) channel.resetWires();
 
         //  only one output "wire" is not in the voices: the Main Limiter.
         //  (the Main Mix output is not a WiredIntSupplier, but instead

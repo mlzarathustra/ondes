@@ -7,6 +7,7 @@ import ondes.synth.wire.WiredIntSupplierPool;
 
 import java.util.Map;
 
+@SuppressWarnings("rawtypes")
 public interface ComponentOwner {
 
     WiredIntSupplierPool getWiredIntSupplierPool();

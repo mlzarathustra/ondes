@@ -46,7 +46,7 @@ public abstract class MonoComponent {
      *     This happens at the configure step, only.
      *     Subsequently, GLOBAL and CHANNEL context
      *     inputs will be connected or disconnected
-     *     on pause() and resume()
+     *     to or from each voice on pause() and resume()
      * </p>
      *
      * @param comp - the component to send our output to
