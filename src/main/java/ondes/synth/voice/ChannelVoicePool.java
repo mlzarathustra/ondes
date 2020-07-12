@@ -56,12 +56,12 @@ public class ChannelVoicePool implements ComponentOwner {
     */
 
 
-
-
+    /**
+     * A no-op here. Only applies to Voice.
+     * @param exit - whether to wait or not for an envelope to finish
+     */
     @Override
-    public void setWaitForEnv(boolean exit) {
-
-    }
+    public void setWaitForEnv(boolean exit) { }
 
     @Override
     public void addInput(WiredIntSupplier output) {

@@ -107,7 +107,7 @@ public class Voice implements ComponentOwner {
         addListener("sustain", comp);
     }
 
-    private void addListener(String valStr, MonoComponent comp) {
+    private  void addListener(String valStr, MonoComponent comp) {
         for (int i=0; i<midiMessageTypes.length; ++i) {
             if (Arrays.asList(midiMessageTypes[i]).contains(valStr)) {
                 midiListeners[i].add(comp);
