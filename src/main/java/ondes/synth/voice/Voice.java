@@ -27,6 +27,8 @@ public class Voice implements ComponentOwner {
     private boolean waitForEnv = false;
     private ChannelVoicePool channelVoicePool;
     private List<ChannelInput> channelInputs = new ArrayList<>();
+    private Envelope defaultEnv;
+    private MonoComponent mainMix;
 
     public void setWaitForEnv(boolean v) { waitForEnv = v; }
 
@@ -182,18 +184,36 @@ public class Voice implements ComponentOwner {
     }
 
     Envelope getDefaultEnv() {
-        Envelope env = new Envelope(synth, "organ");
-        env.setOwner(this);
-        env.setOutput(voiceMix);
-        env.exit = true;
-        addEnvelopeListeners(env);
-        setWaitForEnv(true);
-        return env;
+        if (defaultEnv == null) {
+            defaultEnv = new Envelope(synth, "organ");
+            defaultEnv.setOwner(this);
+            defaultEnv.setOutput(voiceMix);
+            defaultEnv.exit = true;
+            addEnvelopeListeners(defaultEnv);
+            setWaitForEnv(true);
+        }
+        return defaultEnv;
     }
+
+    MonoComponent getMainMix() {
+        if (mainMix == null) {
+            if (components.values()
+                .stream()
+                .noneMatch(c -> c instanceof Envelope)) {
+                    mainMix = getDefaultEnv();
+            } else {
+                    mainMix = voiceMix;
+            }
+        }
+        return mainMix;
+    }
+
+
 
     /**
      * <p>
      *     Add the main mixer to the components.
+     *     This is a VOICE-level output.
      * </p>
      * <p>
      *     Currently "main" is the only global component.
@@ -203,12 +223,16 @@ public class Voice implements ComponentOwner {
      *
      * </p>
      */
-    void addMainOutput() {
-        if (components.values().stream().noneMatch(c -> c instanceof Envelope)) {
-            components.put("main", getDefaultEnv());
-        }
-        else {
-            components.put("main", voiceMix);
+    void addMainOutput(ComponentContext ctx) {
+
+        switch (ctx) {
+            case VOICE:
+                components.put("main", getMainMix());
+                break;
+
+            case CHANNEL:
+                components.put("main", synth.getMainOutput());
+                break;
         }
     }
 
@@ -233,6 +257,8 @@ public class Voice implements ComponentOwner {
 
             if (comp.context == VOICE) comp.setOwner(this);
             else if (comp.context == CHANNEL) comp.setOwner(channelVoicePool);
+
+            addMainOutput(comp.context);
 
             comp.configure(compSpec,components);
 
@@ -262,7 +288,6 @@ public class Voice implements ComponentOwner {
 
         constructComponents(voiceSpec, synth);
 
-        addMainOutput();
         addChannelComponents();
 
         configure();  // calls configure for each component.
