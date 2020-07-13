@@ -1,5 +1,8 @@
 
 
+ --- 
+ - optimize the limiter by clearing the buffer when we reach a new max. Verify that it's actually faster that way before installing, though. 
+ - manage ChannelVoicePool from a separate thread - add voices when the available reserve gets low
 
 
 -------------

@@ -88,6 +88,22 @@ public class Voice extends ComponentOwner {
     }
 
     @SuppressWarnings("rawtypes")
+    public static ComponentContext context(Map m) {
+        Object contextObj = m.get("context");
+        if (contextObj != null &&
+            contextObj.equals("channel"))
+            return CHANNEL;
+
+        if (m.get("type").equals("controller"))
+            return CHANNEL;
+
+        return VOICE;
+    }
+
+
+
+
+    @SuppressWarnings("rawtypes")
     void constructComponents(Map voiceSpec, OndeSynth synth) {
         for (Object key : voiceSpec.keySet()) {
             Object value=voiceSpec.get(key);
@@ -95,10 +111,9 @@ public class Voice extends ComponentOwner {
             Map valMap=(Map)voiceSpec.get(key);
 
             MonoComponent C = null;
-            ComponentContext context = VOICE;
+            ComponentContext context = context(valMap);
             Object contextObj = valMap.get("context");
-            if (contextObj != null && contextObj.equals("channel")) {
-                context = CHANNEL;
+            if (context == CHANNEL) {
                 C = channelVoicePool.getComponent(key.toString());
             }
             if (C == null) {
@@ -110,7 +125,10 @@ public class Voice extends ComponentOwner {
                 System.exit(-1);
             }
 
-            if (context == VOICE) components.put(key.toString(), C);
+            if (context == VOICE) {
+                C.context = VOICE;
+                components.put(key.toString(), C);
+            }
             else {
                 C.context = CHANNEL;
                 channelVoicePool.addComponent(key.toString(), C);

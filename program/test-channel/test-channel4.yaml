@@ -24,14 +24,14 @@ osc1:
 # ctrl #  12  13  91  93
 ctrl12:
   type: controller
-  context: channel
+#  context: channel
   number: 12
   amp: 1000
   out: echo.amount
 
 ctrl13:
   type: controller
-  context: channel
+#  context: channel
   number: 13
   amp: 400
   out: echo.time

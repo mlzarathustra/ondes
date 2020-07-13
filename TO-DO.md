@@ -3,28 +3,14 @@
  ---
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
- ---  
- - Channel components e.g. LFO
-    Add a channel-global: on/off flag to components
-    - Keep them in ChannelVoicePool
-    - It can hand them to VoiceMaker.getVoice() as a HashMap<String,MonoComponent>
-    - which in turn, it passes to the Voice() constructor for the configure step.
-      
  ---
   - attach a slider to FM mod/freq
-
  ---
- 
   - try smoothing gaps in controller sweep using "smooth" algorithm.
-     
  ---
- 
   - distortion - use (2 * atan(y))/pi 
      x > 0 (the slope is 1/(1+x^2), so it will be 1 at 0)
      y will be asymptotic to 1.
-
-
- 
  --- 
   - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
 ---
@@ -33,14 +19,12 @@
     - pitchScale
     - velocityMultiplier
     - levelScale    
-    
  ----
- 
  - Panners - 1D, 2D, 3D
     - control with lfo(s)
     - control with envelope
-    
-
+ ---
+  - a MONO mode with portamento
  ---
 
  - (an)harmonic wave gen: 
@@ -70,61 +54,26 @@
     with an option for linear or logarithmic. 
   
  - try Helmholtz as oscillator / resonator   
- 
- 
- 
- -----------
-   - EnvGen
- 
-     - infinite looping: loop-start loop-end - mutually exclusive with hold
-     - extra credit: finite looping
- 
-   - If there is no envelope, add a default one to taper off to avoid clicks at the end of sine waves.
-  
-
-   ------
 
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
- 
+ --- 
  - Multi-channel (e.g. Stereo) components
    The input and output would be an int array 
    or a `long` for just two channels.
 
- 
- --- 
- - sweep 4-pole IIR filter by linear extrapolation between data points.
-   Better - find a formula like we have for BiQuad     
- 
-
-----------------
-
- - optimize the limiter by clearing the buffer when we reach a new max. Verify that it's actually faster that way before installing, though. 
- 
- - manage ChannelVoicePool from a separate thread
-
 -----------
- 
   - error reporting: report on non-wavegen comps that don't have input?
   - report on unknown properties given? 
-  
  ---
-
-aliasing - oversample and then downsample? 
-
+ - aliasing - oversample and then downsample? 
  ---
  - effects 
-    - echo
     - reverb
     - flange / phase
     - distortion 
- 
-   
- ---
+ -----------
+   - EnvGen
+     - infinite looping: loop-start loop-end - mutually exclusive with hold
+     - extra credit: finite looping
 
-   try allocating the playing voices to various worker threads. 
-   MonoComponent.threadedInputSum()
-   
-   ~~ ~~
-
-   NOPE! About 7x the latency.   
   
