@@ -56,7 +56,7 @@ public class Echo extends MonoComponent {
      */
     void setCurDelay(float ms) {
         ms = min(abs(ms), maxDelay);
-        out.println("setCurDelay: ms="+ms+"; maxDelay="+maxDelay);
+        //out.println("setCurDelay: ms="+ms+"; maxDelay="+maxDelay);
         if (curDelay == ms) return;
         curDelay = (int) ms;
         offset = howManySamples(ms); // wait until after fade.

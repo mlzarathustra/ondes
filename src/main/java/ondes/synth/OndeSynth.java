@@ -87,8 +87,10 @@ public class OndeSynth extends Thread {
 
         void processMidiChannelMessage(int chan, MidiMessage msg) {
             synchronized (cpLock) {
-                for (Voice v : getChannelPlaying(chan))
+                for (Voice v : getChannelPlaying(chan)) {
                     v.processMidiMessage(msg);
+                }
+
             }
         }
     }
@@ -282,7 +284,8 @@ public class OndeSynth extends Thread {
     void sendChannelMessage(MidiMessage msg) {
         int chan = msg.getStatus() & 0xf;
         voiceTracker.processMidiChannelMessage(chan, msg);
-        channelVoicePool[chan].updateState(msg);
+        channelVoicePool[chan].processMidiMessage(msg);
+        channelVoicePool[chan].updateState(msg);  //  TODO - is updateState necessary?
     }
 
     void routeMidiMessage(MidiMessage msg, long ts) {
