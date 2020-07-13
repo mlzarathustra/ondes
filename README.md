@@ -10,7 +10,7 @@ To hear some of what you can do so far:
 There is extensive documentation starting at [Voice.md](doc/Voice.md) and there are a number of example patches included.
  
 ![](doc/images/ondes-synth-architecture-diagram.png)
-
+For more diagrams, see [Diagrams.md](doc/Diagrams.md)
 
 ## synthesizer
 The concept is a fully modular synthesizer that will play through your computer's output device as triggered by a MIDI input device, for example an electronic keyboard. 
