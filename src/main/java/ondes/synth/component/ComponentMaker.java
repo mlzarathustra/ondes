@@ -38,8 +38,7 @@ public class ComponentMaker {
     public static MonoComponent getMonoComponent(Map specs, OndeSynth synth) {
         MonoComponent rs;
         if (specs.get("type") == null) {
-            err.println("Missing 'type' property for component "+
-                specs.get("name"));
+            err.println("Missing 'type' property for component ");
             return null;
         }
         switch (specs.get("type").toString()) {

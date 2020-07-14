@@ -16,14 +16,13 @@ import static ondes.synth.component.ComponentContext.*;
 @SuppressWarnings("rawtypes")
 public abstract class MonoComponent {
 
-//    Voice voice;
-//    public Voice getVoice() { return voice; }
-//    public void setVoice(Voice v) { voice = v; }
+    private String name;
+    public String getName() { return name; }
+    public void setName(String v) { name = v; }
 
     ComponentOwner owner;
     public ComponentOwner getOwner() { return owner; }
     public void setOwner(ComponentOwner o) { owner = o; }
-
 
     public ComponentContext context = VOICE;
 

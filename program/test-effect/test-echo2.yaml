@@ -1,0 +1,148 @@
+
+lfo1:
+  type: wave
+  context: channel
+  shape: sine
+  out: osc1.log
+  level-override: 1000
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: saw
+  input-log:
+    semitones: .10
+    amp: 1000
+  out: lpf
+
+osc2:
+  midi: note-on
+  detune: 10
+  type: wave
+  shape: saw
+  out: lpf
+
+##  Q LPF controls   
+
+ctrl91:
+  type: controller
+  number: 91
+  amp: 1000
+  out: lpf.freq
+
+ctrl93:
+  type: controller
+  number: 93
+  amp: 400
+  out: lpf.Q
+
+env:  # LPF env
+  type: env
+  points:
+    # columns: rate level [option]
+    - 10 100 re-trigger
+    - 3000 25 hold
+    - 5000 0 release
+  out-level: lpf.freq
+  out-level-amp: 1000
+
+midi-note:
+  type: midi-note
+  linear-out:
+    amp: 1000
+    out: lpf.freq
+
+lpf:
+  type: filter
+  shape: biquad
+
+  freq: 55
+  Q: 5   # they say "0-5 default 1"
+
+  input-freq:
+    amp: 1000
+    range: 10000 # hz
+
+  input-Q:
+    amp: 1000
+    range: 50  # .5 -> infinity
+
+  level-scale: 1
+  out: env1
+
+# ####################  input to echo 1 ####################### 
+
+env1:
+  type: env
+  exit: true
+  points:
+    - 850 100 re-trigger
+    - 200 75 hold
+    - 500 0
+  out: echo1
+
+#############################  echo 1 controls ###################
+
+# Alesis  A   B   C   D
+# ctrl #  12  13  91  93
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: echo1.amount
+
+ctrl13:
+  type: controller
+  number: 13
+  amp: 400
+  out: echo1.time
+
+
+echo1:
+  type: echo
+  context: channel
+  amount: 80
+  time: 250
+
+  input-amount:
+    amp: 1000
+    percent: 20
+
+  input-time:
+    amp: 1000
+    ms: 3000
+
+  out: lpf2, main
+  level-scale: 2
+
+################################  reverb-y echo     ####################
+
+lpf2:
+  type: filter
+  context: channel
+  shape: iir
+  key: lp_4_1000
+  level-scale: 1
+  out: echo2
+
+echo2:
+  type: echo
+  context: channel
+  amount: 90
+  time: 45
+  out: main
+  level-scale: 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+

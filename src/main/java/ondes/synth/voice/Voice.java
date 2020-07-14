@@ -112,7 +112,6 @@ public class Voice extends ComponentOwner {
 
             MonoComponent C = null;
             ComponentContext context = context(valMap);
-            Object contextObj = valMap.get("context");
             if (context == CHANNEL) {
                 C = channelVoicePool.getComponent(key.toString());
             }
@@ -124,6 +123,7 @@ public class Voice extends ComponentOwner {
                 err.println("  --> "+voiceSpec.get(key));
                 System.exit(-1);
             }
+            C.setName(key.toString());
 
             if (context == VOICE) {
                 C.context = VOICE;

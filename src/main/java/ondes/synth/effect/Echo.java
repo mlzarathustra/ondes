@@ -96,7 +96,7 @@ public class Echo extends MonoComponent {
 
     @Override
     public int currentValue() {
-        amtParam.mod(); timeParam.mod();
+        amtParam.mod(); timeParam.mod();  
         if (fadeUntil > 0) return fadeEffect();
 
         int x0 = inputSum();
@@ -114,7 +114,6 @@ public class Echo extends MonoComponent {
     @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         super.configure(config, components); // set outputs
-        //setMaxDelay(1000); // default shouldn't be needed
 
         amtParam = new ModParam(config, "amount", "percent", 0,
             this::namedInputSum);

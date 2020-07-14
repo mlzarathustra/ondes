@@ -44,6 +44,8 @@ public class ModParam {
         if (fltInp != null) base = fltInp;
         else base = defaultVal;
 
+        current = base * scale;
+
         Object[] modInp = getInAmpPair(config, "input-"+label, measure);
         if (modInp != null) {
             amp = (int) modInp[0];
@@ -73,5 +75,8 @@ public class ModParam {
     public float getRange() { return range; }
     public float getCurrent() { return current; }
 
-    public void setScale( float val) { scale = val; }
+    public void setScale( float val) {
+        scale = val;
+        current = base * scale;
+    }
 }

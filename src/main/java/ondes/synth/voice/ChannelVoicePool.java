@@ -141,7 +141,10 @@ public class ChannelVoicePool extends ComponentOwner {
                 voice = available.pop();
             }
         }
-        else voice = VoiceMaker.getVoice(progName,synth, this);
+        else {
+            out.println("ChannelVoicePool: creating new voice: "+progName);
+            voice = VoiceMaker.getVoice(progName,synth, this);
+        }
 
         if (voice == null) return null;
 
