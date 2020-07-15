@@ -1,0 +1,46 @@
+
+#  amount of modulation [ctrl A]
+ctrl12:
+  type: controller
+  number: 12  # QS controller A
+  amp: 1000
+  out: op-amp
+
+# frequency of modulator [ctrl B]
+ctrl13:
+  type: controller
+  number: 13  
+  amp: 1000
+  out: mod-osc1.log 
+
+mod-osc1:
+  midi: note-on
+  offset: 0
+  type: wave
+  shape: sine
+  input-log:
+    semitones: 24  #  ctrl B
+    amp: 1000 
+  level-override: 1000
+  out: op-amp
+
+op-amp:
+  type: op-amp
+  out: osc1.linear   
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: sine
+  input-linear:
+    frequency: 5   # ctrl A
+    amp: 1000
+ 
+  out: main
+  level-scale: 6
+
+
+
+
+
+

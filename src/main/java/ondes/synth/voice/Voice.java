@@ -94,7 +94,9 @@ public class Voice extends ComponentOwner {
             contextObj.equals("channel"))
             return CHANNEL;
 
-        if (m.get("type").equals("controller"))
+        Object typeObj = m.get("type");    
+
+        if (typeObj != null && typeObj.equals("controller"))
             return CHANNEL;
 
         return VOICE;

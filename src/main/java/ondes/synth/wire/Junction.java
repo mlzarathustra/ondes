@@ -2,6 +2,7 @@ package ondes.synth.wire;
 
 import java.util.Map;
 import static java.lang.System.err;
+import static java.lang.System.out;
 
 import ondes.synth.component.MonoComponent;
 import static ondes.synth.component.ConfigHelper.*;

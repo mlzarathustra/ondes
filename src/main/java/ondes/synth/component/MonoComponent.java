@@ -17,7 +17,7 @@ import static ondes.synth.component.ComponentContext.*;
 public abstract class MonoComponent {
 
     private String name;
-    public String getName() { return name; }
+    public String getName() { return name==null?"":name; }
     public void setName(String v) { name = v; }
 
     ComponentOwner owner;
