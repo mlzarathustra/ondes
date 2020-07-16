@@ -33,13 +33,23 @@ osc1:
   type: wave
   shape: sine
   input-linear:
-    frequency: 5   # ctrl A
+    percent: 1   # ctrl A
     amp: 1000
  
-  out: main
+  out: env1
   level-scale: 6
 
 
+env1:
+  type: env
+  exit: true
+  points:
+    - 100 100 re-trigger
+    - 0 100 hold
+    - 1000 0
+    - 10000 0 alt-release
+
+  out: main
 
 
 

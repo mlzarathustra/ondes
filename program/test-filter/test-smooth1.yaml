@@ -19,7 +19,7 @@ osc1:
   detune: 7
   type: wave
   input-linear:
-    frequency: 25
+    percent: 25
     amp: 1000
   shape: harmonic
   waves:

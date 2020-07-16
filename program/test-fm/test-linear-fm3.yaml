@@ -13,7 +13,7 @@ osc1:
   type: wave
   shape: sine
   input-linear:
-    frequency: 100
+    percent: 100
     amp: 1000
   out: env1
   level-scale: 2

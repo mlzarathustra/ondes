@@ -28,7 +28,7 @@ mod-osc8:
 
 On the sounding side, you can define the width of the modulation, but because the type of modulation is different, the terminology varies between the two.
 
-For input-log, you define the width in semitones. For input-linear, it's in frequency. Both will also be affected by the envelope or other attenuation of the modulating oscillator.
+For input-log, you define the width in semitones. For input-linear, it's in percentage of frequency. Both will also be affected by the envelope or other attenuation of the modulating oscillator.
 
 In both cases, you need to specify the expected amplitude of the input. Because the input is integer, you can achieve greater accuracy by setting a higher input amplitude. This corresponds with the `level-override` of the modulating oscillator: they should be the same, to achieve unity when the incoming level is divided by the input-amp parameter. 
 
@@ -50,7 +50,7 @@ osc8:
   type: wave
   shape: sine
   input-linear:  
-    freq: 100
+    percent: 1  
     amp: 1000  # corresponds with level-override: of the input
 
 ```

@@ -15,6 +15,7 @@ import static ondes.synth.component.ConfigHelper.*;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.min;
+import static java.lang.Math.max;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -119,6 +120,7 @@ public abstract class WaveGen extends MonoComponent {
 
     private int linearInputAmp = 0;
 
+    private float linearInputRatio = 0;
     private float linearInputFreq = 0;
 
     // FM in general
@@ -272,11 +274,15 @@ public abstract class WaveGen extends MonoComponent {
      */
     @Override
     public void noteON(MidiMessage msg) {
-        setFreq(FreqTable.getFreq(msg.getMessage()[1]));
+        double freq = FreqTable.getFreq(msg.getMessage()[1]);
+        setFreq(freq);
         amplitude = (int)(ampBase
             * pitchScale
             * velocityMultiplier(msg.getMessage()[2])
             * levelScale);
+
+        linearInputFreq = (float)(freq * linearInputRatio);
+
         if (VERBOSE) {
             out.print("WaveGen: "+ MlzMidi.toString(msg)+
                 " << ["+ showBytes(msg)+"]");
@@ -359,10 +365,17 @@ public abstract class WaveGen extends MonoComponent {
 
         // LINEAR input
 
-        prInp = getInAmpPair(config, "input-linear", "frequency");
+        prInp = getInAmpPair(config, "input-linear", "percent");
         if (prInp != null) {
             linearInputAmp = (int) prInp[0];
-            linearInputFreq = (float) prInp[1];
+            linearInputRatio = (float) prInp[1] / 100f;
+            if (linearInputRatio > 1 || linearInputRatio < 0) {
+                err.println("linear input percent must be between 0 and 100.");
+                linearInputRatio = max(0,min(linearInputRatio,1));
+            }
+            // it's going to vary between f+f*ratio to f-f*ratio, so
+            // if ratio>1 the frequency would go negative.
+
             modLinFrequency = true;
         }
 
