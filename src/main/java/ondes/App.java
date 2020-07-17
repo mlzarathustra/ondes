@@ -12,6 +12,7 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -150,6 +151,8 @@ public class App {
             VoiceMaker.setRecurseSubdirs(true);
         }
 
+        List<String> looseVoices = new ArrayList<>();
+
         for (int i=0; i<args.length; ++i) {
 
             //  options with no following args
@@ -162,7 +165,7 @@ public class App {
                     VoiceMaker.loadPrograms();
                     showPrograms(); // exits
 
-                case "-help": case "-h": case "?": case "-?":
+                case "-help": case "--help": case "-h": case "?": case "-?":
                     usage(); //exits
 
                 case "-log-main-out": LOG_MAIN_OUT=true;
@@ -175,10 +178,10 @@ public class App {
             // options with following args - if we get here
             // and there are no args following, it's an error.
 
-            if (i+1 > args.length-1) {
-                err.println("Expected argument following "+args[i]);
-                usage();
-            }
+//            if (i+1 > args.length-1) {
+//                err.println("Expected argument following "+args[i]);
+//                usage();
+//            }
 
             switch(args[i]) {
                 case "-in": inDevStr = args[++i]; continue;
@@ -203,7 +206,17 @@ public class App {
                     usage();
                 }
             }
-            else usage();
+            else looseVoices.add(args[i]);
+        }
+
+        int lvp = 0, pnp = 0;
+        while (lvp < looseVoices.size()) {
+            while (!progNames[pnp].equals("") && pnp < progNames.length) ++pnp;
+            if (pnp == progNames.length) {
+                out.println("Too many loose program names. There are only 16 channels!");
+                break;
+            }
+            progNames[pnp++] = looseVoices.get(lvp++);
         }
 
         VoiceMaker.loadPrograms();

@@ -1,15 +1,15 @@
 #!/bin/bash
 
-run -in 828 -out 'main o' \
--ch1  bassoon \
--ch2  buzz \
--ch3  no-fundamental \
--ch4  no-fundamental-plus10 \
--ch5  octave-organ \
--ch6  ramp-down \
--ch7  ramp-up \
--ch8  saw \
--ch9  sine \
--ch10  square \
--ch11  bell-organ \
+o \
+ bassoon \
+ buzz \
+ no-fundamental \
+ no-fundamental-plus10 \
+ octave-organ \
+ ramp-down \
+ ramp-up \
+ saw \
+ sine \
+ square \
+ bell-organ \
 

@@ -17,11 +17,11 @@ The concept is a fully modular synthesizer that will play through your computer'
 
 Programs (patches) are represented by YAML files. There are numerous examples included, but with YAML, it is easy to create new ones.
 
-It currently works on my system by using the `run` script in the main directory like this:
+It currently works on my system by using the `o` script in the main directory like this:
 
-        run -in 828 -out "main out" -ch1 octave -ch2 10
+        o -in 828 -out "main out" -ch1 octave -ch2 10
 
-You may need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `run` with no arguments for command line help.
+You may need to use the tools provided (`midiInfo` and `audioInfo`) to figure out what to tell JavaSound for the -in and -out options above. Type `o` with no arguments for command line help.
 
 Once you settle upon inputs and outputs, you may want to put them in the file `ondes-args` so you don't have to keep typing them.
 

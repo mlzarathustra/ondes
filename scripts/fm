@@ -1,0 +1,4 @@
+#!/bin/bash
+
+o linear-fm1 linear-fm2 linear-fm3 linear-fm4 \
+       linear-fm5 linear-fm6 linear-fm7 -all

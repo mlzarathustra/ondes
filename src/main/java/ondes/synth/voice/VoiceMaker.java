@@ -48,10 +48,6 @@ public class VoiceMaker {
 
     static List<Map> programs=new ArrayList<>();
 
-//    static {
-//        loadPrograms();
-//    }
-
     @SuppressWarnings("unchecked")
     private static void addLabeledProg(Map prog, String fn) {
         if (prog == null) return; // file read error, reported elsewhere
@@ -131,12 +127,6 @@ public class VoiceMaker {
         return rs;
     }
 
-    public static List<String> progNames() {
-        return programs.stream()
-            .map( p -> p.get("name").toString() )
-            .collect(toList());
-    }
-
     /**
      * @param i - the index of the voice to load, origin 1
      *          (as displayed by showVoices())
@@ -185,12 +175,16 @@ public class VoiceMaker {
         return new Voice(m, synth, channelVoicePool);
     }
 
-    public static void showPrograms() {
-        out.println("Program names:");
+    public static void showPrograms() { showPrograms(false); }
+    public static void showPrograms(boolean detail) {
+        out.println("OndeSynth Programs\n" +
+                    "------------------");
         int i=1;
         for (Map p : programs) {
             out.println("  " + i++ + ": " + p.get("name"));
+            if (detail) showProgram(p.get("name").toString());
         }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -199,12 +193,12 @@ public class VoiceMaker {
         m.keySet().forEach( k-> {
             Object v = m.get(k);
             //out.println("  "+k+": "+v.getClass());
-            out.println("  "+k+": "+v);
+            out.println("  - "+k+": "+v);
         });
     }
 
     public static void main(String[] args) {
         loadPrograms();
-        programs.forEach( out::println );
+        showPrograms(true);
     }
 }

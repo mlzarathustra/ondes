@@ -1,6 +1,0 @@
-#!/bin/bash
-
-. ondes-args
-
-java -cp build/libs/ondes-all.jar ondes.App  "${ONDES_ARGS[@]}" "$@"
-

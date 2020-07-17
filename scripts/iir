@@ -1,22 +1,22 @@
 #!/bin/bash
 
-run  -in 828 -out 'main o' -all \
-    -ch1 noise-iir-440 \
-    -ch2 noise-iir-10k \
-    -ch3 noise-iir-15k \
-    -ch4 noise-iir-20k \
-    -ch5 pwm-iir  \
-    -ch6 pwm \
-    -ch7 sine-iir-440 \
-    -ch8 sine-iir-1k \
-    -ch9 sine-iir-5k \
-    -ch10 sine-iir-10k \
-    -ch11 ramp-up-iir-440 \
-    -ch12 ramp-up-iir-1k \
-    -ch13 ramp-up-iir-2k \
-    -ch14 ramp-up-iir-5k \
-    -ch15 ramp-up-iir-10k \
-    -ch16 ramp-up \
+o  -all \
+    noise-iir-440 \
+    noise-iir-10k \
+    noise-iir-15k \
+    noise-iir-20k \
+    pwm-iir  \
+    pwm \
+    sine-iir-440 \
+    sine-iir-1k \
+    sine-iir-5k \
+    sine-iir-10k \
+    ramp-up-iir-440 \
+    ramp-up-iir-1k \
+    ramp-up-iir-2k \
+    ramp-up-iir-5k \
+    ramp-up-iir-10k \
+    ramp-up \
 
 
 
