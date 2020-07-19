@@ -36,7 +36,8 @@ public class Instant  {
 
         public float getFrequency() { return frequency; }
         public void setFrequency(float freq) {
-            frequency = min(maxFreq,max(0,freq));
+            //frequency = min(maxFreq,max(0,freq));
+            frequency = freq;
             setDelta();
         }
     }

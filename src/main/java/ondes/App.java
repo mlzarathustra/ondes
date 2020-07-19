@@ -126,7 +126,6 @@ public class App {
     static void usage() {
         out.println(getResourceAsString("usage/App.txt"));
         System.exit(0);
-        //  e.g.  run -in 828 -out main
     }
 
     public static void main(String[] args) {
@@ -157,11 +156,9 @@ public class App {
 
             //  options with no following args
             switch(args[i]) {
-                case "-show-patches":
-                case "-show-programs":
+                case "-list":
                 case "-list-patches":
                 case "-list-programs":
-                case "-list":
                     VoiceMaker.loadPrograms();
                     showPrograms(); // exits
 
@@ -187,6 +184,7 @@ public class App {
                 case "-in": inDevStr = args[++i]; continue;
                 case "-out": outDevStr = args[++i]; continue;
 
+                case "-show":
                 case "-show-patch":
                 case "-show-program":
                     VoiceMaker.loadPrograms();

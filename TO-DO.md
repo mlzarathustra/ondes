@@ -1,10 +1,15 @@
 # OndeSynth - to do
 
  ---
+  - test wave gens with negative frequency
+  - sine wave gen - get rid of TAO? 
+  - sine wave gen - will int values work? 
+
+ ---
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
  ---
-  - attach a slider to FM mod/freq
+  - FM amt/freq mod: add an option to report the values for future use
  ---
   - try smoothing gaps in controller sweep using "smooth" algorithm.
  ---
@@ -48,14 +53,11 @@
  - add an option **pitch-scale**: amount
  
  - try modulating the duty cycle of a sawtooth wave.
-
- - create a component that simply maps midi key to a value
-    for use in modulation, 
-    with an option for linear or logarithmic. 
   
  - try Helmholtz as oscillator / resonator   
 
  - multi-voice polyphony - could have a mode that re-uses the first available voice (for portamento &c.) 
+ 
  --- 
  - Multi-channel (e.g. Stereo) components
    The input and output would be an int array 
@@ -75,5 +77,6 @@
    - EnvGen
      - infinite looping: loop-start loop-end - mutually exclusive with hold
      - extra credit: finite looping
-
+ ----------
+   - make a wave editor, maybe in Groovy? with a UI 
   

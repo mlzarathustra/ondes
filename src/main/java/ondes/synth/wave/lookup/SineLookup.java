@@ -1,7 +1,6 @@
 package ondes.synth.wave.lookup;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.sin;
+import static java.lang.Math.*;
 
 public class SineLookup {
     static int tableSize = 512_000;
@@ -17,6 +16,7 @@ public class SineLookup {
 
     public static double sineLookup(double theta) {
         double phase = (theta % TAO)/TAO;
+        phase = phase - floor(phase); // for negative phase
         int idx = (int)(phase * tableSize);
         return sineLookupTable[idx];
     }

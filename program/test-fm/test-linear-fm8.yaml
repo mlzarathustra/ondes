@@ -1,0 +1,63 @@
+
+#  Kind of a nice organ patch
+
+mod-osc1:
+  midi: note-on
+  detune: 3
+  offset: 24
+  type: wave
+  shape: sine
+  level-override: 1000
+  out: osc1.linear
+
+osc1:
+  midi: note-on
+  offset: 0
+  type: wave
+  shape: sine
+  input-linear:
+    percent: 100   # ctrl A
+    amp: 216
+ 
+  out: env1
+  level-scale: 3
+
+ ##  -- -- -- -- -- -- -- -- -- -- ##
+
+mod-osc2:
+  midi: note-on
+  detune: 3
+  offset: 12
+  type: wave
+  shape: sine
+  level-override: 1000
+  out: osc2.linear
+
+osc2:
+  midi: note-on
+  offset: 0
+  detune: 7
+  type: wave
+  shape: sine
+  input-linear:
+    percent: 100   # ctrl A
+    amp: 216
+
+  out: env1
+  level-scale: 3
+
+
+env1:
+  type: env
+  exit: true
+  points:
+    - 100 100 re-trigger
+    - 0 100 hold
+    - 1000 0
+    - 10000 0 alt-release
+
+  out: main
+
+
+
+

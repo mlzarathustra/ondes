@@ -25,7 +25,7 @@ import static java.lang.System.out;
  * All wave generators must extend this class.
  */
 public abstract class WaveGen extends MonoComponent {
-    public static boolean VERBOSE = false;
+    public static final boolean VERBOSE = false;
 
     protected Instant.PhaseClock phaseClock;
     static final double oneStep = pow(2, 1.0/12);
@@ -110,10 +110,7 @@ public abstract class WaveGen extends MonoComponent {
     //  LOG FM
 
     private int logInputAmp = 0;
-    private float logInputSemitones = 0;
     private float logModMaxExp = 0;
-
-
 
 
     //  Linear FM
@@ -210,6 +207,35 @@ public abstract class WaveGen extends MonoComponent {
         return freqMultiplier;
     }
 
+
+
+    boolean TRACK_LINEAR_MOD = false;
+
+    class ModTracker {
+        final int MT_SAMPLES = 44100; // 1 trace/second
+        int ltIdx = 0;
+        double curMin, curMax;
+
+        public void trackLinMod(double freq) {
+            if (ltIdx % MT_SAMPLES == 0 && (curMin != 0 || curMax != 0)) {
+                double delta = curMax - baseFrequency; // should be symmetrical
+                double percent = 100.0 * delta / baseFrequency;
+                out.println(String.format(
+                    " min: %10.4f  max: %10.4f  base: %10.4f  " +
+                    "delta: %10.4f  percent: %10.4f",
+                    curMin, curMax, baseFrequency, delta, percent));
+                curMin = Double.POSITIVE_INFINITY;
+                curMax = Double.NEGATIVE_INFINITY;
+                ltIdx = 0;
+            }
+            if (freq > curMax) curMax = freq;
+            if (freq < curMin) curMin = freq;
+            ltIdx = (ltIdx + 1) % MT_SAMPLES;
+        }
+    }
+    ModTracker mt = new ModTracker();
+
+
     /**
      * <p>
      *    When modulating the frequency, we don't re-adjust the amplitude
@@ -235,6 +261,7 @@ public abstract class WaveGen extends MonoComponent {
             linearInp=((double)namedInputSum("linear"))/linearInputAmp
                 * linearInputFreq;
             freq += linearInp;
+            if (TRACK_LINEAR_MOD) mt.trackLinMod(freq);
         }
         if (modLogFrequency) {
             logInp=((double)namedInputSum("log"))/logInputAmp

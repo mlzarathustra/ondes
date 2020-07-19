@@ -23,9 +23,16 @@ import static java.lang.System.out;
  */
 public class Controller extends MonoComponent {
 
+    public static final boolean TRACE_MODS = false;
+
     int controlNumber;
     int outLevel;
     double minLevel, maxLevel;
+
+    void traceMods() {
+        if (TRACE_MODS) out.println("Control # "+controlNumber+" : "+outLevel+"\r");
+    }
+
 
     /**
      * <p>
@@ -39,6 +46,7 @@ public class Controller extends MonoComponent {
         outLevel = (int)(
             minLevel + ( ((double) lvl) / 127.0 ) * (maxLevel - minLevel)
         );
+        if (TRACE_MODS) traceMods();
     }
 
     /**
