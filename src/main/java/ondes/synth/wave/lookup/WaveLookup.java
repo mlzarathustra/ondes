@@ -6,6 +6,8 @@ public class WaveLookup {
     static int tableSize = 512_000;
     private final double[] lookupTable = new double[tableSize];
 
+    //  todo - normalize level
+
     public WaveLookup(DoubleUnaryOperator fn) {
         for (int i = 0; i < tableSize; ++i) {
             double phase = ((double)i)/tableSize;

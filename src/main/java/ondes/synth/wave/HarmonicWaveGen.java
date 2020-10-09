@@ -41,7 +41,6 @@ import static java.util.stream.Collectors.joining;
 @SuppressWarnings("FieldMayBeFinal")
 class HarmonicWaveGen extends CompositeWave {
 
-
     @Override
     public void setFreq(float midiFrequency) {
         super.setFreq(midiFrequency);
@@ -88,6 +87,7 @@ class HarmonicWaveGen extends CompositeWave {
 
             // it's just numeric pairs, so they can put them all on
             // one line, or split them.
+            // todo - permit wave name after (e.g. ramp-up, square)
             String[] waveTokens = listToTokenAry((List)waveConfig);
 
             harmonicParams = new float[waveTokens.length];
@@ -96,12 +96,12 @@ class HarmonicWaveGen extends CompositeWave {
                 catch (Exception ex) {
                     err.println("could not parse "+waveTokens[i]+" as float");
                 }
-                if (harmonicParams[i] <= 0) {
-                    err.println("wave values must be greater than zero.\n" +
-                        "falling back to default set.");
-                    harmonicParams = this.presets[0];
-                    break;
-                }
+//                if (harmonicParams[i] <= 0) {
+//                    err.println("wave values must be greater than zero.\n" +
+//                        "falling back to default set.");
+//                    harmonicParams = this.presets[0];
+//                    break;
+//                }
             }
         }
 

@@ -1,1 +1,5 @@
+# the 'o' command sources this file
+# The below options will appear before any options given to 'o'
+# hence the 'o' options will take precedence.
+#
 ONDES_ARGS=(-in 828 -out 'main out')

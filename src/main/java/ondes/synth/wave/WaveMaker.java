@@ -70,7 +70,10 @@ public class WaveMaker {
         register("harmonic", HarmonicWaveGen.class);
         register("anharmonic", AnharmonicWaveGen.class);
 
+        // All of these could be called sawtooth, I suppose.
+        //
         register("saw", SawWaveGen.class);
+        register("triangle", SawWaveGen.class);
         register("ramp-up", RampUpWaveGen.class);
         register("ramp-down", RampDownWaveGen.class);
 
