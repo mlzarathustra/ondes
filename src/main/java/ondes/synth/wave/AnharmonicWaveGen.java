@@ -8,6 +8,7 @@ import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import static java.lang.System.err;
+import static java.lang.Math.*;
 
 import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
@@ -47,12 +48,17 @@ class AnharmonicWaveGen extends CompositeWave {
     /**
      * frequency multipliers from anharmonicParams
      */
-    private double[] anharmonicFreqs;
+    private double[] anharmonicMults;
 
     /**
      * amplitude divisors from anharmonicParams
      */
     private double[] anharmonicDivs;
+
+    /**
+     * frequencies for the current MIDI note
+     */
+    private double[] anharmonicBaseFreqs;
 
     /**
      * <p>
@@ -67,15 +73,14 @@ class AnharmonicWaveGen extends CompositeWave {
      */
     @Override
     public synchronized void setFreq(double midiFrequency) {
-        super.setFreq(midiFrequency);
+        super.setFreq(midiFrequency); // sets baseFrequency too
 
-        if (clocks.size() < anharmonicFreqs.length) return; // LFO msg - see above
+        if (clocks.size() < anharmonicMults.length) return; // LFO msg - see above
 
-        for (int wp = 0; wp < anharmonicFreqs.length; wp++) {
-            clocks.get(wp/2)
-                .setFrequency( (float)(
-                    baseFrequency * anharmonicFreqs[wp])
-                );
+        for (int i = 0; i < anharmonicMults.length; i++) {
+            double freq = baseFrequency * anharmonicMults[i];
+            anharmonicBaseFreqs[i] = freq;
+            clocks.get(i).setFrequency( (float) freq );
         }
     }
 
@@ -84,11 +89,11 @@ class AnharmonicWaveGen extends CompositeWave {
         if (!modLinFrequency && !modLogFrequency) return;
         super.modFreq(); // sets linearInp and logInp
 
-        if (modLinFrequency) {
-
-        }
-        if (modLogFrequency) {
-
+        for (int i=0; i<anharmonicBaseFreqs.length; ++i) {
+            double freq = anharmonicBaseFreqs[i];
+            if (modLinFrequency) freq += linearInp;
+            if (modLogFrequency) freq *= pow(2,logInp);
+            clocks.get(i).setFrequency( (float) freq);
         }
     }
 
@@ -148,11 +153,12 @@ class AnharmonicWaveGen extends CompositeWave {
         if (anharmonicParams != null) {
             int anharmonicCount = anharmonicParams.length / 2;
             synth.getInstant().reservePhaseClocks(anharmonicCount);
-            anharmonicFreqs = new double[anharmonicCount];
+            anharmonicMults = new double[anharmonicCount];
             anharmonicDivs = new double[anharmonicCount];
+            anharmonicBaseFreqs = new double[anharmonicCount];
 
-            for (int i = 0; i < anharmonicFreqs.length; ++i) {
-                anharmonicFreqs[i] = anharmonicParams[i * 2];
+            for (int i = 0; i < anharmonicMults.length; ++i) {
+                anharmonicMults[i] = anharmonicParams[i * 2];
                 anharmonicDivs[i] = anharmonicParams[i * 2 + 1];
             }
         }

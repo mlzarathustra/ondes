@@ -1,14 +1,21 @@
 # OndeSynth - to do
-
+ --- 
+  - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
  ---
-  - sine wave gen - get rid of TAO
   - FM amt/freq mod: add an option to report the values for future use
     - {trace: true} or 
     - {trace: {linear: true}} to switch on per-component tracing
+
+  - WaveGen - frequency can be float rather than double
     
   - sine wave gen - will int values work? 
 
  ---
+  - Panners - 
+     - control with lfo(s)
+     - control with envelope
+ ---
+ 
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
 
@@ -18,8 +25,7 @@
   - distortion - use (2 * atan(y))/pi 
      x > 0 (the slope is 1/(1+x^2), so it will be 1 at 0)
      y will be asymptotic to 1.
- --- 
-  - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
+
 ---
  - straighten out the various level coefficients in WaveGen
     - ambBase
@@ -27,10 +33,7 @@
     - velocityMultiplier
     - levelScale    
  ----
- - Panners - 1D, 2D, 3D
-    - control with lfo(s)
-    - control with envelope
- ---
+
   - a MONO mode with portamento
  ---
 
