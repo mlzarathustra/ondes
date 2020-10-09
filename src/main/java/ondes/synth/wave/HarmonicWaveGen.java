@@ -4,15 +4,12 @@ import ondes.synth.wave.lookup.CompositeWave;
 import ondes.synth.wave.lookup.WaveLookup;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
-import static java.lang.System.out;
 
 import static java.util.stream.Collectors.joining;
-import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
 
 /**
@@ -46,8 +43,8 @@ class HarmonicWaveGen extends CompositeWave {
 
 
     @Override
-    public void setFreq(double freq) {
-        super.setFreq(freq);
+    public void setFreq(double midiFrequency) {
+        super.setFreq(midiFrequency);
     }
 
     /** the keys of the "hash-map." The correspondingly indexed
@@ -79,7 +76,7 @@ class HarmonicWaveGen extends CompositeWave {
         super.configure(config,components);
 
         Object preset = config.get("preset");
-        if (preset != null) harmonicWaves = getWave(preset.toString());
+        if (preset != null) harmonicParams = getWave(preset.toString());
 
         Object waveConfig = config.get("waves");
         if (waveConfig instanceof List) {
@@ -93,25 +90,25 @@ class HarmonicWaveGen extends CompositeWave {
             // one line, or split them.
             String[] waveTokens = listToTokenAry((List)waveConfig);
 
-            harmonicWaves = new double[waveTokens.length];
-            for (int i = 0; i< harmonicWaves.length; ++i) {
-                try { harmonicWaves[i] = Double.parseDouble(waveTokens[i]); }
+            harmonicParams = new double[waveTokens.length];
+            for (int i = 0; i< harmonicParams.length; ++i) {
+                try { harmonicParams[i] = Double.parseDouble(waveTokens[i]); }
                 catch (Exception ex) {
                     err.println("could not parse "+waveTokens[i]+" as float");
                 }
-                if (harmonicWaves[i] <= 0) {
+                if (harmonicParams[i] <= 0) {
                     err.println("wave values must be greater than zero.\n" +
                         "falling back to default set.");
-                    harmonicWaves = this.presets[0];
+                    harmonicParams = this.presets[0];
                     break;
                 }
             }
         }
 
-        String waveKey = Arrays.toString(harmonicWaves);
+        String waveKey = Arrays.toString(harmonicParams);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            waveLookup = new WaveLookup(this::currentValue);
+            waveLookup = new WaveLookup(this::valueAtPhase);
             waveLookups.put(waveKey, waveLookup);
         }
 

@@ -66,15 +66,17 @@ public class VoiceMaker {
         //  any with similar names internally
         //
         try {
-            //out.println("depth is "+depth);
-
 //            Path progPath = FileSystems.getDefault().getPath("program");  // JDK 8
 //            Files.walk(progPath,depth).forEach( path -> {
 
-            Files.walk(Path.of("program"),depth).forEach( path -> {
-                Map prog = loadFile(path);
-                if (prog == null) return;
-                addLabeledProg(prog, path.toString());
+            Files.walk(Path.of("program"),depth).
+                sorted( Comparator.comparing(
+                    p-> (""+p.getFileName()).replaceFirst("\\.yaml$","" ))
+                )
+                .forEach( path -> {
+                    Map prog = loadFile(path);
+                    if (prog == null) return;
+                    addLabeledProg(prog, path.toString());
             });
         }
         catch (Exception ignore) {

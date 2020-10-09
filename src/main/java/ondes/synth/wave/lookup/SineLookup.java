@@ -14,8 +14,7 @@ public class SineLookup {
         }
     }
 
-    public static double sineLookup(double theta) {
-        double phase = (theta % TAO)/TAO;
+    public static double sineLookup(double phase) {
         phase = phase - floor(phase); // for negative phase
         int idx = (int)(phase * tableSize);
         return sineLookupTable[idx];

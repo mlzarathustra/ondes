@@ -8,9 +8,7 @@ import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import static java.lang.System.err;
-import static java.lang.System.out;
 
-import static java.util.stream.Collectors.*;
 import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
 /**
@@ -38,29 +36,59 @@ class AnharmonicWaveGen extends CompositeWave {
      * Additional anharmonic waves each need their own.
      */
     private final List<Instant.PhaseClock> clocks = new ArrayList<>();
-    private double[] anharmonicWaves;
+
+    /**
+     * Grouped in pairs: { f, d {, f, d, ...} }
+     * where f is frequency multiplier
+     * and d is amplitude divisor
+     */
+    private double[] anharmonicParams;
+
+    /**
+     * frequency multipliers from anharmonicParams
+     */
+    private double[] anharmonicFreqs;
+
+    /**
+     * amplitude divisors from anharmonicParams
+     */
+    private double[] anharmonicDivs;
 
     /**
      * <p>
      *     We get a "setFreq" message that LFO's need because
      *     they don't get the Note-ON message. But we need to
-     *     wait for the Note-ON so the phase clocks will have
-     *     been restarted.
+     *     wait for the Note-ON (which calls setFreq() again)
+     *     so the phase clocks will have been restarted.
      *
      * </p>
      *
-     * @param freq - frequency requested
+     * @param midiFrequency - frequency requested
      */
     @Override
-    public synchronized void setFreq(double freq) {
-        super.setFreq(freq);
-        if (clocks.size() < anharmonicWaves.length/2) return; // got the LFO msg
+    public synchronized void setFreq(double midiFrequency) {
+        super.setFreq(midiFrequency);
 
-        for (int wp = 0; wp< anharmonicWaves.length-1; wp+=2) {
+        if (clocks.size() < anharmonicFreqs.length) return; // LFO msg - see above
+
+        for (int wp = 0; wp < anharmonicFreqs.length; wp++) {
             clocks.get(wp/2)
                 .setFrequency( (float)(
-                    freq * anharmonicWaves[wp] * getFreqMultiplier())
+                    baseFrequency * anharmonicFreqs[wp])
                 );
+        }
+    }
+
+    @Override
+    public void modFreq() {
+        if (!modLinFrequency && !modLogFrequency) return;
+        super.modFreq(); // sets linearInp and logInp
+
+        if (modLinFrequency) {
+
+        }
+        if (modLogFrequency) {
+
         }
     }
 
@@ -104,12 +132,12 @@ class AnharmonicWaveGen extends CompositeWave {
                         freqToken+", "+divToken+"} as float");
                 }
             }
-            anharmonicWaves = anList.stream().mapToDouble(v->v).toArray();
-            harmonicWaves = hrList.stream().mapToDouble(v->v).toArray();
+            anharmonicParams = anList.stream().mapToDouble(v->v).toArray();
+            harmonicParams = hrList.stream().mapToDouble(v->v).toArray();
         }
 
-        if (( anharmonicWaves == null || anharmonicWaves.length == 0) &&
-            (harmonicWaves == null || harmonicWaves.length == 0)) {
+        if ( (anharmonicParams == null || anharmonicParams.length == 0) &&
+            (harmonicParams == null || harmonicParams.length == 0)) {
             err.println(
                 "Anharmonic composite wave form requires \n" +
                     "a list of value pairs (frequency, divisor).\n");
@@ -117,25 +145,34 @@ class AnharmonicWaveGen extends CompositeWave {
         }
 
         // Set up ANHARMONIC waves
-        synth.getInstant().reservePhaseClocks(anharmonicWaves.length + 1);
+        if (anharmonicParams != null) {
+            int anharmonicCount = anharmonicParams.length / 2;
+            synth.getInstant().reservePhaseClocks(anharmonicCount);
+            anharmonicFreqs = new double[anharmonicCount];
+            anharmonicDivs = new double[anharmonicCount];
+
+            for (int i = 0; i < anharmonicFreqs.length; ++i) {
+                anharmonicFreqs[i] = anharmonicParams[i * 2];
+                anharmonicDivs[i] = anharmonicParams[i * 2 + 1];
+            }
+        }
 
         // Set up HARMONIC waves
-        String waveKey = Arrays.toString(harmonicWaves);
+        // find a matching wave table, or create one if needed
+        // this::valueAtPhase depends on harmonicParams
+        //
+        String waveKey = Arrays.toString(harmonicParams);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            waveLookup = new WaveLookup(this::currentValue);
+            waveLookup = new WaveLookup(this::valueAtPhase);
             waveLookups.put(waveKey, waveLookup);
         }
     }
 
-    // TODO - pool phase clocks
-    //         the program named "almost" uses this, and overloads a lot
-    //         I'm betting the allocation and garbage collect are why.
-
     @Override
     public synchronized void resume() {
         super.resume();
-        for (int i = 0; i< anharmonicWaves.length-1; i += 2) {
+        for (int i = 0; i< anharmonicParams.length-1; i += 2) {
             clocks.add(synth.getInstant().addPhaseClock());
         }
     }
@@ -155,9 +192,9 @@ class AnharmonicWaveGen extends CompositeWave {
         if (clocks.isEmpty()) return 0;
         modFreq();
         double sum=0;
-        for (int ov = 0; ov< anharmonicWaves.length-1; ov+=2) {
-            sum += sineLookup( clocks.get(ov/2).getPhase() * TAO )
-                / anharmonicWaves[ov+1];
+        for (int ov = 0; ov< anharmonicParams.length-1; ov+=2) {
+            sum += sineLookup( clocks.get(ov/2).getPhase() )
+                / anharmonicParams[ov+1];
         }
         sum +=  waveLookup.valueAt(phaseClock.getPhase()) ;
         //out.println(sum);

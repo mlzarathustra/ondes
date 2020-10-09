@@ -8,25 +8,21 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
-import static java.lang.System.out;
-
 public abstract class CompositeWave extends WaveGen {
 
-    public static double TAO=Math.PI*2.0;
-
     public final double[] defaultWave = { 1,1, 2,2, 3,3 };
-    protected double[] harmonicWaves =defaultWave;
+    protected double[] harmonicParams =defaultWave;
 
     protected static HashMap<String,WaveLookup> waveLookups=new HashMap<>();
 
     protected WaveLookup waveLookup;
 
     boolean first=true;
-    protected double currentValue(double phase) {
+    protected double valueAtPhase(double phase) {
         double sum=0;
-        for (int ov = 0; ov< harmonicWaves.length-1; ov+=2) {
-            sum += sineLookup( phase * TAO * harmonicWaves[ov] )
-                / harmonicWaves[ov+1];
+        for (int ov = 0; ov< harmonicParams.length-1; ov+=2) {
+            sum += sineLookup( phase * harmonicParams[ov] )
+                / harmonicParams[ov+1];
         }
         first=false;
         return sum;

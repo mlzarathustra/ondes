@@ -61,12 +61,15 @@ public abstract class WaveGen extends MonoComponent {
     float levelScale = 1;
 
     /**
-     *  Here is where we preserve the original frequency
-     *  when modulating.
+     *  the frequency from the MIDI note number
+     */
+    protected double midiFrequency = -1;
+
+    /**
+     *  the MIDI frequency plus the specified
+     *  offset + detune
      */
     protected double baseFrequency = -1;
-
-    private double offsetFrequency = -1;
 
 
     /**
@@ -122,8 +125,8 @@ public abstract class WaveGen extends MonoComponent {
 
     // FM in general
 
-    private boolean modLinFrequency=false;
-    private boolean modLogFrequency=false;
+    protected boolean modLinFrequency=false;
+    protected boolean modLogFrequency=false;
 
 
     /**
@@ -216,14 +219,15 @@ public abstract class WaveGen extends MonoComponent {
         int ltIdx = 0;
         double curMin, curMax;
 
+        // TODO - shouldn't this be using offsetFrequency?
         public void trackLinMod(double freq) {
             if (ltIdx % MT_SAMPLES == 0 && (curMin != 0 || curMax != 0)) {
-                double delta = curMax - baseFrequency; // should be symmetrical
-                double percent = 100.0 * delta / baseFrequency;
+                double delta = curMax - midiFrequency; // should be symmetrical
+                double percent = 100.0 * delta / midiFrequency;
                 out.println(String.format(
                     " min: %10.4f  max: %10.4f  base: %10.4f  " +
                     "delta: %10.4f  percent: %10.4f",
-                    curMin, curMax, baseFrequency, delta, percent));
+                    curMin, curMax, midiFrequency, delta, percent));
                 curMin = Double.POSITIVE_INFINITY;
                 curMax = Double.NEGATIVE_INFINITY;
                 ltIdx = 0;
@@ -235,6 +239,8 @@ public abstract class WaveGen extends MonoComponent {
     }
     ModTracker mt = new ModTracker();
 
+    // to be used by overriding modFreq()
+    protected double linearInp, logInp;
 
     /**
      * <p>
@@ -255,7 +261,7 @@ public abstract class WaveGen extends MonoComponent {
     protected void modFreq() {
         if (!modLinFrequency && !modLogFrequency) return;
 
-        double logInp=0, linearInp=0, freq=offsetFrequency;
+        double freq= baseFrequency;
 
         if (modLinFrequency) {
             linearInp=((double)namedInputSum("linear"))/linearInputAmp
@@ -281,19 +287,19 @@ public abstract class WaveGen extends MonoComponent {
      * set the amplitude scaling from this pitch (lower notes need to be
      * boosted to sound as loud) and set the `baseFrequency`
      * </p>
-     * @param freq - the desired frequency
+     * @param midiFrequency - the desired frequency
      */
-    public void setFreq(double freq) {
+    public void setFreq(double midiFrequency) {
         if (freqOverride > 0) {
-            freq = freqOverride;
+            midiFrequency = freqOverride;
         }
         // noise has no frequency, but should not be scaled at infinity!
         // Note that the lowest note available in MIDI is 8.175 hz
-        if (freq > 8) pitchScale = (float)getScaling(pitchScaleFactor, freq);
+        if (midiFrequency > 8) pitchScale = (float)getScaling(pitchScaleFactor, midiFrequency);
 
-        offsetFrequency = freq * getFreqMultiplier();
-        phaseClock.setFrequency((float) offsetFrequency);
-        baseFrequency = freq;
+        baseFrequency = midiFrequency * getFreqMultiplier();
+        phaseClock.setFrequency((float) baseFrequency);
+        this.midiFrequency = midiFrequency;
     }
 
     /**
@@ -301,14 +307,14 @@ public abstract class WaveGen extends MonoComponent {
      */
     @Override
     public void noteON(MidiMessage msg) {
-        double freq = FreqTable.getFreq(msg.getMessage()[1]);
-        setFreq(freq);
+        double midiFreq = FreqTable.getFreq(msg.getMessage()[1]);
+        setFreq(midiFreq);
         amplitude = (int)(ampBase
             * pitchScale
             * velocityMultiplier(msg.getMessage()[2])
             * levelScale);
 
-        linearInputFreq = (float)(freq * linearInputRatio);
+        linearInputFreq = (float)(midiFreq * linearInputRatio);
 
         if (VERBOSE) {
             out.print("WaveGen: "+ MlzMidi.toString(msg)+
