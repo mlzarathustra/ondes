@@ -43,7 +43,7 @@ class HarmonicWaveGen extends CompositeWave {
 
 
     @Override
-    public void setFreq(double midiFrequency) {
+    public void setFreq(float midiFrequency) {
         super.setFreq(midiFrequency);
     }
 
@@ -56,14 +56,14 @@ class HarmonicWaveGen extends CompositeWave {
      * the values, as a set of pairs. The pairs are each:
      *      frequency multiplier, divisor
      */
-    private double[][] presets = {
+    private float[][] presets = {
             {1,1, 2,2, 3,3},
             {1,1, 2,2, 6,3, 14,3},
             {1,1, 2,2, 11,3, 14,3, 17,3},
             {1,1, 2,2, 3,3, 4,2, 8,2, 12,3}
     };
 
-    private double[] getWave(String preset) {
+    private float[] getWave(String preset) {
         for (int i = 0; i< presetTags.length; ++i) {
             if (presetTags[i].equals(preset)) return presets[i];
         }
@@ -90,9 +90,9 @@ class HarmonicWaveGen extends CompositeWave {
             // one line, or split them.
             String[] waveTokens = listToTokenAry((List)waveConfig);
 
-            harmonicParams = new double[waveTokens.length];
+            harmonicParams = new float[waveTokens.length];
             for (int i = 0; i< harmonicParams.length; ++i) {
-                try { harmonicParams[i] = Double.parseDouble(waveTokens[i]); }
+                try { harmonicParams[i] = Float.parseFloat(waveTokens[i]); }
                 catch (Exception ex) {
                     err.println("could not parse "+waveTokens[i]+" as float");
                 }

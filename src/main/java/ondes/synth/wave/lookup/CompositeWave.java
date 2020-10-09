@@ -10,8 +10,8 @@ import static ondes.synth.wave.lookup.SineLookup.sineLookup;
 
 public abstract class CompositeWave extends WaveGen {
 
-    public final double[] defaultWave = { 1,1, 2,2, 3,3 };
-    protected double[] harmonicParams =defaultWave;
+    public final float[] defaultWave = { 1,1, 2,2, 3,3 };
+    protected float[] harmonicParams =defaultWave;
 
     protected static HashMap<String,WaveLookup> waveLookups=new HashMap<>();
 

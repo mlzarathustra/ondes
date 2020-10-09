@@ -11,6 +11,7 @@ import static java.lang.System.err;
 import static java.lang.Math.*;
 
 import static ondes.synth.wave.lookup.SineLookup.sineLookup;
+import static ondes.mlz.Util.*;
 
 /**
  * <p>
@@ -43,22 +44,22 @@ class AnharmonicWaveGen extends CompositeWave {
      * where f is frequency multiplier
      * and d is amplitude divisor
      */
-    private double[] anharmonicParams;
+    private float[] anharmonicParams;
 
     /**
      * frequency multipliers from anharmonicParams
      */
-    private double[] anharmonicMults;
+    private float[] anharmonicMults;
 
     /**
      * amplitude divisors from anharmonicParams
      */
-    private double[] anharmonicDivs;
+    private float[] anharmonicDivs;
 
     /**
      * frequencies for the current MIDI note
      */
-    private double[] anharmonicBaseFreqs;
+    private float[] anharmonicBaseFreqs;
 
     /**
      * <p>
@@ -72,13 +73,13 @@ class AnharmonicWaveGen extends CompositeWave {
      * @param midiFrequency - frequency requested
      */
     @Override
-    public synchronized void setFreq(double midiFrequency) {
+    public synchronized void setFreq(float midiFrequency) {
         super.setFreq(midiFrequency); // sets baseFrequency too
 
         if (clocks.size() < anharmonicMults.length) return; // LFO msg - see above
 
         for (int i = 0; i < anharmonicMults.length; i++) {
-            double freq = baseFrequency * anharmonicMults[i];
+            float freq = baseFrequency * anharmonicMults[i];
             anharmonicBaseFreqs[i] = freq;
             clocks.get(i).setFrequency( (float) freq );
         }
@@ -111,15 +112,15 @@ class AnharmonicWaveGen extends CompositeWave {
             String[] waveTokenAry = listToTokenAry((List)waveConfig);
 
             //  The inputs are in pairs: { freq, divisor }
-            List<Double>
+            List<Float>
                 hrList = new ArrayList<>(),
                 anList = new ArrayList<>();
-            double freqInp, divInp;
+            float freqInp, divInp;
             for (int i=0; i<waveTokenAry.length; i += 2) {
                 String freqToken = waveTokenAry[i], divToken = waveTokenAry[i+1];
                 try {
-                    freqInp = Double.parseDouble(freqToken);
-                    divInp = Double.parseDouble(divToken);
+                    freqInp = Float.parseFloat(freqToken);
+                    divInp = Float.parseFloat(divToken);
                     if (freqInp < 0 || divInp < 0) {
                         err.println("ERROR! Anharmonic wave values " +
                             "must be greater than zero.");
@@ -137,8 +138,8 @@ class AnharmonicWaveGen extends CompositeWave {
                         freqToken+", "+divToken+"} as float");
                 }
             }
-            anharmonicParams = anList.stream().mapToDouble(v->v).toArray();
-            harmonicParams = hrList.stream().mapToDouble(v->v).toArray();
+            anharmonicParams = toFloatAry(anList);
+            harmonicParams = toFloatAry(hrList);
         }
 
         if ( (anharmonicParams == null || anharmonicParams.length == 0) &&
@@ -153,9 +154,9 @@ class AnharmonicWaveGen extends CompositeWave {
         if (anharmonicParams != null) {
             int anharmonicCount = anharmonicParams.length / 2;
             synth.getInstant().reservePhaseClocks(anharmonicCount);
-            anharmonicMults = new double[anharmonicCount];
-            anharmonicDivs = new double[anharmonicCount];
-            anharmonicBaseFreqs = new double[anharmonicCount];
+            anharmonicMults = new float[anharmonicCount];
+            anharmonicDivs = new float[anharmonicCount];
+            anharmonicBaseFreqs = new float[anharmonicCount];
 
             for (int i = 0; i < anharmonicMults.length; ++i) {
                 anharmonicMults[i] = anharmonicParams[i * 2];

@@ -1,14 +1,8 @@
 # OndeSynth - to do
- --- 
-  - Anharmonic - adjust frequency of phase clocks. See TODO at WaveGen.modFreq()
- ---
+
   - FM amt/freq mod: add an option to report the values for future use
     - {trace: true} or 
     - {trace: {linear: true}} to switch on per-component tracing
-
-  - WaveGen - frequency can be float rather than double
-    
-  - sine wave gen - will int values work? 
 
  ---
   - Panners - 
@@ -18,6 +12,9 @@
  
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
+
+ ---  
+  - sine wave gen - will int values work? 
 
  ---
   - try smoothing gaps in controller sweep using "smooth" algorithm.

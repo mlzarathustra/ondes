@@ -143,5 +143,11 @@ public class Util {
         return rs;
     }
 
+    public static <T> float [] toFloatAry(List<T> list) {
+        float[] rs = new float[list.size()];
+        for (int i=0; i<rs.length; ++i) rs[i]=(Float)list.get(i);
+        return rs;
+    }
+
 
 }

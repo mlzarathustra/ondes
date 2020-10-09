@@ -63,19 +63,19 @@ public abstract class WaveGen extends MonoComponent {
     /**
      *  the frequency from the MIDI note number
      */
-    protected double midiFrequency = -1;
+    protected float midiFrequency = -1;
 
     /**
      *  the MIDI frequency plus the specified
      *  offset + detune
      */
-    protected double baseFrequency = -1;
+    protected float baseFrequency = -1;
 
 
     /**
      *  if positive, overrides MIDI
      */
-    protected double freqOverride = -1;
+    protected float freqOverride = -1;
 
     /**
      * <p>
@@ -289,7 +289,7 @@ public abstract class WaveGen extends MonoComponent {
      * </p>
      * @param midiFrequency - the desired frequency
      */
-    public void setFreq(double midiFrequency) {
+    public void setFreq(float midiFrequency) {
         if (freqOverride > 0) {
             midiFrequency = freqOverride;
         }
@@ -297,7 +297,7 @@ public abstract class WaveGen extends MonoComponent {
         // Note that the lowest note available in MIDI is 8.175 hz
         if (midiFrequency > 8) pitchScale = (float)getScaling(pitchScaleFactor, midiFrequency);
 
-        baseFrequency = midiFrequency * getFreqMultiplier();
+        baseFrequency = midiFrequency * (float)getFreqMultiplier();
         phaseClock.setFrequency((float) baseFrequency);
         this.midiFrequency = midiFrequency;
     }
@@ -307,7 +307,7 @@ public abstract class WaveGen extends MonoComponent {
      */
     @Override
     public void noteON(MidiMessage msg) {
-        double midiFreq = FreqTable.getFreq(msg.getMessage()[1]);
+        float midiFreq = (float)FreqTable.getFreq(msg.getMessage()[1]);
         setFreq(midiFreq);
         amplitude = (int)(ampBase
             * pitchScale
