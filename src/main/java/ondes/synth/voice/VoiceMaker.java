@@ -3,6 +3,7 @@ package ondes.synth.voice;
 import java.nio.file.*;
 import java.util.*;
 
+import ondes.App;
 import ondes.synth.OndeSynth;
 
 import static java.lang.System.out;
@@ -155,7 +156,7 @@ public class VoiceMaker {
         if (m == null) {
             err.println("Warning: Could not find program matching '"+
                 progName+"'");
-            System.exit(-1);  // load default program instead?
+            App.quitOnError();  // load default program instead?
         }
         return m;
     }

@@ -3,6 +3,7 @@ package ondes.synth.voice;
 import javax.sound.midi.MidiMessage;
 import java.util.*;
 
+import ondes.App;
 import ondes.midi.MlzMidi;
 import ondes.synth.ComponentOwner;
 import ondes.synth.component.ComponentContext;
@@ -123,7 +124,7 @@ public class Voice extends ComponentOwner {
             if (C == null) {
                 err.println("ERROR - could not load component "+key);
                 err.println("  --> "+voiceSpec.get(key));
-                System.exit(-1);
+                App.quitOnError();
             }
             C.setName(key.toString());
 

@@ -160,7 +160,7 @@ public class OndeSynth extends Thread {
             mainLimiter = (Limiter) ComponentMaker.getMonoComponent(config, this);
             if (mainLimiter == null) {
                 err.println("Cannot open Main Limiter!");
-                System.exit(-1);
+                App.quitOnError();
             }
             mainLimiter.mainOutput = new WiredIntSupplierPool()
                 .getWiredIntSupplier(mainLimiter::currentValue);
@@ -333,7 +333,7 @@ public class OndeSynth extends Thread {
         catch (Exception ex) {
             out.println("attempting to open midi device "+midiInDev);
             out.println(ex);
-            System.exit(-1);
+            App.quitOnError();
         }
 
         midiListener.start();

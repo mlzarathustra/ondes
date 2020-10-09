@@ -1,5 +1,7 @@
 package ondes.synth.filter.iir;
 
+import ondes.App;
+
 import java.util.HashMap;
 
 import static java.lang.System.err;
@@ -189,7 +191,7 @@ public class IIRSpecLib {
     static {
         if (specKeys.length != specValues.length) {
             err.println("IIRSpecLib - keys and values are of different length!");
-            System.exit(-1);
+            App.quitOnError();
         }
         for (int i=0; i<specKeys.length; ++i) {
             specMap.put(specKeys[i], new IIRSpec(specKeys[i], specValues[i]));

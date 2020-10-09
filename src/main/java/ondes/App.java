@@ -98,7 +98,7 @@ public class App {
             out.println(
                 "could not find midi transmitting device to match "
                     +inDevStr);
-            System.exit(-1);
+            quitOnError();
         }
         try {
             return MidiSystem.getMidiDevice(info);
@@ -126,6 +126,15 @@ public class App {
     static void usage() {
         out.println(getResourceAsString("usage/App.txt"));
         System.exit(0);
+    }
+
+    public static void quitOnError() {
+        out.println(
+            "\n\n" +
+            "For help use the -h option\n" +
+            "For full instructions see README.md");
+
+        System.exit(-1);
     }
 
     public static void main(String[] args) {
@@ -231,7 +240,7 @@ public class App {
         if (midiDev == null) {
             out.println("Could not open MIDI input device "+inDevStr);
             out.println("See READ.md for more information.");
-            System.exit(-1);
+            quitOnError();
         }
         out.println("Midi Input device   : "+midiDev.getDeviceInfo());
         Mixer mixer = getMixer(outDevStr);
@@ -240,7 +249,7 @@ public class App {
             out.println("See READ.md for more information.");
             out.println("For audio output, you need one with a SOURCE line, " +
                 "illogical as that seems.");
-            System.exit(-1);
+            quitOnError();
         }
 
         out.println("Mixer (audio output): "+mixer.getMixerInfo());
