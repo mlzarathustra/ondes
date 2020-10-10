@@ -56,8 +56,8 @@ public class VoiceMaker {
             .replaceFirst("(?i).yaml$","");
         prog.put("name", name);
         programs.add(prog);
-
     }
+
     public static void loadPrograms() {
 
         programs = new ArrayList<>();

@@ -38,7 +38,7 @@ which might look like this:
 
 ![](images/env-simple.png)
 
-Above, the simplest OFF represents the first moment where both the key is up and the sustain pedal is up. It starts the transit to the point after `hold`. If there is no point after `hold`, it goes to zero.  If the Note-OFF arrives before the envelope reaches to `hold` the behavior depends on the sustain pedal:
+Above, the simplest OFF represents the first moment where both the key is up and the sustain pedal is up. It starts the transit to the point after `hold`. If there is no point after `hold`, it goes to zero immediately.  If the Note-OFF arrives before the envelope reaches to `hold` the behavior depends on the sustain pedal:
   - pedal is up: jump to the point after `hold` (or [0,0] if there is none)
   - pedal is down: jump to `alt-release` if it exists, or to `hold` if not.
 
@@ -67,7 +67,9 @@ It could look like this:
 ![](images/env-complex.png)
 
 
-Here's an example showing all of the keywords, **re-trigger**, **hold**, **release** and **alt-release**. If any of these appear, they _must_ appear in the exact order given. Remember that **#** indicates comments: 
+Here's an example showing all of the keywords, **re-trigger**, **hold**, **release** and **alt-release**. If any of these appear, they _must_ appear in the exact order given. The dash in re-trigger and alt-release is ignored. In fact, dashes in keywords will always be ignored. So **retrigger** is the same as **re-trigger**. 
+
+Remember that **#** indicates comments: 
 ```yaml
 env3:
   type: env
@@ -92,8 +94,23 @@ env3:
 
   out-level: osc1.pwm
   out-level-amp: -1000,1000 
-
 ```
+
+Two qualifiers may appear on the same step. For example, it can make sense for the **hold** and the **retrigger** to both be the same point, e.g.: 
+
+```yaml
+env1:
+  type: env
+  exit: true
+  points:
+    - 1000 100 hold retrigger
+    - 1000 50
+    - 5000 0
+    - 1e9 0 alt-release
+
+  out: main
+```
+ 
 
 ## Two definitions used below:
 
@@ -132,7 +149,9 @@ Qualifiers are one of:
  - **release**     
  - **alt-release** 
  
- They are all optional, but the ones that appear must be in the order given above.      
+ They are all optional, but the ones that appear must be in the order given above. 
+ 
+ Again, the dash in re-trigger and alt-release is ignored. In fact, dashes in keywords will always be ignored. So **retrigger** is the same as **re-trigger**.      
     
 ## how the envelope works    
 The envelope may be divided into two phases, based on the **release** point, whether or not it's labeled. The release point is determined as follows: 
@@ -163,7 +182,7 @@ The most obvious use for **alt-release** is for the release to fade out, but the
 So that with the pedal down, the decay will pause, but with the pedal up the decay will resume again.
 
 ##Qualifiers  
-Here they are again, in order:
+Here they are again, in order. Note that embedded dashes (-) are ignored, and included only for readability. 
      
 - **re-trigger** - by default, a re-trigger (Note-ON arriving before this envelope has finished) will jump back to 0,0. If a re-trigger flag appears, it will jump back here instead.
 - **hold** - if the envelope reaches this point and the note is still in an "ON" state it will remain at this point until we reach an "OFF" state (note UP and pedal UP)

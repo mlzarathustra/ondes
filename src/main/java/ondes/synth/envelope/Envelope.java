@@ -25,11 +25,13 @@ public class Envelope extends MonoComponent {
     static public boolean DB = false;
 
     /**
-     * NOTE: this is the order they MUST appear in (though any
-     * may be omitted)
+     * NOTE: this is the order they MUST appear in, though any may be omitted.
+     * They may contain embedded dashes (e.g. "re-trigger" and "alt-release")
      */
     static final List<String> options =
-        Arrays.asList("re-trigger", "hold", "release", "alt-release");
+        Arrays.asList("retrigger", "hold", "release", "altrelease");
+
+
     static Map<String, List<String>> envs = new HashMap<>();
 
     static {
@@ -262,25 +264,27 @@ public class Envelope extends MonoComponent {
         double rate, level;
         int sampleRate = synth.getSampleRate();
 
-        String option="";
+        ArrayList<String> stepOptions=new ArrayList<>();
         boolean ok = false;
         StepParam(String line) {
             String[] tokens = line.split("[\\s,]+");
-            if (tokens.length < 2 || tokens.length > 3) return;
+            if (tokens.length < 2) return;
             try {
                 rate = Double.parseDouble(tokens[0]);
                 level = Double.parseDouble(tokens[1]);
             }
             catch (Exception ex) { return; }
-            if (tokens.length == 3) {
-                option = tokens[2];
+            ok=true;
+
+            for (int i=2; i<tokens.length; ++i) {
+                String option = tokens[i].replaceAll("-","");
                 ok = (options.contains(option) );
+                if (ok) stepOptions.add(option);
             }
-            else ok=true;
         }
         public String toString() {
             return "StepParam { rate="+rate+"; level="+level+
-                "; option="+option+" }";
+                "; options="+stepOptions+" }";
         }
     }
 
@@ -347,7 +351,7 @@ public class Envelope extends MonoComponent {
             // unless this is the alt-release.
             //
             if (steps.size() > 0 &&
-                (! sp.option.equals("alt-release")) &&
+                (! sp.stepOptions.contains("altrelease")) &&
                 steps.get(steps.size()-1).level == sp.level
             ) {
                 steps.add(new Hold((int)sp.rate, sp.level, synth.getInstant()));
@@ -355,14 +359,21 @@ public class Envelope extends MonoComponent {
             else {
                 steps.add(new Step(sp));
             }
-            switch (sp.option) {
-                case "": break;
-                case "re-trigger": reTrigger = steps.size() - 1; break;
-                case "hold": hold = steps.size() - 1; break;
-                case "release": release = steps.size() - 1; break;
-                case "alt-release": altRelease = steps.size() - 1; break;
-                default:
-                    err.println("Unknown Envelope option: "+sp.option+" will be ignored.");
+            for (String option : sp.stepOptions) {
+                switch (option) {
+                    case "": break;
+                    case "retrigger":
+                        reTrigger = steps.size() - 1; break;
+                    case "hold":
+                        hold = steps.size() - 1; break;
+                    case "release":
+                        release = steps.size() - 1; break;
+                    case "altrelease":
+                        altRelease = steps.size() - 1; break;
+                    default:
+                        err.println("Unknown Envelope option: " + option +
+                            " will be ignored.");
+                }
             }
         }
 
@@ -395,13 +406,17 @@ public class Envelope extends MonoComponent {
         }
 
         //  figure out where the 'release' step is
-        if (release < 0) {
-            if (hold >= 0) {
-                release = hold +((hold < steps.size() - 1) ? 1 : 0);
-            }
-            else {
-                if (altRelease < 0) release = steps.size() - 1;
-                else release = altRelease - 1;
+        //  the right answer can be tricky depending on
+        //  the event sequence (note ON/OFF, sustain)
+        if (altRelease > 0) release = altRelease  - 1;
+        else {
+            if (release < 0) {
+                if (hold >= 0) {
+                    release = hold + ((hold < steps.size() - 1) ? 1 : 0);
+                } else {
+                    if (altRelease < 0) release = steps.size() - 1;
+                    else release = altRelease - 1;
+                }
             }
         }
         return true;
