@@ -1,16 +1,19 @@
 # OndeSynth - to do
-
- - fix `Envelope` input so `retrigger` (or re-trigger) and `hold` can both be at the same point.
-
- ---
+ 
+   - A graphical wave editor would be nice. Output the points.
+   
+   - `WaveLookup` constructor: normalize level 
+   
   - FM Monitor
     amt/freq mod: add an option to report the values for future use
-    - {trace: true} or 
-    - {trace: {linear: true}} to switch on per-component tracing
     
-    The tricky part is that in order to trace the modulation, you need two things: 
-    - amount of modulation, the frequency delta as a percentage of the carrier pitch (which ModTracker is probably best at) 
-    - frequency of the modulator relative to the modulated oscillator, represented in semitones; it may be sufficient to show the frequency relative to the "offsetFrequency" (= midi + detune + semitone offset)
+    - trace: fm
+    
+        amount of modulation, the frequency delta as a percentage of the carrier pitch (which ModTracker is probably best at)
+        
+    - trace: frequency
+     
+        frequency of the modulator relative to the modulated oscillator, represented in semitones; it may be sufficient to show the frequency relative to the "offsetFrequency" (= midi + detune + semitone offset)
 
  ---
   - Panners - 
@@ -18,24 +21,19 @@
      - control with envelope
  ---
 
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-      
+ ---
+ ---
+ ---   
+  - if there is only one envelope, assume it is the primary.
+  - change the keyword "exit" to "primary"?
+
+ ---
  - (an)harmonic wave gen: 
     - allow for a third "column" in each set - perhaps require that the input be a list of pairs or triplets
     - the third column can be saw, ramp, square; for harmonic frequencies only, at first.
     See `CompositeWave.valueAtPhase()` - the easiest will probably be to break the list into 3 components (as the Anharmonic waves now do) with the 3rd being a string key of the wave form (or null if sine)  
     
- ---    
-   - A graphical wave editor would be nice. Output the points.
-   
-   - `WaveLookup` constructor: normalize level 
-   
- ===      
- ---
- ---
-  - if there is only one envelope, assume it is the primary.
-  - change the keyword "exit" to "primary"?
-
- ---  
-  - sine wave gen - will int values work? 
  ---
   - try smoothing gaps in controller sweep using "smooth" algorithm.
  ---

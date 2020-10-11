@@ -69,10 +69,10 @@ public class MonoMainMix extends MonoComponent {
         avgLatency =  (int)( ((float)bufferSize * 1_000_000_000.0) / sampleRate );
         timingOverflow = avgLatency * 3 / 2;
 
-        Line.Info[] lineInfo = mixer.getSourceLineInfo();
-        out.println(Arrays.toString(lineInfo));
-
         try {
+            Line.Info[] lineInfo = mixer.getSourceLineInfo();
+            out.println(Arrays.toString(lineInfo));
+
             SourceDataLine line = (SourceDataLine) mixer.getLine(lineInfo[0]);
             out.println(line);
             // format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo,
