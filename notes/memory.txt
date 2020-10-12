@@ -1,0 +1,24 @@
+[B = byte array
+[Z is boolean
+(see https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/types.html)
+
+below, byte arrays are taking 130M (I added the commas)
+
+ num     #instances         #bytes  class name (module)
+-------------------------------------------------------
+   1:       5409981    130,059,240  [B (java.base@11.0.7)
+   2:           729        8232696  [D (java.base@11.0.7)
+   3:         17927        2972824  [I (java.base@11.0.7)
+   4:         33165        1326600  java.util.HashMap$KeyIterator (java.base@11.0.7)
+   5:         18605         971832  [Ljava.lang.Object; (java.base@11.0.7)
+   6:          3364         913600  [Z (java.base@11.0.7)
+
+
+
+
+
+
+
+
+
+
