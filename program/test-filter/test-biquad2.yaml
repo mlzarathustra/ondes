@@ -55,7 +55,7 @@ env1:
   type: env
   points:
     # columns: rate level [option]
-    - 500 100 re-trigger
+    - 500 75 re-trigger
     - 3000 25 hold
     - 5000 0 release
     - 20000 0 alt-release

@@ -55,60 +55,6 @@ public class App {
 
     public static boolean LOG_MAIN_OUT = false;
 
-    static Mixer getMixer(String outDevStr) {
-        Mixer.Info[] info= AudioSystem.getMixerInfo();
-        List<Mixer.Info> list = Arrays.stream(info)
-            .filter(i -> {
-                String id=i.toString().toLowerCase();
-                if (!id.contains(outDevStr))
-                    return false;
-                Mixer mixer=AudioSystem.getMixer(i);
-                return mixer.getSourceLineInfo().length > 0;
-            })
-            .collect(toList());
-
-        //out.println(list);
-        if (list.isEmpty()) return null;
-        out.println(list.size() + " items match "+outDevStr);
-
-        // if more than one item matches, make sure we can
-        // open the source data line.
-
-        Mixer rs = null;
-        for (Mixer.Info srcInfo : list) {
-            try {
-                rs = AudioSystem.getMixer(srcInfo);
-                Line.Info[] lineInfo = rs.getSourceLineInfo();
-                //out.println("lineInfo is "+lineInfo.length+" items.");
-                //SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[0]);
-                SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[lineInfo.length - 1]);
-                sdl.open();
-                sdl.start();
-                break; // if no exception
-            }
-            catch (Exception ignore) { }
-        }
-
-        return rs;
-    }
-
-    static MidiDevice getMidiDev(String inDevStr) {
-        MidiDevice.Info info = MlzMidi.getTransmitter(inDevStr);
-        if (info == null) {
-            out.println(
-                "could not find midi transmitting device to match "
-                    +inDevStr);
-            quitOnError();
-        }
-        try {
-            return MidiSystem.getMidiDevice(info);
-        }
-        catch (Exception ex) {
-            out.println("attempting to open midi device "+inDevStr);
-            out.println(ex);
-            return null;
-        }
-    }
 
     static boolean hold = false; // kludge - suppress note offs for drone!
     public static boolean holdValue() { return hold; }
@@ -228,43 +174,11 @@ public class App {
 
         VoiceMaker.loadPrograms();
 
-        //  Connect MIDI input and Audio output
-        //
-        out.println("Input device : "+inDevStr);
-        out.println("Output device: "+outDevStr);
+        SynthSession session = new SynthSession(
+            inDevStr, outDevStr, progNames, bufferSize);
 
-        //  it displays the ones it has loaded later on.
-        //out.println("Program Names: "+Arrays.toString(progNames));
-
-        MidiDevice midiDev = getMidiDev(inDevStr);
-        if (midiDev == null) {
-            out.println("Could not open MIDI input device "+inDevStr);
-            out.println("See READ.md for more information.");
-            quitOnError();
-        }
-        out.println("Midi Input device   : "+midiDev.getDeviceInfo());
-        Mixer mixer = getMixer(outDevStr);
-        if (mixer == null) {
-            out.println("Could not open audio mixer device for output: "+inDevStr);
-            out.println("See READ.md for more information.");
-            out.println("For audio output, you need one with a SOURCE line, " +
-                "illogical as that seems.");
-            quitOnError();
-        }
-
-        out.println("Mixer (audio output): "+mixer.getMixerInfo());
-
-        //  START UP SYNTH
-        //
-        OndeSynth synth = new OndeSynth(
-            44100,      // sample rate
-            midiDev,    // input device
-            mixer,      // output device
-            progNames,  // patch names
-            bufferSize  // audio buffer size
-        );
-
-        synth.start();
+        if (!session.open()) quitOnError();
+        session.start();
 
         //  Quit when user hits Enter
         //
@@ -274,12 +188,8 @@ public class App {
 
         try { in.readLine(); }
         catch (Exception ignore) { }
-        synth.logFlush();
 
-        midiDev.close();
-        mixer.close();
-
+        session.close();
         System.exit(0);
-
     }
 }

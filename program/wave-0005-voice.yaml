@@ -1,0 +1,151 @@
+osc2:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  offset: -24
+  detune: 7
+  out: lpf
+  waves:
+    - 2 1.0
+    - 4 0.6666667
+    - 6 0.75
+    - 8 1.3333334
+    - 9 1.0
+    - 10 5.0
+    - 12 1.0
+    - 14 6.9999995
+    - 16 2.6666667
+    - 18 1.0588236
+    - 20 3.3333333
+    - 22 11.0
+    - 24 2.0
+    - 26 12.999999
+    - 27 3.0
+    - 28 4.6666665
+    - 30 3.7499998
+    - 32 5.3333335
+    - 34 17.0
+    - 36 1.7142856
+    - 38 19.0
+    - 40 6.6666665
+    - 42 5.25
+    - 44 7.333333
+    - 45 5.0
+    - 46 23.0
+    - 48 4.0
+    - 50 25.0
+    - 52 8.666666
+    - 54 3.1764708
+    - 56 9.333333
+    - 58 29.0
+    - 60 4.9999995
+    - 62 31.0
+    - 63 6.9999995
+    - 64 10.666667
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  offset: -24
+  out: lpf
+  waves:
+    - 2 1.0
+    - 4 0.6666667
+    - 6 0.75
+    - 8 1.3333334
+    - 9 1.0
+    - 10 5.0
+    - 12 1.0
+    - 14 6.9999995
+    - 16 2.6666667
+    - 18 1.0588236
+    - 20 3.3333333
+    - 22 11.0
+    - 24 2.0
+    - 26 12.999999
+    - 27 3.0
+    - 28 4.6666665
+    - 30 3.7499998
+    - 32 5.3333335
+    - 34 17.0
+    - 36 1.7142856
+    - 38 19.0
+    - 40 6.6666665
+    - 42 5.25
+    - 44 7.333333
+    - 45 5.0
+    - 46 23.0
+    - 48 4.0
+    - 50 25.0
+    - 52 8.666666
+    - 54 3.1764708
+    - 56 9.333333
+    - 58 29.0
+    - 60 4.9999995
+    - 62 31.0
+    - 63 6.9999995
+    - 64 10.666667
+
+midi-note:
+  type: midi-note
+  linear-out:
+    amp: 1000
+    out: lpf.freq
+    #
+    # scaling both here and on the input?
+
+# Alesis  A   B   C   D
+# ctrl #  12  13  91  93
+ctrl12:
+  type: controller
+  number: 12
+  amp: 1000
+  out: lpf.freq
+
+ctrl13:
+  type: controller
+  number: 13
+  amp: 400
+  out: lpf.Q
+
+env1:
+  type: env
+  points:
+    # columns: rate level [option]
+    - 500 100 re-trigger
+    - 3000 25 hold
+    - 5000 0 release
+    - 20000 0 alt-release
+    -
+  out-level: lpf.freq
+  out-level-amp: 1000
+
+lpf:
+  type: filter
+  shape: biquad
+  input-freq:
+    amp: 1000
+    range: 10000 # hz
+
+  input-Q:
+    amp: 1000
+    range: 50  # .5 -> infinity
+
+  freq: 70
+  Q: .7   # they say "0-5 default 1"
+  level-scale: 1
+  out: env
+
+env:
+  type: env
+  exit: true
+  points:
+    # columns: rate level [option]
+    - 50 100 re-trigger
+    - 1000 50 hold
+    - 1000 25
+    - 2000 0 release
+    - 20000 0 alt-release
+  out: main
+
