@@ -2,6 +2,7 @@ package ondes;
 
 import ondes.midi.MlzMidi;
 import ondes.synth.OndeSynth;
+import ondes.synth.voice.VoiceMaker;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
@@ -17,14 +18,14 @@ import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 
 public class SynthSession {
-    String inDevStr, outDevStr;
-    MidiDevice midiDev;
-    Mixer mixer;
-    OndeSynth synth;
-    String[] progNames;
-    int bufferSize;
+    private final String inDevStr, outDevStr;
+    private final String[] progNames;
+    private final int bufferSize;
+    private MidiDevice midiDev;
+    private Mixer mixer;
+    private OndeSynth synth;
 
-    SynthSession(String inDevStr,
+    public SynthSession(String inDevStr,
                  String outDevStr,
                  String[] progNames,
                  int bufferSize) {
@@ -34,7 +35,9 @@ public class SynthSession {
         this.bufferSize = bufferSize;
     }
 
-    boolean open() {
+    public boolean open() {
+        VoiceMaker.loadPrograms();
+
         //  Connect MIDI input and Audio output
         //
         out.println("Input device : " + inDevStr);
@@ -63,7 +66,7 @@ public class SynthSession {
         return true;
     }
 
-    void start() {
+    public void start() {
         synth = new OndeSynth(
             44100,      // sample rate
             midiDev,    // input device
@@ -75,12 +78,20 @@ public class SynthSession {
         synth.start();
     }
 
-    void close() {
+    public void close() {
         if (synth != null) synth.logFlush();
 
         if (midiDev != null) midiDev.close();
         if (mixer != null) mixer.close();
     }
+
+    public OndeSynth getSynth() { return synth; }
+
+    // /// // ///   // /// // ///   // /// // ///   // /// // ///   // /// // ///   // /// // ///   // /// // ///
+             // /// // ///   // /// // ///   // /// // ///   // /// // ///   // /// // ///   // /// // ///
+       // /// // ///   // /// // ///   // /// // ///   // /// // ///   // /// // ///
+
+
 
     static MidiDevice getMidiDev(String inDevStr) {
         MidiDevice.Info info = MlzMidi.getTransmitter(inDevStr);

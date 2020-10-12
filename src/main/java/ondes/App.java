@@ -172,7 +172,7 @@ public class App {
             progNames[pnp++] = looseVoices.get(lvp++);
         }
 
-        VoiceMaker.loadPrograms();
+        //  Create, open, and start new Synth Session
 
         SynthSession session = new SynthSession(
             inDevStr, outDevStr, progNames, bufferSize);

@@ -1,0 +1,9 @@
+
+#  for now...
+#   todo - implement the WaveEditor component
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: sine
+  out: main

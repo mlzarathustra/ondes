@@ -129,14 +129,7 @@ public abstract class MonoComponent {
         = new HashMap<>();
 
     protected synchronized int namedInputSum(String name) {
-        List<WiredIntSupplier> inp = namedInputs.get(name);
-        int rs=0;
-        if (inp != null) {
-            for (WiredIntSupplier input : inp) {
-                rs += input.getAsInt();
-            }
-        }
-        return rs;
+        return inputSum(namedInputs.get(name));
     }
 
     protected int namedInputSize(String name) {
@@ -148,11 +141,12 @@ public abstract class MonoComponent {
         return namedInputs.get(name);
     }
 
+    protected int inputSum() { return inputSum(inputs); }
     /**
      * for most inputs
      * @return - the sum of all the inputs at this current sample
      */
-    protected int inputSum() {
+    protected int inputSum(List<WiredIntSupplier> inputs) {
         int sum=0;
         int i=0;
         for (;;) {
