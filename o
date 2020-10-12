@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# obsolete? 
+# HEAP_TRACE="-agentlib:hprof=heap=sites"
+
 . ondes-args
 
-java -cp build/libs/ondes-all.jar ondes.App  "${ONDES_ARGS[@]}" "$@"
+java $HEAP_TRACE -cp build/libs/ondes-all.jar ondes.App  "${ONDES_ARGS[@]}" "$@"
 

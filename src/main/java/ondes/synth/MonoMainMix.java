@@ -55,6 +55,7 @@ public class MonoMainMix extends MonoComponent {
 
     private byte[] lineBuffer;
     private int[] outputBuffer;
+    private byte[] split;
     //
     private int avgLatency, timingOverflow;
 
@@ -120,6 +121,7 @@ public class MonoMainMix extends MonoComponent {
         }
         int sb = audFmt.getSampleSizeInBits();
         bytesPerSample = (sb/8) + (sb%8 > 0 ? 1 : 0);
+        split = new byte[bytesPerSample]; // avoid allocating one for each sample
 
         outputBuffer = new int[bufferSize]; // todo - this is mono
         lineBuffer = new byte[bufferSize * bytesPerSample * channels];
@@ -147,7 +149,6 @@ public class MonoMainMix extends MonoComponent {
      * @return - how many bytes were copied into lineBuffer
      */
     private int toLineFmt(int[] outputBuffer, int count) {
-        byte[] split = new byte[bytesPerSample];
         int lbIdx=0;
         long unsignedOffset = signed ? 0 : 1 << (8*bytesPerSample - 1);
         for (int obp=0; obp<count; ++obp) {
