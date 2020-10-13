@@ -61,6 +61,7 @@ env2:
 
 lpf:
   type: filter
+  context: channel
   shape: iir
   key: lp_6_10k
   level-scale: 1

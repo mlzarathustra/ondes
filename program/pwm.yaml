@@ -18,7 +18,7 @@ osc1:
   input-log:
     semitones: -.03
     amp: 1000
-  out: lpf
+  out: env
 
 lfo1:
   freq: 0.2
@@ -35,7 +35,7 @@ osc2:
   mod-percent: 95
   input-amp: 1000
   velocity-amount: 150
-  out: lpf
+  out: env
 
 lfo2:
   freq: 0.11
@@ -44,13 +44,6 @@ lfo2:
   level-override: 1000
   out: osc2.pwm
 
-lpf:
-  type: filter
-  shape: iir
-  key: lp_4_8000
-  level-scale: 1
-  out: env
-
 env:
   type: env
   exit: true
@@ -58,10 +51,52 @@ env:
     # columns: rate level [option]
     - 100 100 re-trigger
     - 25 92 hold
-    - 700 0 release
+    - 300 0 release
     - 20000 0 alt-release
 
+  out: echo
+
+
+echo:
+  type: echo
+  context: channel
+  amount: 40
+  time: 124
+  out: echo2
+
+echo2:
+  type: echo
+  context: channel
+  amount: 30
+  time: 300
+  out: lpf
+
+
+lpf:
+  type: filter
+  context: channel
+  shape: iir
+  key: lp_4_8000
+  level-scale: 1
   out: main
+
+
+
+  ##################
+
+  # Alesis  A   B   C   D
+  # ctrl #  12  13  91  93
+#  ctrl12:
+#    type: controller
+#    number: 12
+#    amp: 1000
+#    out: echo.amount
+#
+#  ctrl13:
+#    type: controller
+#    number: 13
+#    amp: 400
+#    out: echo.time
 
 
 

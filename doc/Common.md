@@ -1,17 +1,31 @@
 
 # common parameters 
+
+```yaml
+osc1: 
+  midi: note-on
+  type: wave
+  out: main
+  shape: sine
+```  
+  
   
 The following can apply to all components. 
   
  - **osc1** - this is an example of the label of a component. It's available for use by any component in the same voice (i.e. this same file).
  
- - Note that the global **main** component (the MainMix object) is declared by default for every voice. If you neglect to put a line `out: main` in some component, the voice has no way of sounding.
- 
  - **midi** - tell which type(s) of MIDI message this component should receive. The **MIDI message types** section below lists the eight types.
  
- - **level-scale** - output scaling. 1 is unchanged. .5 is half as loud. 2 is twice as loud. The Synth only allows you to go to 11. There is a limiter that will save you from the nasty wave truncation if you overload, but it can only smooth out the signal so far. So if it displays the overload symbol `<>` on the console, you want to turn the levels down.  
+ - **type** - this parameter is required (so ondes will know what type of component to create)
   
-  - **out** - where this component&rsquo;s output is sent to. Here it's going directly to the main out, but it can be directed to any component that takes input. For example a `filter` or `op-amp`.
+  - **out** - where this component&rsquo;s output is sent to. Here it's going directly to the main out, but it can be directed to any component that takes input. For example a `filter` or `op-amp`. 
+ 
+ - Note that the global **main** component (the MainMix object) is declared by default for every voice. If you neglect to put a line `out: main` in some component, the voice has no way of sounding.
+ 
+ - **context** - use `context: channel` to have one of these per MIDI channel. Otherwise, there will be one per voice. 
+ 
+ - **level-scale** - output scaling. 1 is unchanged. .5 is half as loud. 2 is twice as loud. The Synth only allows you to go to 11. There is a limiter that will save you from the nasty wave truncation if you overload, but it can only smooth out the signal so far. So if it displays the overload symbol `<>` on the console, you want to turn the levels down.  
+
  
   - **level-override** - Sets the output amplitude, overriding other considerations. For sound WaveGens, we scale amplitude (or actually, peak deviation) according to pitch, so that that low frequencies won't get lost, and note-velocity if specified. However, for an LFO we need to control the output level very precisely. It's meant to be paired with the **input-amp** setting on the destination, i.e. both should be the same.
   

@@ -147,6 +147,7 @@ public abstract class MonoComponent {
      * @return - the sum of all the inputs at this current sample
      */
     protected int inputSum(List<WiredIntSupplier> inputs) {
+        if (inputs == null) return 0;
         int sum=0;
         int i=0;
         for (;;) {

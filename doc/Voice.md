@@ -3,7 +3,9 @@
 
 ## Patching together components in YAML
 
- A `program` in OndeSynth is a set of specifications for a patch in YAML. If you don't know YAML, you can probably fake it by looking at the existing patch files. It's a hierarchical data format with in which indents indicate the hierarchy. Plentiful information exists about it online. 
+ A `program` in OndeSynth is a set of **Components** connected together. I use the term `patch` interchangeably with `program.` A `Voice` on the other hand is a program that has been instantiated into an Object in order to play music. The distinction is somewhat loose. 
+ 
+ It is represented as a set of specifications in YAML. If you don't know YAML, you can probably fake it by looking at the existing program files (for example in the `program` directory). YAML is a hierarchical data format with in which indents indicate the hierarchy. Plentiful information exists about it online. 
  
  The application looks in two places for the YAML files: the resources directory `program` (a collection internal to the app, mostly basic patches like plain sine and sawtooth waves) and a directory called `program` relative to the working directory. It will parse subdirectories also, but only if the command line contains `-all`. Subdirectories are meant for test patches that you don't want to clutter up the main list with.
  
@@ -24,15 +26,23 @@ Here is a patch with a single component, of type 'wave' (also called "WaveGen" o
 ```
 
 ## Components 
- - Each component is a Map named by a key (within the main Map), which must be global to the file. For example `osc1` above. The uniqueness constraint is part of the YAML spec.
-
- - Components can now reside in either the `Voice` or the `Channel` context. Likely candidates for Channel components are LFO's or Echo. For example, a Voice-context LFO will reset each time, so it will give the exact same attack any time a note is hit. However, at the Channel level, the LFO will keep on going no matter what, so the attack will vary depending on the state of the LFO. 
+Each component is a Map named by a key (within the main Map), which must be global to the file. For example `osc1` above. The requirement for it to be unique is part of the YAML spec.
  
-    This feature is under development and may not yet be stable. You can make a component into a channel-context component by saying in the definition: 
+### context
+
+Components can reside in either the `Voice` or the `Channel` context. Most will reside in the **Voice** context, and that is the default. Likely candidates for **Channel** components are LFO's or Echo.
+ 
+Another likely **Channel** component is any IIR filter, as it seems the double precision Math can tend to overload and cause gaps.  
+  
+ A Voice-context LFO will reset each time, so it will give the exact same attack any time a note is hit. However, at the Channel level, the LFO will keep on going no matter what, so the attack will vary depending on the state of the LFO. 
+ 
+You can make a component into a channel-context component by saying in the definition: 
  
         context: channel
         
-    Channel-context components will not be paused like Voice-context components are when the voice stops sounding. Also, there will be only one of a given Channel-context component per Channel, rather than one per voice. And the "main" output of a Channel component will go directly to the limiter, rather than the Voice junction which is considered "main" for a Voice component. Otherwise the Channel component would include the output of all the voices from that channel in every voice's output from that channel, which would not work very well.      
+Channel-context components will not be paused like Voice-context components are when the voice stops sounding. Also, there will be only one of a given Channel-context component per Channel, rather than one per voice. And the "main" output of a Channel component will go directly to the limiter, rather than the Voice junction which is considered "main" for a Voice component. Otherwise the Channel component would include the output of all the voices from that channel in every voice's output from that channel, which would not work very well.  
+    
+### programs        
  
 A program will usually contain multiple components. The above has only one: a square wave generator by the name of `osc1` Ondes "helps" a little by adding an envelope if there is none, and then everything goes through a limiter before reaching the main out. The limiter on overload will display little diamond <> symbols, so if you see those, it is a good idea to address the issue. 
 
