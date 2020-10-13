@@ -27,6 +27,9 @@
  ---   
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
+ ---
+   performance? - shut off startup tasks:
+   https://answers.microsoft.com/en-us/windows/forum/windows_10-performance/windows-10-performance-and-install-integrity/75529fd4-fac7-4653-893a-dd8cd4b4db00
 
  ---
  - (an)harmonic wave gen: 

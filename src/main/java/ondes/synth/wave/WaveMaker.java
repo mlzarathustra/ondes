@@ -79,6 +79,8 @@ public class WaveMaker {
 
         register("noise", NoiseWaveGen.class);
         register("pink", PinkNoiseGen.class);
+
+        register("wave-editor", WaveEditor.class);
     }
 
 }

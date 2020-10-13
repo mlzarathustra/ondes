@@ -253,7 +253,7 @@ public class MonoMainMix extends MonoComponent {
             if (LOG_MAIN_OUT) {
                 // loops++; for limiting # of outputs
 
-                logWrite("srcLine.write() rs="+rs+
+                logWrite("srcLine.write() rs="+rs+" bytes; "+
                     "   total >> "+ String.format("%,d ns",(now-lastWrite))+
                     "    write "+ String.format("%,d ns",(now-beforeWrite))+
                     "    process "+ String.format("%,d ns", (beforeWrite - lastWrite))
