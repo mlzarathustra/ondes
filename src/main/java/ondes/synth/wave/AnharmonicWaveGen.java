@@ -2,6 +2,7 @@ package ondes.synth.wave;
 
 import ondes.synth.Instant;
 import ondes.synth.wave.lookup.CompositeWave;
+import ondes.synth.wave.lookup.FloatWaveLookup;
 import ondes.synth.wave.lookup.WaveLookup;
 
 import javax.sound.midi.MidiMessage;
@@ -171,7 +172,7 @@ class AnharmonicWaveGen extends CompositeWave {
         String waveKey = Arrays.toString(harmonicParams);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            waveLookup = new WaveLookup(this::valueAtPhase);
+            waveLookup = new FloatWaveLookup(this::valueAtPhase);
             waveLookups.put(waveKey, waveLookup);
         }
     }
@@ -203,7 +204,7 @@ class AnharmonicWaveGen extends CompositeWave {
             sum += sineLookup( clocks.get(ov/2).getPhase() )
                 / anharmonicParams[ov+1];
         }
-        sum +=  waveLookup.valueAt(phaseClock.getPhase()) ;
+        sum +=  waveLookup.valueAt((float)phaseClock.getPhase()) ;
         //out.println(sum);
 
         return (int) (sum * getAmp());

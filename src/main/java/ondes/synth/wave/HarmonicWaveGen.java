@@ -1,6 +1,7 @@
 package ondes.synth.wave;
 
 import ondes.synth.wave.lookup.CompositeWave;
+import ondes.synth.wave.lookup.FloatWaveLookup;
 import ondes.synth.wave.lookup.WaveLookup;
 
 import java.util.Arrays;
@@ -108,7 +109,7 @@ class HarmonicWaveGen extends CompositeWave {
         String waveKey = Arrays.toString(harmonicParams);
         waveLookup = waveLookups.get(waveKey);
         if (waveLookup == null) {
-            waveLookup = new WaveLookup(this::valueAtPhase);
+            waveLookup = new FloatWaveLookup(this::valueAtPhase);
             waveLookups.put(waveKey, waveLookup);
         }
 
@@ -126,7 +127,7 @@ class HarmonicWaveGen extends CompositeWave {
     public int currentValue() {
         modFreq();
         return (int)(
-            waveLookup.valueAt(phaseClock.getPhase()) * getAmp()
+            waveLookup.valueAt((float)phaseClock.getPhase()) * getAmp()
         );
 
     }
