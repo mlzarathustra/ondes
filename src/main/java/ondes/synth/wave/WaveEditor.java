@@ -26,7 +26,7 @@ public class WaveEditor extends WaveGen {
     // todo - refresh rather than new if possible
 
     public static void setWave(float[] harmonics) {
-        out.println( "WaveEditor: harmonics="+Arrays.toString(harmonics) );
+        //out.println( "WaveEditor: harmonics="+Arrays.toString(harmonics) );
         WaveEditor.harmonics = harmonics;
         if (backBuffer == null) backBuffer = new FloatWaveLookup(WaveEditor::valueAtPhase);
         else backBuffer.refresh();

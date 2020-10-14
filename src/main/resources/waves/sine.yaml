@@ -1,0 +1,8 @@
+#  generates a sine wave
+osc1:
+  midi: note-on
+  type: wave
+  shape: harmonic
+  out: main
+  waves:
+    - 1 1

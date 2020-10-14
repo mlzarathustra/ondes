@@ -60,9 +60,21 @@ public class VoiceMaker {
 
     public static void loadPrograms() {
 
+        // addLabeledProg() will add to here
         programs = new ArrayList<>();
 
-        //  First load the .yaml files from the filesystem,
+        // First, load the internal resources.
+        //
+        List<String> fileNames = listResourceFiles("program");
+        if (DB) out.println("resource files: "+fileNames);
+
+        fileNames.forEach( fn -> {
+            Map prog = loadResource("program/"+fn);
+            addLabeledProg(prog, fn);
+
+        });
+
+        //  Then load the .yaml files from the filesystem,
         //  (in the ./program/ directory) so those will supersede
         //  any with similar names internally
         //
@@ -84,18 +96,7 @@ public class VoiceMaker {
             // this happens if the directory isn't there, which is
             // no big deal.
         }
-
-        // Next, load the internal resources.
-        //
-        List<String> fileNames = listResourceFiles("program");
-        if (DB) out.println("resource files: "+fileNames);
-
-        fileNames.forEach( fn -> {
-            Map prog = loadResource("program/"+fn);
-            addLabeledProg(prog, fn);
-
-        });
-
+        programs.sort(Comparator.comparing(m->m.get("name").toString()));
     }
     
     //////////////////////////////////////////////////////////////////////
@@ -184,7 +185,7 @@ public class VoiceMaker {
                     "------------------");
         int i=1;
         for (Map p : programs) {
-            out.println("  " + i++ + ": " + p.get("name"));
+            out.println(String.format("%5d: ",i++)+ p.get("name"));
             if (detail) showProgram(p.get("name").toString());
         }
 
