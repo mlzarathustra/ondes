@@ -1,7 +1,5 @@
 # OndeSynth - to do
  
-   - A graphical wave editor would be nice. Output the points.
-   
    - `WaveLookup` constructor: normalize level 
    
   - FM Monitor
@@ -14,6 +12,8 @@
     - trace: frequency
      
         frequency of the modulator relative to the modulated oscillator, represented in semitones; it may be sufficient to show the frequency relative to the "offsetFrequency" (= midi + detune + semitone offset)
+
+    - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. 
 
  ---
   - Panners - 

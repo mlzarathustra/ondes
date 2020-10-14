@@ -5,9 +5,9 @@
 
  A `program` in OndeSynth is a set of **Components** connected together. I use the term `patch` interchangeably with `program.` A `Voice` on the other hand is a program that has been instantiated into an Object in order to play music. The distinction is somewhat loose. 
  
- It is represented as a set of specifications in YAML. If you don't know YAML, you can probably fake it by looking at the existing program files (for example in the `program` directory). YAML is a hierarchical data format with in which indents indicate the hierarchy. Plentiful information exists about it online. 
+ It is represented as a set of specifications in YAML. If you don't know YAML, it's easy to pick up, and you can probably fake it by looking at the existing program files (for example in the `program` directory). YAML is a hierarchical data format with in which indents indicate the hierarchy. Plentiful information exists about it online. 
  
- The application looks in two places for the YAML files: the resources directory `program` (a collection internal to the app, mostly basic patches like plain sine and sawtooth waves) and a directory called `program` relative to the working directory. It will parse subdirectories also, but only if the command line contains `-all`. Subdirectories are meant for test patches that you don't want to clutter up the main list with.
+ The application looks in two places for the YAML files: a collection internal to the app, mostly basic patches like plain sine and sawtooth waves (in the resources directory `program`) and a directory called `program` relative to the working directory. It will parse subdirectories also, but only if the command line contains `-all`. Subdirectories are currently for test patches that you don't want to clutter up the main list with.
  
  The file name minus '.yaml' will be the patch name. If there are duplicate patch names, you can use `ondes -list` and select by number instead of name.
  
@@ -55,7 +55,6 @@ What a component will do is defined by a series of properties listed below the n
     - **limiter** - keeps a signal from overflowing
     - **op-amp** - multiplies two signals together, so that one can control the output envelope of the other. For example an LFO or an Envelope can do amplitude modulation.
     - **filter** - alters the sound spectrum by changing the frequency response.
-
     
    More will follow in the future.
    
@@ -69,6 +68,16 @@ For the lists of parameters available, see the following files:
  - [Controller](Controller.md)
  - [MidiNote](MidiNote.md)
  - [Mix](Mix.md)
+
+
+## Editing Waves 
+
+There are several ways to generate more complex waveforms than the usual sine, square, and so on. 
+
+1. Harmonic wave forms can be created using the [wave editor](WaveEditor.md)
+
+1. FM, using linear modulation as does the DX-7. Soon there will be better ways to monitor FM settings so you can more easily capture the parameters for a sound you are hearing. 
+
     
  ----
  
