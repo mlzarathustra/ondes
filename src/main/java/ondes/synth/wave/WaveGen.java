@@ -207,20 +207,12 @@ public abstract class WaveGen extends MonoComponent {
         return freqMultiplier;
     }
 
-
-    /**
-     *    the label of the modulated WaveGen
-     *    if trace-relative is set to a WaveGen component,
-     *    we will display the relative frequency in semitones
-     *    as it changes. To use for introspecting FM sounds.
-     */
-    String TRACE_MODULATED_WAVE = null;
-
-
     /**
      *    If set, we will display the frequency span of the
      *    linear modulation. The percentage is what we want
      *    to capture.
+     *
+     *    todo - to be clean, this should get reset on note-on
      */
     boolean TRACE_LINEAR_MOD = false;
     double lastPercent=0;
@@ -235,10 +227,11 @@ public abstract class WaveGen extends MonoComponent {
                 double delta = curMax - midiFrequency; // should be symmetrical
                 double percent = 100.0 * delta / midiFrequency;
                 if (lastPercent != 0 && abs(percent - lastPercent) > 0.0001) {
-                    out.println(String.format(
-                        "  PERCENT: %10.4f  | min: %10.4f  max: %10.4f  base: %10.4f  " +
-                            "delta: %10.4f",
-                        percent, curMin, curMax, midiFrequency, delta));
+                    out.printf(
+                        "["+getName() +"] "+
+                        "   %10.4f %% LINEAR MODULATION   | " + //" min: %10.4f  max: %10.4f " +
+                            " base: %10.4f  delta: %10.4f%n",
+                        percent, curMin, curMax, midiFrequency, delta);
                 }
                 lastPercent = percent;
                 curMin = Double.POSITIVE_INFINITY;
@@ -251,6 +244,43 @@ public abstract class WaveGen extends MonoComponent {
         }
     }
     ModTracker mt = new ModTracker();
+    static final double LOG2 = log(2);
+
+    /**
+     *    the label of another WaveGen to track.
+     *    if trace-relative is set to a WaveGen component,
+     *    we will display the relative frequency in semitones
+     *    as it changes. To use for introspecting FM sounds.
+     *
+     *    The "trace-relative" property needs to go into the
+     *    oscillator being modulated, as we look a the
+     *    BASE frequency of this oscillator and the
+     *    CURRENT frequency of the other oscillator
+     *    (i.e. the phaseClock.getFrequency())
+     *
+     */
+    class SemitoneDiffTracker {
+        final int MT_SAMPLES = 44100; // 1 trace/second
+        int ltIdx = 0;
+
+        WaveGen waveGen;
+        SemitoneDiffTracker(WaveGen wg) { waveGen = wg; }
+        public void trackSemitones() {
+            double otherFreq = waveGen.phaseClock.getFrequency();
+            if (baseFrequency == 0 || otherFreq == 0) return;
+            double diff = 12.0 *
+                abs(log(baseFrequency / otherFreq)) / LOG2;
+            if (ltIdx == 0) {  // once per second
+                out.printf(
+                    "["+getName()+":"+waveGen.getName()+"] "+
+                    "  FREQ DIFF: %10.4f SEMITONES  | ", diff);
+                out.printf(" %s: %10.4f %s: %10.4f %n",
+                    getName(), baseFrequency, waveGen.getName(), waveGen.phaseClock.getFrequency());
+            }
+            ltIdx = (ltIdx + 1) % MT_SAMPLES;
+        }
+    }
+    SemitoneDiffTracker dt = null;
 
     // to be used by overriding modFreq()
     protected double linearInp, logInp;
@@ -272,6 +302,13 @@ public abstract class WaveGen extends MonoComponent {
      * </p>
      */
     protected void modFreq() {
+        // todo - create WaveGen.currentValue() and require the child classes
+        //      to call THAT, instead of calling modFreq() directly
+        //      since the below trace isn't modulating frequency
+        //      hence "modFreq" is the wrong place for it.
+        //
+        if (dt != null) dt.trackSemitones();
+
         if (!modLinFrequency && !modLogFrequency) return;
 
         double freq= baseFrequency;
@@ -431,6 +468,18 @@ public abstract class WaveGen extends MonoComponent {
         }
         else if (inp != null) {
             err.println("Envelope: trace-linear property was specified but is not boolean.");
+        }
+
+        inp = config.get("trace-relative");
+        if (inp != null) {
+            try {
+                dt = new SemitoneDiffTracker((WaveGen) components.get(inp.toString()));
+            }
+            catch (ClassCastException ex) {
+                err.println("trace-relative: component given is not a WaveGen.");
+                err.println("  >> "+inp+" << ");
+            }
+
         }
 
         //   Fixed frequency
