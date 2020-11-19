@@ -5,13 +5,11 @@
   - FM Monitor
     amt/freq mod: add an option to report the values for future use
     
-    - trace: fm
-    
-        amount of modulation, the frequency delta as a percentage of the carrier pitch (which ModTracker is probably best at)
-        
     - trace: frequency
      
         frequency of the modulator relative to the modulated oscillator, represented in semitones; it may be sufficient to show the frequency relative to the "offsetFrequency" (= midi + detune + semitone offset)
+        
+    - document: trace-linear, trace-relative    
 
     - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. 
 

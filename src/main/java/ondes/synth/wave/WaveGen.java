@@ -8,14 +8,11 @@ import ondes.midi.FreqTable;
 import javax.sound.midi.MidiMessage;
 import java.util.Map;
 
+import static java.lang.Math.*;
 import static ondes.midi.MlzMidi.showBytes;
 import static ondes.mlz.PitchScaling.*;
 import static ondes.synth.component.ConfigHelper.*;
 
-
-import static java.lang.Math.pow;
-import static java.lang.Math.min;
-import static java.lang.Math.max;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
@@ -211,23 +208,39 @@ public abstract class WaveGen extends MonoComponent {
     }
 
 
+    /**
+     *    the label of the modulated WaveGen
+     *    if trace-relative is set to a WaveGen component,
+     *    we will display the relative frequency in semitones
+     *    as it changes. To use for introspecting FM sounds.
+     */
+    String TRACE_MODULATED_WAVE = null;
 
-    boolean TRACK_LINEAR_MOD = false;
+
+    /**
+     *    If set, we will display the frequency span of the
+     *    linear modulation. The percentage is what we want
+     *    to capture.
+     */
+    boolean TRACE_LINEAR_MOD = false;
+    double lastPercent=0;
 
     class ModTracker {
         final int MT_SAMPLES = 44100; // 1 trace/second
         int ltIdx = 0;
         double curMin, curMax;
 
-        // TODO - shouldn't this be using offsetFrequency?
         public void trackLinMod(double freq) {
             if (ltIdx % MT_SAMPLES == 0 && (curMin != 0 || curMax != 0)) {
                 double delta = curMax - midiFrequency; // should be symmetrical
                 double percent = 100.0 * delta / midiFrequency;
-                out.println(String.format(
-                    " min: %10.4f  max: %10.4f  base: %10.4f  " +
-                    "delta: %10.4f  percent: %10.4f",
-                    curMin, curMax, midiFrequency, delta, percent));
+                if (lastPercent != 0 && abs(percent - lastPercent) > 0.0001) {
+                    out.println(String.format(
+                        "  PERCENT: %10.4f  | min: %10.4f  max: %10.4f  base: %10.4f  " +
+                            "delta: %10.4f",
+                        percent, curMin, curMax, midiFrequency, delta));
+                }
+                lastPercent = percent;
                 curMin = Double.POSITIVE_INFINITY;
                 curMax = Double.NEGATIVE_INFINITY;
                 ltIdx = 0;
@@ -267,7 +280,7 @@ public abstract class WaveGen extends MonoComponent {
             linearInp=((double)namedInputSum("linear"))/linearInputAmp
                 * linearInputFreq;
             freq += linearInp;
-            if (TRACK_LINEAR_MOD) mt.trackLinMod(freq);
+            if (TRACE_LINEAR_MOD) mt.trackLinMod(freq);
         }
         if (modLogFrequency) {
             logInp=((double)namedInputSum("log"))/logInputAmp
@@ -410,6 +423,14 @@ public abstract class WaveGen extends MonoComponent {
             // if ratio>1 the frequency would go negative.
 
             modLinFrequency = true;
+        }
+        Object inp;
+        inp = config.get("trace-linear");  // trace linear modulation
+        if (inp instanceof Boolean) {
+            TRACE_LINEAR_MOD = (Boolean)inp;
+        }
+        else if (inp != null) {
+            err.println("Envelope: trace-linear property was specified but is not boolean.");
         }
 
         //   Fixed frequency
