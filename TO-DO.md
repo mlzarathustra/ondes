@@ -4,20 +4,18 @@
    
   - FM Monitor
     amt/freq mod: add an option to report the values for future use
-    
-    - trace: frequency
-     
-        frequency of the modulator relative to the modulated oscillator, represented in semitones; it may be sufficient to show the frequency relative to the "offsetFrequency" (= midi + detune + semitone offset)
-        
+
     - document: trace-linear, trace-relative    
 
-    - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. 
+  - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. Inherit the waves from the WG indicated. 
 
  ---
   - Panners - 
      - control with lfo(s)
      - control with envelope
  ---
+  - Provide an API endpoint for morbleu
+ 
 
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-      
  ---
