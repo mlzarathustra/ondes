@@ -1,11 +1,8 @@
 # OndeSynth - to do
- 
-   - `WaveLookup` constructor: normalize level 
-   
-  - FM Monitor
-    amt/freq mod: add an option to report the values for future use
 
-    - document: trace-linear, trace-relative    
+  - document: trace-linear, trace-relative    
+
+  - `WaveLookup` constructor: normalize level 
 
   - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. Inherit the waves from the WG indicated. 
 
