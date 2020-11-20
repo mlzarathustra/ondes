@@ -21,6 +21,12 @@ The following parameters can be used for wave generators. Only certain ones may 
  - **offset** - number of half steps to offset the frequency from the base. -12 is down an octave. 6 is a tritone. Dust off your music theory books! 
  
   - **freq** - mostly for LFO's. Overrides the MIDI key frequency, whether or not the WaveGen receives note-on messages. For an LFO, you probably also want to say `signed: false`  though signed values can produce interesting effects.
+  
+  - **level-scale** - an optional value by which to scale the output. The output value is multiplied by level-scale, so the default is "1."  Can help you control extra-weak or extra-strong signals. 
+  
+  - **level-override** - hardwires the "amplitude" to this value. If the amplitude is 10, the values output will range from -10 to 10, unless the "signed" flag is true, in which case they will vary from 0 to 20. 
+  
+  - **signed** - {true|false} default true. If set to false, the WaveGen will only output values above zero, by adding the amplitude to each point. So the wave will have the same shape and size, but be shifted above the X axis. 
     
   - **mod-percent** - The percentage of modulation for a PWM wave. See `pwm.yaml` in the resources directory for examples. PWM stands for "Pulse Width Modulation" and refers to changing the duty cycle of a square wave, which gives a kind of combing effect.
   
@@ -52,9 +58,11 @@ You'll find examples in the program/test-fm directory. To load patches in subdir
 
 The exact amplitude is the result of an equation that may change. To override this formula, use the **level-override** property to set a fixed (integer) amplitude.  
 
+"Amplitude" in this context means the distance on either side of the X axis. For example, if the amplitude is 10, the wave will vary from -10 to 10, unless it's marked as "signed," in which case it will vary from 0 to 20. 
+
 If you don't use **level-override**, the amplitude currently looks like this:
 
-**ampBase** &#xD7; **pitchScale** &#xD7; **velocityMultiplier** &#xD7; **levelScale**
+**ampBase** x **pitchScale** x **velocityMultiplier** x **levelScale**
 
  - **ampBase** - presently set to 1024. This could change.  
  - **pitchScale** - a complex formula, but by default the amplitude decreases by .1 per octave going up.  For example if C3 has a level of 1, pitchScale will look like this:

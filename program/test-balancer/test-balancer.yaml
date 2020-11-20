@@ -1,24 +1,44 @@
 
 
+#  amount of modulation [ctrl A]
+ctrl12:
+  type: controller
+  number: 12  # QS controller A
+  amp: 1000
+  out: op-amp
+
+mod-osc:
+  type: wave
+  shape: saw
+  freq: .333
+  signed: true # the default
+  level-override: 1000
+  out: op-amp
+
+op-amp:
+  type: op-amp
+  out: balancer.ctrl
+
 
 osc1:
   midi: note-on
   offset: 0
+  detune: 7
   type: wave
   shape: square
-  out: balancer
+  out: balancer.right
 
 osc2:
   midi: note-on
   offset: 12
   type: wave
   shape: ramp-up
-  out: balancer
+  out: balancer.left
 
 
 balancer:
   type: balancer
   input-ctrl:
-    initial-value: 500
-    amp: 1000
+    initial-value: 0
+    amp: 1000000  # here implies: -1000..1000
   out: main

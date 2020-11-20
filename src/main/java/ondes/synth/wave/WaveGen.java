@@ -179,6 +179,16 @@ public abstract class WaveGen extends MonoComponent {
 
     protected boolean signed = true;
 
+    /**
+     * The amplitude on either side of the X axis.
+     * So if the amplitude is 10, the values range from -10 to 10
+     *
+     * Can be overridden by the "level-override" value. Otherwise,
+     * it's an equation based on the MIDI key, velocity, and
+     * "level-scale" value.
+     *
+     * @return
+     */
     public int getAmp() {
         //out.println("getAmp(): ampOverride is "+ampOverride);
         if (ampOverride >= 0) return ampOverride;

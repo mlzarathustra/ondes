@@ -9,7 +9,6 @@ noise1:
 
 vca-lfo:
   type: wave
-  signed: false
   freq: .2
   shape: saw
   level-override: 1000

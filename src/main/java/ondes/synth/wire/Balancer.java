@@ -3,7 +3,7 @@ package ondes.synth.wire;
 import ondes.synth.component.MonoComponent;
 
 import java.util.Map;
-
+import static java.lang.System.out;
 import static ondes.synth.component.ConfigHelper.getDouble;
 import static ondes.synth.component.ConfigHelper.getInAmpPair;
 
@@ -48,7 +48,10 @@ public class Balancer extends MonoComponent {
         float L = namedInputSum("left"), R = namedInputSum("right"),
             ctrl = namedInputSum("ctrl");
 
-        float lScale = ctrl / ctrlInputAmp;
+        //  if ctrlInputAmp is 1000, the value will be
+        //   -1000 <= ctrl <= 1000
+        //
+        float lScale = ((ctrl / ctrlInputAmp)+1f)/2f;
         float val = lScale * L + (1-lScale) * R;
 
         return (int)(val * scale);
