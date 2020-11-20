@@ -6,10 +6,7 @@ import ondes.synth.envelope.Envelope;
 import ondes.synth.envelope.Limiter;
 import ondes.synth.filter.FilterMaker;
 import ondes.synth.wave.WaveMaker;
-import ondes.synth.wire.Controller;
-import ondes.synth.wire.Junction;
-import ondes.synth.wire.MidiNoteNum;
-import ondes.synth.wire.OpAmp;
+import ondes.synth.wire.*;
 import ondes.synth.filter.Smooth;
 
 import java.util.Map;
@@ -53,6 +50,7 @@ public class ComponentMaker {
 
             case "env": rs = new Envelope(); break;
             case "mix": rs = new Junction(); break;
+            case "balancer": rs = new Balancer(); break;
             case "limiter": rs = new Limiter(); break;
             case "op-amp": rs = new OpAmp(); break;
             case "controller": rs = new Controller(); break;

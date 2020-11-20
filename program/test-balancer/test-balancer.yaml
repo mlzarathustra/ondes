@@ -1,0 +1,24 @@
+
+
+
+osc1:
+  midi: note-on
+  offset: 0
+  type: wave
+  shape: square
+  out: balancer
+
+osc2:
+  midi: note-on
+  offset: 12
+  type: wave
+  shape: ramp-up
+  out: balancer
+
+
+balancer:
+  type: balancer
+  input-ctrl:
+    initial-value: 500
+    amp: 1000
+  out: main

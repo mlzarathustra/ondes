@@ -1,7 +1,5 @@
 # OndeSynth - to do
 
-  - document: trace-linear, trace-relative    
-
   - `WaveLookup` constructor: normalize level 
 
   - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. Inherit the waves from the WG indicated. 

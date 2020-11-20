@@ -60,15 +60,6 @@ public class OpAmp extends MonoComponent {
                 "  '1' is default. Can be floating point.");
         if (dblInp != null) scale = dblInp;
 
-        // TODO - currently unused - remove?
-        //
-        dblInp= getDouble(config.get("input-amp"),
-            "'input-amp' must be a number, typically " +
-                "the same as the level-override of the sender.");
-        if (dblInp != null) {
-            inputAmp =  dblInp.floatValue();
-            if (inputAmp != 0) inputAmpInv = 1.0f/inputAmp;
-        }
     }
 
     @Override
