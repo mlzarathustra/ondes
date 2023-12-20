@@ -189,11 +189,11 @@ public class OndeSynth extends Thread {
      *
      * @param sampleRate - cycles per second. Currently ignored here
      *                   see TODO below
-     * @param midiInDev         - transmits MIDI messages that the synth responds to
+     * @param midiInDev  - transmits MIDI messages that the synth responds to
      *                   e.g. note-ON, pitch bend, and so on.
      * @param outDev     - note that "source" is from the perspective of the
      *                   mixer. From our perspective, it is a target.
-     * @param progNames         - a list of 16 strings identifying the programs
+     * @param progNames  - a list of 16 strings identifying the programs
      *                   for each channel. A loose "contains" match compares
      *                   the input with the 'name' property of the program.
      */

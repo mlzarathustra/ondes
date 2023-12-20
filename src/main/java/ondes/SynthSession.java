@@ -111,7 +111,7 @@ public class SynthSession {
         }
     }
 
-    static Mixer getMixer(String outDevStr) {
+    public static Mixer getMixer(String outDevStr) {
         Mixer.Info[] info= AudioSystem.getMixerInfo();
         List<Mixer.Info> list = Arrays.stream(info)
             .filter(i -> {
