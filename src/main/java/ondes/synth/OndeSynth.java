@@ -75,6 +75,7 @@ public class OndeSynth extends Thread {
                 channelPlaying[chan].remove(voices[chan][note]);
             }
             voices[chan][note] = null;
+            
         }
 
         /**
