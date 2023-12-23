@@ -1,8 +1,9 @@
 package ondes.synth;
 
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.System.out;
 
@@ -19,7 +20,8 @@ public class GrimReaperThread extends Thread {
         this.synth = synth;
     }
 
-    private final List<List<Integer>> endedNoteQueue = new ArrayList<>();
+    private final Queue<List<Integer>> endedNoteQueue =
+        new ConcurrentLinkedQueue<>();
     boolean stop = false;
 
     public synchronized void queueNoteEnd(int chan, int note) {
@@ -28,17 +30,10 @@ public class GrimReaperThread extends Thread {
     }
 
     public void endNotes() {
-        int i=0;
-        for (;;) {
-            List<Integer> n;
-            synchronized(this) {
-                if (i >= endedNoteQueue.size()) break;
-                n = endedNoteQueue.get(i);
-                ++i;
-            }
+        while (!endedNoteQueue.isEmpty()) {
+            List<Integer> n = endedNoteQueue.poll();
             synth.noteEnded(n.get(0), n.get(1));
         }
-        endedNoteQueue.clear();
     }
 
     public void run() {

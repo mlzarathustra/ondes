@@ -1,7 +1,5 @@
 package ondes.synth;
 
-import ondes.midi.MlzMidi;
-
 import javax.sound.midi.MidiMessage;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -39,7 +37,9 @@ public class MidiListenerThread extends Thread {
             if (stop) return;
 
             //  process queue
-            queue.forEach( msg -> synth.routeMidiMessage(msg,0) );
+            while (!queue.isEmpty()) {
+                synth.routeMidiMessage(queue.poll(),0);
+            }
         }
     }
 }
