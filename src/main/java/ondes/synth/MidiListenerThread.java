@@ -4,16 +4,19 @@ import ondes.midi.MlzMidi;
 
 import javax.sound.midi.MidiMessage;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import static java.lang.System.out;
 
 public class MidiListenerThread extends Thread {
     OndeSynth synth;
+
     MidiListenerThread(OndeSynth synth) {
         super("OndeSynth - MidiListenerThread");
         this.synth = synth;
     }
 
-    private final Deque<MidiMessage> queue = new ArrayDeque<>();
+    private final Queue<MidiMessage> queue = new ConcurrentLinkedQueue<>();
     boolean stop=false;
 
     public synchronized void routeMidiMessage(MidiMessage msg) {
@@ -36,13 +39,7 @@ public class MidiListenerThread extends Thread {
             if (stop) return;
 
             //  process queue
-            while (!queue.isEmpty()) {
-                MidiMessage msg;
-                synchronized(this) {
-                    msg = queue.pop();
-                }
-                synth.routeMidiMessage(msg,0);
-            }
+            queue.forEach( msg -> synth.routeMidiMessage(msg,0) );
         }
     }
 }

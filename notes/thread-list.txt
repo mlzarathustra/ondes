@@ -1,0 +1,22 @@
+Wave editor running:
+
+Thread[Thread-0,5,main]
+Thread[Java Sound Event Dispatcher,5,main]
+Thread[OndeSynth - main thread,5,main]
+Thread[AWT-EventQueue-0,6,main]
+Thread[DestroyJavaVM,5,main]
+Thread[Image Fetcher 0,8,main]
+Thread[Java Sound MidiInDevice Thread,5,main]
+Thread[OndeSynth - MidiListenerThread,5,main]
+Thread[OndeSynth - GrimReaperThread,5,main]
+
+
+Ondes by itself
+Thread[main,5,main]
+
+Thread[Java Sound Event Dispatcher,5,main]
+Thread[Java Sound MidiInDevice Thread,5,main]
+
+Thread[OndeSynth - main thread,5,main]
+Thread[OndeSynth - MidiListenerThread,5,main]
+Thread[OndeSynth - GrimReaperThread,5,main]
