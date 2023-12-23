@@ -1,6 +1,7 @@
 package ondes.synth.wire;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.IntSupplier;
 
 /**
@@ -10,9 +11,9 @@ import java.util.function.IntSupplier;
  */
 public class WiredIntSupplierPool {
 
-    private final List<WiredIntSupplier> wires = new ArrayList<>();
+    private final Queue<WiredIntSupplier> wires = new ConcurrentLinkedQueue<>();
 
-    public synchronized WiredIntSupplier getWiredIntSupplier(IntSupplier iu) {
+    public WiredIntSupplier getWiredIntSupplier(IntSupplier iu) {
         WiredIntSupplier wire = new WiredIntSupplier() {
             public int updateInputs() { return iu.getAsInt(); }
         };
@@ -20,10 +21,8 @@ public class WiredIntSupplierPool {
         return wire;
     }
 
-    public synchronized void reset() {
-        for (WiredIntSupplier wire : wires) {
-            wire.setVisited(false);
-        }
+    public void reset() {
+        for (WiredIntSupplier wire : wires) wire.setVisited(false);
     }
 
     public String toString() {
