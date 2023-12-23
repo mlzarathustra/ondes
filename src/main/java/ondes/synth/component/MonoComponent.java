@@ -7,6 +7,7 @@ import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.System.err;
 import static java.util.stream.Collectors.toList;
@@ -123,21 +124,21 @@ public abstract class MonoComponent {
      *
      * Getting the output value is basically a depth-first walk.
      */
-    private final List<WiredIntSupplier> inputs = new ArrayList<>();
+    private final Queue<WiredIntSupplier> inputs = new ConcurrentLinkedQueue<>();
 
-    private final HashMap<String, List<WiredIntSupplier>> namedInputs
+    private final HashMap<String, Queue<WiredIntSupplier>> namedInputs
         = new HashMap<>();
 
-    protected synchronized int namedInputSum(String name) {
+    protected int namedInputSum(String name) {
         return inputSum(namedInputs.get(name));
     }
 
     protected int namedInputSize(String name) {
-        List<WiredIntSupplier> inp = namedInputs.get(name);
+        Queue<WiredIntSupplier> inp = namedInputs.get(name);
         return inp == null ? 0 : inp.size();
     }
 
-    protected List<WiredIntSupplier> getNamedInputs(String name) {
+    protected Queue<WiredIntSupplier> getNamedInputs(String name) {
         return namedInputs.get(name);
     }
 
@@ -146,17 +147,10 @@ public abstract class MonoComponent {
      * for most inputs
      * @return - the sum of all the inputs at this current sample
      */
-    protected int inputSum(List<WiredIntSupplier> inputs) {
+    protected int inputSum(Queue<WiredIntSupplier> inputs) {
         if (inputs == null) return 0;
         int sum=0;
-        int i=0;
-        for (;;) {
-            synchronized(this) {
-                if (i >= inputs.size()) break;
-                sum += inputs.get(i).getAsInt();
-                ++i;
-            }
-        }
+        for (WiredIntSupplier wis : inputs) sum += wis.getAsInt();
         return sum;
     }
 
@@ -164,7 +158,7 @@ public abstract class MonoComponent {
      * for op amp
      * @return - the product of all the inputs at this current sample
      */
-    protected synchronized double inputProd() {
+    protected double inputProd() {
         double rs = 1;
         for (WiredIntSupplier input : inputs) rs *= input.getAsInt();
         return rs;
@@ -335,7 +329,7 @@ public abstract class MonoComponent {
      *
      * @param input - the input to add.
      */
-    public synchronized void addInput(WiredIntSupplier input) {
+    public void addInput(WiredIntSupplier input) {
         if (!inputs.contains(input)) inputs.add(input);
     }
 
@@ -354,11 +348,11 @@ public abstract class MonoComponent {
      * @param input - the input to add.
      * @param select - the name of the input list to keep it in
      */
-    public synchronized void addInput(WiredIntSupplier input, String select) {
-        List<WiredIntSupplier> inputs =
+    public void addInput(WiredIntSupplier input, String select) {
+        Queue<WiredIntSupplier> inputs =
             namedInputs.computeIfAbsent(
                 select,
-                k->new ArrayList<>());
+                k->new ConcurrentLinkedQueue<>());
 
         if (!inputs.contains(input)) inputs.add(input);
     }
@@ -368,12 +362,12 @@ public abstract class MonoComponent {
      * as the rest of the components we're connected to have the same
      * life cycle. The one exception is "main"
      */
-    public synchronized void delInput(WiredIntSupplier input) {
+    public void delInput(WiredIntSupplier input) {
         inputs.remove(input);
     }
 
-    public synchronized void delInput(WiredIntSupplier input, String select) {
-        List<WiredIntSupplier> inputs = namedInputs.get(select);
+    public void delInput(WiredIntSupplier input, String select) {
+        Queue<WiredIntSupplier> inputs = namedInputs.get(select);
         inputs.remove(input);
     }
 
