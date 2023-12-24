@@ -1,0 +1,52 @@
+
+Classes that extend MonoComponent
+
+Class : 'label'
+where 'label' is what it's called in ComponentMaker
+
+Class > 'label' = what it's called in FilterMaker
+
+Class -> 'label' = what it's called in WaveMaker
+
+--
+
+MonoMainMix : null
+
+Echo : echo
+Envelope : env
+Limiter : limiter
+
+Filter = abstract tagging class
+SincFilter > sinc
+Smooth : smooth  (it's created in ComponentMaker)
+SweepingSincFilter > sweep-sinc
+BiQuadFilter > biquad
+IIRFilter > iir
+
+NoiseWaveGen -> noise
+PinkNoiseGen -> pink
+
+CompositeWave = abstract parent class of
+    HarmonicWaveGen and AnharmonicWaveGen
+AnharmonicWaveGen -> anharmonic
+HarmonicWaveGen -> harmonic
+
+PwmWaveGen -> pwm
+RampDownWaveGen -> ramp-down
+RampUpWaveGen -> ramp-up
+SawWaveGen -> saw
+SineWaveGen -> sine
+SquareWaveGen -> square
+WaveEditor -> wave-editor
+WaveGen = abstract parent class for *Gen
+
+Balancer : balancer
+Controller : controller
+Junction : mix
+MidiNoteNum : midi-note
+OpAmp : op-amp
+
+
+
+
+

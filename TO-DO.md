@@ -1,21 +1,35 @@
 # OndeSynth - to do
 
+
+  - Fix DBG1222 (superfluous connection to main when there the output is a channel-level effect)
+
+  - Clean up documentation - make sure all the components are documented
+  - 4-pole filter
+  - named inputs - translate them into an array
+  - Provide an API endpoint for morbleu
+
+---
+(From 2020)
+
+  - Panners - (balancer? there are test patches for them.)
+    - control with lfo(s)
+    - control with envelope
+    - document
+    
+
   - `WaveLookup` constructor: normalize level 
 
   - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. Inherit the waves from the WG indicated. 
 
  ---
-  - Panners - 
-     - control with lfo(s)
-     - control with envelope
- ---
-  - Provide an API endpoint for morbleu
- 
 
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-      
- ---
- ---
- ---   
+<br/><br/><br/><br/><br/>
+
+
+
+####################################################################
+
+ 
   - if there is only one envelope, assume it is the primary.
   - change the keyword "exit" to "primary"?
  ---
@@ -80,6 +94,5 @@
    - EnvGen
      - infinite looping: loop-start loop-end - mutually exclusive with hold
      - extra credit: finite looping
- ----------
-   - make a wave editor, maybe in Groovy? with a UI 
+
   
