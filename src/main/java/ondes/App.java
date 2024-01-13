@@ -164,7 +164,7 @@ public class App {
 
         int lvp = 0, pnp = 0;
         while (lvp < looseVoices.size()) {
-            while (!progNames[pnp].equals("") && pnp < progNames.length) ++pnp;
+            while (pnp < progNames.length && !progNames[pnp].isEmpty()) ++pnp;
             if (pnp == progNames.length) {
                 out.println("Too many loose program names. There are only 16 channels!");
                 break;
