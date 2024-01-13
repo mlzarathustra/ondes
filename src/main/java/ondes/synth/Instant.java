@@ -2,6 +2,7 @@ package ondes.synth;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -47,9 +48,9 @@ public class Instant  {
     private int maxFreq;
     private double seconds;
 
-    private final ArrayDeque<PhaseClock>
-        clocks=new ArrayDeque<>(),
-        phaseClockPool = new ArrayDeque<>();
+    private final ConcurrentLinkedDeque<PhaseClock>
+        clocks=new ConcurrentLinkedDeque<>(),
+        phaseClockPool = new ConcurrentLinkedDeque<>();
 
     Instant(int sr) {
         sampleRate = sr;
@@ -70,7 +71,7 @@ public class Instant  {
 
     public PhaseClock addPhaseClock() { return addPhaseClock(0); }
 
-    public synchronized PhaseClock addPhaseClock(float frequency) {
+    public PhaseClock addPhaseClock(float frequency) {
         PhaseClock pc;
         if (phaseClockPool.isEmpty()) {
             pc=new PhaseClock();
@@ -81,7 +82,7 @@ public class Instant  {
         clocks.add(pc);
         return pc;
     }
-    public synchronized void delPhaseClock(PhaseClock pc) {
+    public void delPhaseClock(PhaseClock pc) {
         phaseClockPool.push(pc);
         clocks.remove(pc);
     }
@@ -93,7 +94,7 @@ public class Instant  {
 
     // // // // //
 
-    public synchronized void next() {
+    public void next() {
         sampleNumber++;
         seconds = ((double)sampleNumber)/sampleRate;
         clocks.forEach(PhaseClock::update);
