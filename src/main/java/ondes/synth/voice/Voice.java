@@ -4,7 +4,6 @@ import javax.sound.midi.MidiMessage;
 import java.util.*;
 
 import ondes.App;
-import ondes.midi.MlzMidi;
 import ondes.synth.ComponentOwner;
 import ondes.synth.component.ComponentContext;
 import ondes.synth.component.MonoComponent;
@@ -15,9 +14,16 @@ import ondes.synth.wire.*;
 
 import static java.lang.System.err;
 import static java.lang.System.out;
-import static ondes.mlz.Util.getList;
 import static ondes.synth.component.ComponentContext.*;
 
+/**
+ *  A Voice is a set of Components
+ *  configured according to the specified YAML.
+ *
+ *  Its state is the state of that voice being played
+ *
+ *
+ */
 @SuppressWarnings("FieldMayBeFinal,unchecked,rawtypes")
 public class Voice extends ComponentOwner {
     private boolean DB=false;
@@ -66,22 +72,32 @@ public class Voice extends ComponentOwner {
 
     public void resume() {
         components.values().forEach(MonoComponent::resume);
-        for (int i=0; i<channelInputs.size(); ++i) {
-            channelInputs.get(i).connect();
+        for (ChannelInput channelInput : channelInputs) {
+            channelInput.connect();
         }
-        synth.getMainOutput().addInput(voiceMix.getMainOutput());
+        if (voiceMix.inputSize() > 0) {
+            synth.getMainOutput().addInput(voiceMix.getMainOutput());
+        }
+
+        //out.println("Voice.resume(): "+synth.getMainOutput().inputSize()+" inputs (anonymous) "+
+        //    synth.getMainOutput().namedInputSize()+" named inputs"); // DBG1222
     }
     public void pause() {
-        synth.getMainOutput().delInput(voiceMix.getMainOutput());
+        if (voiceMix.inputSize() > 0) {
+            synth.getMainOutput().delInput(voiceMix.getMainOutput());
+        }
 
         List<MonoComponent> list = new ArrayList(components.values());
-        for (int i=0; i<list.size(); ++i) {
-            MonoComponent comp = list.get(i);
+        for (MonoComponent comp : list) {
             if (comp.context == VOICE) comp.pause();
         }
-        for (int i=0; i<channelInputs.size(); ++i) {
-            channelInputs.get(i).disconnect();
+        for (ChannelInput channelInput : channelInputs) {
+            channelInput.disconnect();
         }
+
+//        out.println("Voice.pause(): "+synth.getMainOutput().inputSize()+" inputs (anonymous) "+
+//            synth.getMainOutput().namedInputSize()+" named inputs"); // DBG1222
+
     }
 
     public void resetWires() {
@@ -104,14 +120,33 @@ public class Voice extends ComponentOwner {
     }
 
 
+    /**
+     * Given a "program" Map, (voiceSpec) construct each of its
+     * components.  The components are named by the top level keys
+     * in the YAML file.
 
+     * If the 'context' property of a component is "channel," or if
+     * the component is a controller, that component will only be created
+     * once per channel, and put into "channelVoicePool."
+     * Otherwise, the context is "voice," it will be put into
+     * "components."
 
+     * So below, if a "channel" level component with that name exists,
+     * we use it, otherwise we create it.
+
+     * Note that we do not connect anything here: we only add the
+     * components to either "components" (for the voice level) or
+     * "channelVoicePool" (for the channel level)
+     *
+     * @param voiceSpec - the program, from YAML
+     * @param synth - the synth that will be playing it
+     */
     @SuppressWarnings("rawtypes")
     void constructComponents(Map voiceSpec, OndeSynth synth) {
         for (Object key : voiceSpec.keySet()) {
             Object value=voiceSpec.get(key);
             if (!(value instanceof Map)) continue;
-            Map valMap=(Map)voiceSpec.get(key);
+            Map valMap=(Map)value;
 
             MonoComponent C = null;
             ComponentContext context = context(valMap);
@@ -119,11 +154,11 @@ public class Voice extends ComponentOwner {
                 C = channelVoicePool.getComponent(key.toString());
             }
             if (C == null) {
-                C= ComponentMaker.getMonoComponent(valMap, synth);
+                C = ComponentMaker.getMonoComponent(valMap, synth);
             }
             if (C == null) {
                 err.println("ERROR - could not load component "+key);
-                err.println("  --> "+voiceSpec.get(key));
+                err.println("  --> "+value);
                 App.quitOnError();
             }
             C.setName(key.toString());
@@ -157,7 +192,8 @@ public class Voice extends ComponentOwner {
                 .stream()
                 .noneMatch(c -> c instanceof Envelope)) {
                     mainMix = getDefaultEnv();
-            } else {
+            }
+            else {
                     mainMix = voiceMix;
             }
         }
@@ -167,19 +203,16 @@ public class Voice extends ComponentOwner {
 
 
     /**
-     * <p>
-     *     Add the main mixer to the components.
-     *     This is a VOICE-level output.
-     * </p>
-     * <p>
-     *     Currently "main" is the only global component.
-     *     Other voice-level components should be filtered out
-     *     in the constructComponents() loop, or they
-     *     will be configured multiple times.
+     * Add a component to the "components" map with the key "main"
      *
-     * </p>
+     * If the component is at the Voice level, "main" will be the
+     * local mix.
+     *
+     * If it's at the Channel level, "main" will be the synth's
+     * main output.
+     *
      */
-    void addMainOutput(ComponentContext ctx) {
+    void setMainComponent(ComponentContext ctx) {
 
         switch (ctx) {
             case VOICE:
@@ -206,7 +239,7 @@ public class Voice extends ComponentOwner {
 
     @SuppressWarnings("rawtypes")
     void configure() {
-        addMainOutput(VOICE); // avoid concurrent mod exception below
+        setMainComponent(VOICE); // avoid concurrent mod exception below
 
         for (String compKey : components.keySet()) {
             if (compKey.equals("main")) continue;
@@ -216,7 +249,7 @@ public class Voice extends ComponentOwner {
             if (comp.context == VOICE) comp.setOwner(this);
             else if (comp.context == CHANNEL) comp.setOwner(channelVoicePool);
 
-            addMainOutput(comp.context);
+            setMainComponent(comp.context);
 
             comp.configure(compSpec,components);
 
@@ -238,6 +271,23 @@ public class Voice extends ComponentOwner {
         }
     }
 
+    /**
+     * The Voice constructor is only ever called from VoiceMaker.getVoice()
+     *
+     * First we create all the components for this voice. If this is
+     * the first voice created on this channel, also create all the
+     * channel level components.
+     *
+     * To simplify the connection process, we temporarily add the
+     * channel-level components to this Voice, so we can connect to them,
+     * then we remove them, as they are kept in the ChannelVoicePool
+     * class rather than here.
+     *
+     *
+     * @param voiceSpec - a Map from the YAML input
+     * @param synth - the OndesSynth
+     * @param channelVoicePool - the pool this voice is a member of
+     */
     @SuppressWarnings("unchecked,rawtypes")
     Voice(Map voiceSpec, OndeSynth synth, ChannelVoicePool channelVoicePool) {
         this.synth = synth;

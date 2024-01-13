@@ -75,7 +75,8 @@ public class OndeSynth extends Thread {
                 channelPlaying[chan].remove(voices[chan][note]);
             }
             voices[chan][note] = null;
-            
+            //out.println("delVoice - removed "+(chan+1)+": "+note);   // DBG1222
+            //out.println("   playing: "+channelPlaying[chan].size());
         }
 
         /**
@@ -167,6 +168,7 @@ public class OndeSynth extends Thread {
                 .getWiredIntSupplier(mainLimiter::currentValue);
             mainLimiter.context = GLOBAL;
             mainLimiter.configure(config, null);
+            mainLimiter.setName("Main Limiter");
         }
         return mainLimiter;
     }

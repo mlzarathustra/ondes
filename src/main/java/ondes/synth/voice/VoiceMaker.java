@@ -15,7 +15,7 @@ import static ondes.mlz.YamlLoader.*;
 
 /**
  * <p>
- *     A "program" is simply a Map.
+ *     A "program" is a Map, defined by a YAML file.
  * </p>
  * <p>
  *     We load (on startup) from the resource directory 'program' and also
@@ -49,6 +49,15 @@ public class VoiceMaker {
 
     static List<Map> programs=new ArrayList<>();
 
+    /**
+     * Add a program (Map) to the "programs" ArrayList.
+     * It will be named (labeled) according to the filename it came from,
+     * which is to say we add a "name" property to the program Map,
+     * containing the filename minus the .yaml suffix.
+     *
+     * @param prog - the Map from YAML
+     * @param fn - the filename of the file the YAML came from
+     */
     @SuppressWarnings("unchecked")
     private static void addLabeledProg(Map prog, String fn) {
         if (prog == null) return; // file read error, reported elsewhere
@@ -58,6 +67,11 @@ public class VoiceMaker {
         programs.add(prog);
     }
 
+    /**
+     *  Populate the "programs" ArrayList with Maps
+     *  defined by the YAML files in the "program" directory
+     *
+     */
     public static void loadPrograms() {
 
         // addLabeledProg() will add to here
@@ -104,7 +118,9 @@ public class VoiceMaker {
 
 
     /**
-     * Get the shortest name that contains the one given
+     * Get program (Map) with the shortest name
+     *          that contains the one given.
+     *
      * Because: if you have "square" and "square plus,"
      * asking for "square" should give you the first one.
      *
@@ -144,6 +160,14 @@ public class VoiceMaker {
         return programs.get(i-1);
     }
 
+    /**
+     * Get the program (Map) indicated by progName, which may either
+     * be a program "name" prefix, or an index to the programs listed
+     * alphabetically
+     *
+     * @param progName - name or index
+     * @return - Map of component specifications from YAML
+     */
     public static Map getVoiceMap(String progName) {
         //  see if it's a plain index number first.
         try {
@@ -174,9 +198,9 @@ public class VoiceMaker {
         OndeSynth synth,
         ChannelVoicePool channelVoicePool) {
 
-        Map m = getVoiceMap(progName);
-        if (m == null) return null; // getVoiceMap will show an error
-        return new Voice(m, synth, channelVoicePool);
+            Map m = getVoiceMap(progName);
+            if (m == null) return null; // getVoiceMap will show an error
+            return new Voice(m, synth, channelVoicePool);
     }
 
     public static void showPrograms() { showPrograms(false); }

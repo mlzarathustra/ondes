@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.System.err;
+import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 import static ondes.mlz.Util.getList;
 import static ondes.synth.component.ComponentContext.*;
@@ -141,6 +142,14 @@ public abstract class MonoComponent {
     protected Queue<WiredIntSupplier> getNamedInputs(String name) {
         return namedInputs.get(name);
     }
+
+    public int inputSize() {
+        return inputs.size();
+    }
+    public int namedInputSize() {
+        return namedInputs.size();
+    }
+
 
     protected int inputSum() { return inputSum(inputs); }
     /**
@@ -331,6 +340,7 @@ public abstract class MonoComponent {
      */
     public void addInput(WiredIntSupplier input) {
         if (!inputs.contains(input)) inputs.add(input);
+        //out.println("adding input to "+getName());  // DBG1222
     }
 
     /**
