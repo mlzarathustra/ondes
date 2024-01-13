@@ -3,7 +3,7 @@ package ondes.synth.wave;
 import ondes.synth.Instant;
 import ondes.synth.wave.lookup.CompositeWave;
 import ondes.synth.wave.lookup.FloatWaveLookup;
-import ondes.synth.wave.lookup.WaveLookup;
+//import ondes.synth.wave.lookup.WaveLookup;
 
 import javax.sound.midi.MidiMessage;
 import java.util.*;
@@ -74,7 +74,7 @@ class AnharmonicWaveGen extends CompositeWave {
      * @param midiFrequency - frequency requested
      */
     @Override
-    public synchronized void setFreq(float midiFrequency) {
+    public void setFreq(float midiFrequency) {
         super.setFreq(midiFrequency); // sets baseFrequency too
 
         if (clocks.size() < anharmonicMults.length) return; // LFO msg - see above
@@ -82,7 +82,7 @@ class AnharmonicWaveGen extends CompositeWave {
         for (int i = 0; i < anharmonicMults.length; i++) {
             float freq = baseFrequency * anharmonicMults[i];
             anharmonicBaseFreqs[i] = freq;
-            clocks.get(i).setFrequency( (float) freq );
+            clocks.get(i).setFrequency( freq );
         }
     }
 
@@ -101,7 +101,7 @@ class AnharmonicWaveGen extends CompositeWave {
 
 
     @Override
-    @SuppressWarnings("rawtypes,unchecked")
+    @SuppressWarnings("rawtypes")
     public void configure(Map config, Map components) {
         super.configure(config,components);
 
@@ -178,7 +178,7 @@ class AnharmonicWaveGen extends CompositeWave {
     }
 
     @Override
-    public synchronized void resume() {
+    public void resume() {
         super.resume();
         for (int i = 0; i< anharmonicParams.length-1; i += 2) {
             clocks.add(synth.getInstant().addPhaseClock());
@@ -186,7 +186,7 @@ class AnharmonicWaveGen extends CompositeWave {
     }
 
     @Override
-    public synchronized void pause() {
+    public void pause() {
         super.pause();
         clocks.forEach( synth.getInstant()::delPhaseClock );
         clocks.clear();
@@ -196,7 +196,7 @@ class AnharmonicWaveGen extends CompositeWave {
      * @return component level at the instant of this sample.
      */
     @Override
-    public synchronized int currentValue() {
+    public int currentValue() {
         if (clocks.isEmpty()) return 0;
         modFreq();
         double sum=0;
