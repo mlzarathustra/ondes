@@ -17,10 +17,12 @@ public class MidiListenerThread extends Thread {
     private final Queue<MidiMessage> queue = new ConcurrentLinkedQueue<>();
     boolean stop=false;
 
-    public synchronized void routeMidiMessage(MidiMessage msg) {
+    public void routeMidiMessage(MidiMessage msg) {
         //out.println("MidiListenerThread.queue.add() "+ MlzMidi.toString(msg));
         queue.add(msg);
-        this.notify();
+        synchronized (this) {
+            this.notify();
+        }
     }
 
     public void run() {
