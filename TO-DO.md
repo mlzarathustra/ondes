@@ -3,8 +3,11 @@
 
   - Fix DBG1222 (superfluous connection to main when there the output is a channel-level effect)
 
-  - Clean up documentation - make sure all the components are documented
-  - 4-pole filter
+  - Clean up documentation - make sure all the 
+    - components are documented
+    - all defined programs are documented
+
+  - 4-pole filter = 2+2, following all inputs (freq, res)
   - named inputs - translate them into an array
   - Provide an API endpoint for morbleu
 
