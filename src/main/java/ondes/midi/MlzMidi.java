@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.System.out;
 import static java.util.stream.Collectors.*;
+import static javax.sound.midi.Sequence.*;
 
 
 public class MlzMidi {
@@ -167,6 +168,22 @@ public class MlzMidi {
             rs.append(" ");
         }
         return rs.toString();
+    }
+
+    /**
+     * Timing "division type" of a Sequence
+     * which tells what the ticks represent
+     *
+     * @param divType - result of seq.getDivType()
+     * @return - a string representation
+     */
+    public static String divTypeString(float divType) {
+        if (divType == PPQ) return "PPQ";
+        if (divType == SMPTE_24) return "SMPTE_24";
+        if (divType == SMPTE_25) return "SMPTE_25";
+        if (divType == SMPTE_30) return "SMPTE_30";
+        if (divType == SMPTE_30DROP) return "SMPTE_30DROP";
+        return "Unknown Sequence divType.";
     }
     
 

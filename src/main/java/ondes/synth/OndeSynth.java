@@ -123,7 +123,6 @@ public class OndeSynth extends Thread {
         }
     }
 
-//    private MonoMainMix monoMainMix;
     private MonoMainMix monoMainMix;
     //
 
@@ -214,7 +213,6 @@ public class OndeSynth extends Thread {
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
-//        monoMainMix = new MonoMainMix(outDev, bufSize);
         monoMainMix = new MonoMainMix(outDev, bufSize);
         monoMainMix.context = GLOBAL;
         this.sampleRate = monoMainMix.getSampleRate();

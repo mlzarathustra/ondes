@@ -60,7 +60,7 @@ public class MonoMainMix extends MonoComponent {
     private int avgLatency, timingOverflow;
 
 
-    public MonoMainMix(Mixer mixer) { this(mixer,2048); }
+    //public MonoMainMix(Mixer mixer) { this(mixer,2048); }
 
     public MonoMainMix(Mixer mixer, int bufferSize) {
         this.bufferSize = bufferSize;
