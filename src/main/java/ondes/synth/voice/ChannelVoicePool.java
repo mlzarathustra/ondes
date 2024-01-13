@@ -11,6 +11,7 @@ import javax.sound.midi.MidiMessage;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static java.lang.System.out;
 
@@ -28,11 +29,16 @@ public class ChannelVoicePool extends ComponentOwner {
     String progName;
     OndeSynth synth;
     int chan;
+
+    /**
+     * Channel-level components, shared by all Voices on this channel
+     */
     private final Map<String, MonoComponent> components=new HashMap<>();
 
     public void addComponent(String key, MonoComponent comp) {
         components.put(key, comp);
     }
+
     public Map<String, MonoComponent> getComponents() { return components; }
     public MonoComponent getComponent(String key) { return components.get(key); }
 
@@ -93,7 +99,7 @@ public class ChannelVoicePool extends ComponentOwner {
 
     }
     
-    private final ArrayDeque<Voice> available=new ArrayDeque<>();
+    private final ConcurrentLinkedDeque<Voice> available=new ConcurrentLinkedDeque<>();
 //    private final ArrayDeque<Voice> inUse = new ArrayDeque<>();
 
     /**
@@ -127,7 +133,7 @@ public class ChannelVoicePool extends ComponentOwner {
      */
     public Voice peekVoice() {
         Voice voice;
-        if (available.size() > 0) voice = available.peek();
+        if (!available.isEmpty()) voice = available.peek();
         else voice = VoiceMaker.getVoice(progName,synth, this);
 
         return voice;
@@ -136,11 +142,7 @@ public class ChannelVoicePool extends ComponentOwner {
     public Voice getVoice() {
         Voice voice;
 
-        if (available.size() > 0) {
-            synchronized (this) {
-                voice = available.pop();
-            }
-        }
+        if (!available.isEmpty()) voice = available.pop();
         else {
             out.println("ChannelVoicePool: creating new voice: "+progName);
             voice = VoiceMaker.getVoice(progName,synth, this);
@@ -158,10 +160,7 @@ public class ChannelVoicePool extends ComponentOwner {
 
     public void releaseVoice(Voice voice) {
         voice.pause();
-
-        synchronized (this) {
-            available.add(voice);
-        }
+        available.add(voice);
     }
     
     
