@@ -3,14 +3,14 @@ osc1:
   midi: note-on
   type: wave
   shape: ramp-up
-  out: lpf
+  out: env1
 
 osc2:
   midi: note-on
   detune: 13
   type: wave
   shape: ramp-up
-  out: lpf
+  out: env1
 
 
 lpf:
@@ -18,7 +18,8 @@ lpf:
   shape: iir
   key: lp_4_1000
   level-scale: 4
-  out: env1
+  context: channel
+  out: main
 
 env1:
   type: env
@@ -29,4 +30,4 @@ env1:
     - 20 75
     - 3000 50 hold
     - 5000 0
-  out: main
+  out: lpf
