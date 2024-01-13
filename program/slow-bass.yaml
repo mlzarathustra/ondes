@@ -16,7 +16,7 @@ osc2:
 lpf:
   type: filter
   shape: iir
-  key: lp_4_1k
+  key: lp_4_1000
   level-scale: 4
   out: env1
 
