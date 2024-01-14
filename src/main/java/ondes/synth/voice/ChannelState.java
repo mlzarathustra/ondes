@@ -5,6 +5,7 @@ import ondes.midi.MlzMidi;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 import static java.lang.System.err;
@@ -18,8 +19,10 @@ public class ChannelState {
 
     int channel;
     
-    private final HashMap<Integer,Integer> controllers = new HashMap<>();
-    private final HashMap<Integer,Integer> afterKeys = new HashMap<>();
+    private final ConcurrentHashMap<Integer,Integer> controllers =
+        new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer,Integer> afterKeys =
+        new ConcurrentHashMap<>();
     int channelPressure;
     int program;
     int pitchBend;
@@ -29,7 +32,7 @@ public class ChannelState {
         reset();
     }
 
-    synchronized void reset() {
+    void reset() {
         controllers.clear();
         afterKeys.clear();
         channelPressure = -1;
@@ -37,7 +40,7 @@ public class ChannelState {
         pitchBend = Integer.MIN_VALUE;
     }
 
-    public synchronized void update(MidiMessage msg) {
+    public void update(MidiMessage msg) {
         //out.println("ChannelState.update: "+ MlzMidi.toString(msg));
 
         // we only get messages for the whole channel,
@@ -66,7 +69,7 @@ public class ChannelState {
         }
     }
 
-    public synchronized List<MidiMessage> getMessages() {
+    public List<MidiMessage> getMessages() {
         ArrayList<MidiMessage> rs = new ArrayList<>();
         try {
             for (int k : afterKeys.keySet()) {
