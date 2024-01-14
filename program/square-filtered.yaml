@@ -1,0 +1,15 @@
+
+osc1:
+  midi: note-on
+  type: wave
+  shape: square
+  out: lpf
+
+# hides the aliasing, but of course doesn't get rid of it.
+
+lpf:
+  type: filter
+  shape: iir
+  key: lp_4_1600
+  level-scale: 1
+  out: main

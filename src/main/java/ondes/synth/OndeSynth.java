@@ -17,6 +17,7 @@ import ondes.synth.voice.Voice;
 import ondes.synth.wire.WiredIntSupplierPool;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static java.lang.System.err;
@@ -34,18 +35,16 @@ public class OndeSynth extends Thread {
      *
      */
     static class VoiceTracker {
-        static class VoiceSet extends HashSet<Voice> { }
+        // static class VoiceSet extends HashSet<Voice> { } // Java "typedef"
 
         //  16 MIDI channels x 128 Notes
         private final Voice [][]voices = new Voice[16][128];
         // track playing voices per channel
-        private final VoiceSet[] channelPlaying=new VoiceSet[16];
+        private final Set<Voice>[] channelPlaying=new Set[16];
         {
-            for (int i=0; i<16; ++i) channelPlaying[i] = new VoiceSet();
+            for (int i=0; i<16; ++i) channelPlaying[i] =
+                ConcurrentHashMap.newKeySet();
         }
-        final Object cpLock = new Object() {
-            public String toString() { return "VoiceTracker lock"; }
-        };
 
         // /// // /// // /// // ///
 
@@ -55,16 +54,12 @@ public class OndeSynth extends Thread {
 
         void forEach(Consumer<Voice> fn) {
             for (int chan=0; chan<16; ++chan) {
-                synchronized (cpLock) {
-                    for (Voice v : channelPlaying[chan]) fn.accept(v);
-                }
+                for (Voice v : channelPlaying[chan]) fn.accept(v);
             }
         }
 
         void addVoice(Voice v, int chan, int note) {
-            synchronized (cpLock) {
-                channelPlaying[chan].add(v);
-            }
+            channelPlaying[chan].add(v);
             voices[chan][note]=v;
             v.midiNote = note;
         }
@@ -72,9 +67,7 @@ public class OndeSynth extends Thread {
         void delVoice(int chan, int note) {
             if (voices[chan][note] == null) return;
             voices[chan][note].midiNote = -1;
-            synchronized (cpLock) {
-                channelPlaying[chan].remove(voices[chan][note]);
-            }
+            channelPlaying[chan].remove(voices[chan][note]);
             voices[chan][note] = null;
             //out.println("delVoice - removed "+(chan+1)+": "+note);   // DBG1222
             //out.println("   playing: "+channelPlaying[chan].size());
@@ -84,16 +77,13 @@ public class OndeSynth extends Thread {
          * @param chan - origin 0
          * @return - the list of voices currently playing on this channel
          */
-        VoiceSet getChannelPlaying(int chan) {
+        Set<Voice> getChannelPlaying(int chan) {
             return channelPlaying[chan];
         }
 
         void processMidiChannelMessage(int chan, MidiMessage msg) {
-            synchronized (cpLock) {
-                for (Voice v : getChannelPlaying(chan)) {
-                    v.processMidiMessage(msg);
-                }
-
+            for (Voice v : getChannelPlaying(chan)) {
+                v.processMidiMessage(msg);
             }
         }
     }
