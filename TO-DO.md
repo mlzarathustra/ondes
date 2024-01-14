@@ -1,13 +1,21 @@
 # OndeSynth - to do
+ 
+  - Play back from MIDI file
+    - For now, only "play back" to a WAV file
+    - Implement WaveMonoMainMix to capture data
+    - write to wave file
+    
+  - Get rid of 'synchronized' in OndesSynth.VoiceTracker
 
   - named inputs - translate them into an array
 
   - Clean up documentation - make sure all the 
     - components are documented
     - all defined programs are documented
+    
+  - Provide an API endpoint for morbleu
 
   - 4-pole filter = 2+2, following all inputs (freq, res)
-  - Provide an API endpoint for morbleu
 
 ---
 (From 2020)
