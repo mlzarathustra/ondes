@@ -6,7 +6,8 @@ import javax.sound.sampled.Mixer;
 import ondes.App;
 import ondes.midi.FreqTable;
 import ondes.midi.MlzMidi;
-import ondes.synth.component.ComponentContext;
+import ondes.synth.mix.MainMix;
+import ondes.synth.mix.MonoMainMix;
 import ondes.synth.wave.lookup.SineLookup;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
@@ -123,7 +124,7 @@ public class OndeSynth extends Thread {
         }
     }
 
-    private MonoMainMix monoMainMix;
+    private MainMix monoMainMix;
     //
 
     private Limiter mainLimiter;
@@ -214,7 +215,7 @@ public class OndeSynth extends Thread {
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
         monoMainMix = new MonoMainMix(outDev, bufSize);
-        monoMainMix.context = GLOBAL;
+        monoMainMix.setContext(GLOBAL);
         this.sampleRate = monoMainMix.getSampleRate();
         mainLimiter  = getMainLimiter();
         instant = new Instant(sampleRate);
@@ -409,7 +410,7 @@ public class OndeSynth extends Thread {
     }
 
 
-    public MonoComponent getMainOutput() {
+    public MainMix getMainOutput() {
         if (USE_LIMITER) {
             return getMainLimiter();
         }

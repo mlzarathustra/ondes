@@ -1,4 +1,4 @@
-package ondes.synth;
+package ondes.synth.mix;
 
 import ondes.App;
 import ondes.synth.component.MonoComponent;
@@ -25,7 +25,7 @@ import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
  *
  */
 @SuppressWarnings("FieldMayBeFinal")
-public class MonoMainMix extends MonoComponent {
+public class MonoMainMix extends MainMix {
 
     private boolean DB=true;
 

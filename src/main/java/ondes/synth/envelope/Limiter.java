@@ -3,6 +3,7 @@ package ondes.synth.envelope;
 
 import ondes.mlz.MaxTrackerPQ;
 import ondes.synth.component.MonoComponent;
+import ondes.synth.mix.MainMix;
 import ondes.synth.wire.WiredIntSupplier;
 
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
 import static java.lang.System.err;
 import static java.lang.System.out;
 
-public class Limiter extends MonoComponent {
+public class Limiter extends MainMix {
 
     long maxIn, maxOut, threshold;
     double slope;

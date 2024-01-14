@@ -28,6 +28,10 @@ public abstract class MonoComponent {
 
     public ComponentContext context = VOICE;
 
+    public void setContext(ComponentContext cc) {
+        context = cc;
+    }
+
 
     /**
      * <p>
