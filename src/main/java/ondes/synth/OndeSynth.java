@@ -175,8 +175,6 @@ public class OndeSynth extends Thread {
      */
     boolean stop;
 
-    boolean USE_LIMITER=true;
-
     /**
      * The constructor only sets
      *
@@ -213,9 +211,7 @@ public class OndeSynth extends Thread {
 
         //
         //
-        if (USE_LIMITER) {
-            monoMainMix.addInput(mainLimiter.getMainOutput());
-        }
+        monoMainMix.addInput(mainLimiter.getMainOutput());
     }
 
     /**
@@ -400,13 +396,10 @@ public class OndeSynth extends Thread {
     }
 
 
-    public MainMix getMainOutput() {
-        if (USE_LIMITER) {
-            return getMainLimiter();
-        }
-        return monoMainMix;
-
+    public MonoComponent getMainOutput() {
+        return getMainLimiter();
     }
+
     public Instant getInstant() { return instant; }
 
     public int getSampleRate() { return sampleRate; }

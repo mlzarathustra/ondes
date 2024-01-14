@@ -11,7 +11,7 @@ import java.util.Map;
 import static java.lang.System.err;
 import static java.lang.System.out;
 
-public class Limiter extends MainMix {
+public class Limiter extends MonoComponent {
 
     long maxIn, maxOut, threshold;
     double slope;
