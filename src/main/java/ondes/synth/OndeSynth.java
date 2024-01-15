@@ -122,9 +122,9 @@ public class OndeSynth extends Thread {
     private final Instant instant;
     private int sampleRate;
 
-    private final MidiDevice midiInDev;
-    private final MidiListenerThread midiListener;
-    private final GrimReaperThread grimReaper;
+    private MidiDevice midiInDev;
+    private MidiListenerThread midiListener;
+    private GrimReaperThread grimReaper;
 
     /**
      * <p>
@@ -205,10 +205,15 @@ public class OndeSynth extends Thread {
         MainMix     mainMix,
         String[]    progNames
     ) {
-        super("OndeSynth - main thread");
+        this(mainMix, progNames);
+
         this.midiInDev = midiInDev;
         midiListener = new MidiListenerThread(this);
         grimReaper = new GrimReaperThread(this);
+    }
+
+    public OndeSynth(MainMix mainMix, String[] progNames) {
+        super("OndeSynth - main thread");
 
         monoMainMix = mainMix;
         monoMainMix.setContext(GLOBAL);

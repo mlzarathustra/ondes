@@ -16,6 +16,7 @@ import static ondes.mlz.Util.getResourceAsString;
 
 import ondes.midi.MlzMidi;
 import ondes.synth.OndeSynth;
+import ondes.synth.mix.WaveMonoMainMix;
 import ondes.synth.voice.VoiceMaker;
 
 import java.util.Comparator;
@@ -28,10 +29,16 @@ public class PlayMidiFile {
 
     File midiFile, waveFile;
     int sampleRate;
+    String[] progNames;
 
-    PlayMidiFile(File midiFile, File waveFile, int sampleRate) {
+    PlayMidiFile(
+        File midiFile, File waveFile, String[] progNames,
+        int sampleRate
+    ) {
+
         this.midiFile = midiFile;
         this.waveFile = waveFile;
+        this.progNames = progNames;
         this.sampleRate = sampleRate;
     }
 
@@ -139,6 +146,9 @@ public class PlayMidiFile {
 
 
         List<MidiEvent> evtList = getEventList(midiFile);
+        WaveMonoMainMix mainMix = new WaveMonoMainMix(sampleRate);
+
+        OndeSynth synth = new OndeSynth(mainMix, progNames);
 
         //  TODO - once we get the samples,
         //   WavFileWriter.writeBuffer(samples, getSampleRate, waveFileName)
@@ -220,10 +230,20 @@ public class PlayMidiFile {
 
         }
 
-        PlayMidiFile midiFilePlayer = new PlayMidiFile(midiFile, waveFile, sampleRate);
+        int lvp = 0, pnp = 0;
+        while (lvp < looseVoices.size()) {
+            while (pnp < progNames.length && !progNames[pnp].isEmpty()) ++pnp;
+            if (pnp == progNames.length) {
+                out.println("Too many loose program names. There are only 16 channels!");
+                break;
+            }
+            progNames[pnp++] = looseVoices.get(lvp++);
+        }
+
+        PlayMidiFile midiFilePlayer =
+            new PlayMidiFile(midiFile, waveFile, progNames, sampleRate);
+
         midiFilePlayer.run();
-
-
     }
 
 }

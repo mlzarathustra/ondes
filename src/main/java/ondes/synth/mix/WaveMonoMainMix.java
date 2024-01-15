@@ -4,7 +4,7 @@ public class WaveMonoMainMix extends MainMix {
 
     int sampleRate;
 
-    WaveMonoMainMix(int sampleRate) {
+    public WaveMonoMainMix(int sampleRate) {
         this.sampleRate = sampleRate;
     }
 
