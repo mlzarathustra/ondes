@@ -210,8 +210,6 @@ public class OndeSynth extends Thread {
         midiListener = new MidiListenerThread(this);
         grimReaper = new GrimReaperThread(this);
 
-        //  TODO - allow the user to specify the sample rate,
-        //            rather than only accepting the default.
         monoMainMix = mainMix;
         monoMainMix.setContext(GLOBAL);
 

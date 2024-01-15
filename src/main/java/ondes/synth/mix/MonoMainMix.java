@@ -51,6 +51,7 @@ public class MonoMainMix extends MainMix {
     //
 
     private int bytesPerSample;
+    private long unsignedOffset;
 
     private boolean signed, littleEndian;
     private int channels;  // 1=mono 2=stereo &c.
@@ -77,12 +78,10 @@ public class MonoMainMix extends MainMix {
             Line.Info[] lineInfo = outDev.getSourceLineInfo();
             out.println("Available source lines: ");
             List.of(lineInfo).forEach( info -> out.println("  "+info) );
-            //out.println(Arrays.toString(lineInfo));
 
             SourceDataLine line = (SourceDataLine) outDev.getLine(lineInfo[0]);
 
-            //out.println(line); // toString() not defined
-            // format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo,
+            // default format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo,
             // 4 bytes/frame, little-endian
 
             openOutputLine(line);
@@ -128,6 +127,8 @@ public class MonoMainMix extends MainMix {
         }
         int sb = audFmt.getSampleSizeInBits();
         bytesPerSample = (sb/8) + (sb%8 > 0 ? 1 : 0);
+        unsignedOffset = signed ? 0 : 1 << (8*bytesPerSample - 1);
+
         split = new byte[bytesPerSample]; // avoid allocating one for each sample
 
         outputBuffer = new int[bufferSize]; // todo - this is mono
@@ -167,7 +168,6 @@ public class MonoMainMix extends MainMix {
      */
     private int toLineFmt(int[] outputBuffer, int count) {
         int lbIdx=0;
-        long unsignedOffset = signed ? 0 : 1 << (8*bytesPerSample - 1);
         for (int obp=0; obp<count; ++obp) {
             int val = outputBuffer[obp];
             val += unsignedOffset;

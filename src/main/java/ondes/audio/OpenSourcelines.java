@@ -222,7 +222,7 @@ public class OpenSourcelines {
 
             SourceDataLine line = (SourceDataLine) mixer.getLine(lineInfo[0]);
             out.println(line);
-            // format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo,
+            // default format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo,
             // 4 bytes/frame, little-endian
             return line;
 

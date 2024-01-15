@@ -1,0 +1,7 @@
+
+    Plays back a MIDI file into a .WAV file
+
+    Syntax:
+        java ondes.file.MixMidiFile <input-filename>.mid <output-filename>.wav
+
+    For now, we assume 44100 sample rate, 16 bit stereo.

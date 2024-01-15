@@ -1,12 +1,18 @@
 package ondes.file;
 
 import javax.sound.midi.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.System.out;
+import static ondes.mlz.Util.getResourceAsString;
+
 import ondes.midi.MlzMidi;
 import ondes.synth.OndeSynth;
 
@@ -18,6 +24,17 @@ public class PlayMidiFile {
     static boolean showRawEvents = false;
     static boolean showSortedEvents = true;
 
+    /**
+     *  # of seconds after the last MIDI event at which to
+     *  fade, if it hasn't gone down to all 0's yet.
+     */
+    float fadeAfter = 10;
+
+    /**
+        How long to fade for, if needed.
+     */
+    float fadeLength = 4;
+
     static OndeSynth synth;
 
         //  TODO - assign
@@ -27,10 +44,10 @@ public class PlayMidiFile {
         return 44100;
     }
 
-    static void usage() {
-        out.println("Syntax: java java.ondes.file.MixMidiFile <filename>.mid");
-        System.exit(0);
 
+    static void usage() {
+        out.println(getResourceAsString("usage/PlayMidiFile.txt"));
+        System.exit(0);
     }
 
     static void showTrackInfo(Track[] tracks) {
@@ -62,6 +79,17 @@ public class PlayMidiFile {
 
         return rs;
     }
+
+    /*
+        OndeSynth does this:
+
+        for (;;) {
+            resetWires();
+            instant.next();
+            monoMainMix.update();
+            if (stop) return;
+        }
+    */
 
     public static void main(String[] args) throws IOException {
         if (args.length == 0) usage();
@@ -109,6 +137,10 @@ public class PlayMidiFile {
             );
 
         }
+
+        
+        //  TODO - once we get the samples,
+        //   WavFileWriter.writeBuffer(samples, getSampleRate, fileName)
     }
 
 }
