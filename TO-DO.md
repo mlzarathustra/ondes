@@ -1,24 +1,23 @@
 # OndeSynth - to do
  
   - Play back from MIDI file
+    - Do I want to use SynthSession for this? 
     - For now, only "play back" to a WAV file
-    - Implement WaveMonoMainMix to capture data
+    - Implement WaveMonoMainMix, AS a MainMix, to capture data
     - write to wave file
     
-  - Get rid of 'synchronized' in OndesSynth.VoiceTracker
 
-  - named inputs - translate them into an array
+    - Provide an API endpoint for morbleu
 
   - Clean up documentation - make sure all the 
     - components are documented
     - all defined programs are documented
     
-  - Provide an API endpoint for morbleu
 
   - 4-pole filter = 2+2, following all inputs (freq, res)
+  - named inputs - translate them into an array
 
 ---
-(From 2020)
 
   - Panners - (balancer? there are test patches for them.)
     - control with lfo(s)
@@ -31,6 +30,68 @@
   - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. Inherit the waves from the WG indicated. 
 
  ---
+
+# Sample Rate Adjust 
+
+search for DBG0115
+
+Apparently 44100 and 48000 are OK, but higher than that it gets gaps.
+
+The actual sample rate is currently only set in MonoMainMix.openOutputLine():
+```
+  AudioFormat audFmt = srcLine.getFormat();
+
+  //  it can be floating point...
+  sampleRate = (int) audFmt.getSampleRate();
+```
+
+That's the actual sample rate, though the constant 44100 appears elsewhere
+in the code.    
+
+`srcLine` comes from the `MonoMainMix` constructor
+```
+    Line.Info[] lineInfo = outDev.getSourceLineInfo();
+    out.println(Arrays.toString(lineInfo));
+
+    SourceDataLine line = (SourceDataLine) outDev.getLine(lineInfo[0]);
+```
+
+in SynthSession.java sampleRate handed as a constant to OndeSynth()
+```
+    public void start() {
+        synth = new OndeSynth(
+            44100,      // sample rate
+            MidiDevice  midiInDev,
+            Mixer       outDev, //  passed to MonoMainMix c'tor     
+            ...
+
+```
+
+44100 appears literally: 
+ - SynthSession.start()  //shown above
+ - PlayMidiFile
+ - BiQuadFilter.main()
+ - SampleRateConversion.main() // unused
+
+Ondes shouldn't be passed the sampleRate directly. It gets a MainMix, 
+which should return it correctly. 
+
+MonoMainMix will.
+
+In order to SET the sample rate, 
+the line in `SynthSession.getMixer()`
+
+    sdl.open();
+
+needs to be
+
+    AudioFormat format = sdl.getFormat()
+    //  adjust format for sampleRate
+    sdl.open(format);
+
+
+
+
 
 <br/><br/><br/><br/><br/>
 
