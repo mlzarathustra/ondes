@@ -1,6 +1,17 @@
 
 # WaveGen parameters
 
+Here's an example of a "wave" component represented in YAML:
+```
+osc1:
+    midi: note-on   # send this component note ON messages
+    detune: -12
+    offset: 7
+    type: wave
+    shape: square
+    out: main
+```
+
 The following parameters can be used for wave generators. Only certain ones may apply, depending on the wave shape you have chosen. For example, **noise** does not care about **offset** or **detune**.
 
  - **shape** - For a wave, the wave form. Following are the key words (which must be exact) for specifying the different wave forms:
