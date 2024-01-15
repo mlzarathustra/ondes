@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.System.out;
@@ -15,6 +16,7 @@ import static ondes.mlz.Util.getResourceAsString;
 
 import ondes.midi.MlzMidi;
 import ondes.synth.OndeSynth;
+import ondes.synth.voice.VoiceMaker;
 
 import java.util.Comparator;
 
@@ -23,6 +25,16 @@ public class PlayMidiFile {
 
     static boolean showRawEvents = false;
     static boolean showSortedEvents = true;
+
+    File midiFile, waveFile;
+    int sampleRate;
+
+    PlayMidiFile(File midiFile, File waveFile, int sampleRate) {
+        this.midiFile = midiFile;
+        this.waveFile = waveFile;
+        this.sampleRate = sampleRate;
+    }
+
 
     /**
      *  # of seconds after the last MIDI event at which to
@@ -35,13 +47,13 @@ public class PlayMidiFile {
      */
     float fadeLength = 4;
 
-    static OndeSynth synth;
+    OndeSynth synth;
 
         //  TODO - assign
 
-    static int getSampleRate() {
+    int getSampleRate() {
         //return synth.getSampleRate();
-        return 44100;
+        return sampleRate;
     }
 
 
@@ -80,24 +92,7 @@ public class PlayMidiFile {
         return rs;
     }
 
-    /*
-        OndeSynth does this:
-
-        for (;;) {
-            resetWires();
-            instant.next();
-            monoMainMix.update();
-            if (stop) return;
-        }
-    */
-
-    public static void main(String[] args) throws IOException {
-        if (args.length == 0) usage();
-
-        File midiFile = new File(args[0]);
-        if (!midiFile.isFile()) usage();
-
-        out.println("MIDI file: "+midiFile);
+    List<MidiEvent> getEventList(File midiFile) {
         Sequence seq;
 
         try {
@@ -108,7 +103,7 @@ public class PlayMidiFile {
         }
         catch (Exception ex) {
             out.println("Exception!\n"+ex);
-            return;
+            return null;
         }
 
         float divType = seq.getDivisionType();
@@ -137,10 +132,98 @@ public class PlayMidiFile {
             );
 
         }
+        return evtList;
+    }
 
-        
+    public void run() {
+
+
+        List<MidiEvent> evtList = getEventList(midiFile);
+
         //  TODO - once we get the samples,
-        //   WavFileWriter.writeBuffer(samples, getSampleRate, fileName)
+        //   WavFileWriter.writeBuffer(samples, getSampleRate, waveFileName)
+
+    }
+
+    /*
+        OndeSynth does this:
+
+        for (;;) {
+            resetWires();
+            instant.next();
+            monoMainMix.update();
+            if (stop) return;
+        }
+    */
+
+    public static void main(String[] args) throws IOException {
+        //  Parse command line args
+        //
+        if (args.length < 2) usage();
+
+        // one for each channel
+        String[] progNames = new String[16];
+        for (int i=0; i<16; ++i) progNames[i]="";
+
+        List<String>argList = new ArrayList<>(Arrays.asList(args));
+
+        String midiFileName = argList.remove(0);
+        String waveFileName = argList.remove(0);
+
+        File midiFile = new File(midiFileName);
+        if (!midiFile.isFile()) {
+            midiFile = new File(midiFileName+".mid");
+            if (!midiFile.isFile()) {
+                out.println("Can't open file "+midiFileName+"!");
+                usage();
+            }
+        }
+        out.println("MIDI file: "+midiFile);
+
+        File waveFile = new File(waveFileName);
+        if (waveFile.exists()) {
+            out.println("WAVE file "+waveFile+" already exists!");
+            usage();
+        }
+
+        if (argList.contains("-all") || argList.contains("-all-patches")) {
+            out.println("load all patches");
+            VoiceMaker.setRecurseSubdirs(true);
+        }
+
+        List<String> looseVoices = new ArrayList<>();
+
+        int sampleRate = 44100;
+
+        for (int i=0; i<args.length; ++i) {
+
+            //  options with no following args
+            switch (args[i]) {
+                case "-sample-rate":
+                    sampleRate = Integer.parseInt(args[++i]);
+                    continue;
+
+                    //  other args with parameters here
+
+            }
+
+            if (args[i].startsWith("-ch")) {
+                try {
+                    progNames[ Integer.parseInt(args[i].substring(3)) - 1 ]
+                        = args[++i];
+                }
+                catch (Exception ex) {
+                    usage();
+                }
+            }
+            else looseVoices.add(args[i]);
+
+        }
+
+        PlayMidiFile midiFilePlayer = new PlayMidiFile(midiFile, waveFile, sampleRate);
+        midiFilePlayer.run();
+
+
     }
 
 }
