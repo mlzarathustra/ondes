@@ -10,6 +10,11 @@ import java.util.List;
 import static java.lang.System.out;
 import static ondes.App.quitOnError;
 
+/**
+ *
+ *  Only ever used from WaveEditor.main()
+ *
+ */
 public class SynthConnection {
     Waves waves;
     public void setWaves(Waves w) { waves = w; }

@@ -6,10 +6,7 @@ import ondes.synth.voice.VoiceMaker;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,23 +14,57 @@ import java.util.List;
 import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Both the main Ondes "App" and WaveEditor use this class
+ *
+ */
 public class SynthSession {
     private final String inDevStr, outDevStr;
     private final String[] progNames;
     private final int bufferSize;
     private MidiDevice midiDev;
-    private Mixer mixer;
+    private Mixer outDev;
     private OndeSynth synth;
 
-    public SynthSession(String inDevStr,
-                 String outDevStr,
-                 String[] progNames,
-                 int bufferSize) {
+    /**
+     * Called from
+     * <ul>
+     *   <li>App (for main playback mode)</li>,
+     *   <li>SynthConnection (for Wave Editor)</li>
+     * </ul>
+
+     * @param inDevStr - string identifying MIDI input device
+     * @param outDevStr - string identifying Audio output device
+     * @param progNames - the names of programs to load
+     * @param bufferSize - size of audio buffer to use
+     */
+    public SynthSession(
+                String inDevStr,
+                String outDevStr,
+                String[] progNames,
+                int bufferSize) {
+
         this.inDevStr = inDevStr;
         this.outDevStr = outDevStr;
         this.progNames = progNames;
         this.bufferSize = bufferSize;
     }
+
+    /**
+     *  <ul>
+     *  <li>
+     *      Loads the programs into the static VoiceMaker arrays
+     *  </li>
+     *  <li>
+     *  From the identifying labels passed in: inDevStr, outDevStr
+     *  gets the MIDI input device (midiDev) and the
+     *      Audio (output) Mixer (outDev)
+     *  </li>
+     *  </ul>
+
+     *
+     * @return - success
+     */
 
     public boolean open() {
         VoiceMaker.loadPrograms();
@@ -54,23 +85,24 @@ public class SynthSession {
         }
         out.println("Midi Input device   : " + midiDev.getDeviceInfo());
 
-        mixer = getMixer(outDevStr);
-        if (mixer == null) {
-            out.println("Could not open audio mixer device for output: " + inDevStr);
+        outDev = getMixer(outDevStr);
+        if (outDev == null) {
+            out.println("Could not open audio mixer device for output: " + outDevStr);
             out.println("See READ.md for more information.");
             out.println("For audio output, you need one with a SOURCE line, " +
                 "illogical as that seems.");
            return false;
         }
-        out.println("Mixer (audio output): " + mixer.getMixerInfo());
+        out.println("Mixer (audio output): " + outDev.getMixerInfo());
         return true;
     }
 
     public void start() {
         synth = new OndeSynth(
-            44100,      // sample rate
+            //  TODO DBG0115
+            48000,      // sample rate
             midiDev,    // input device
-            mixer,      // output device
+            outDev,      // output device
             progNames,  // patch names
             bufferSize  // audio buffer size
         );
@@ -82,7 +114,7 @@ public class SynthSession {
         if (synth != null) synth.logFlush();
 
         if (midiDev != null) midiDev.close();
-        if (mixer != null) mixer.close();
+        if (outDev != null) outDev.close();
     }
 
     public OndeSynth getSynth() { return synth; }
@@ -112,6 +144,7 @@ public class SynthSession {
     }
 
     public static Mixer getMixer(String outDevStr) {
+        out.println("SynthSession.getMixer("+outDevStr+")");
         Mixer.Info[] info= AudioSystem.getMixerInfo();
         List<Mixer.Info> list = Arrays.stream(info)
             .filter(i -> {
@@ -125,29 +158,12 @@ public class SynthSession {
 
         //out.println(list);
         if (list.isEmpty()) return null;
-        out.println(list.size() + " items match "+outDevStr);
+        out.println( list.size() +
+            ( list.size()==1 ? " item matches ": " items match ") + outDevStr);
+        if (list.size() > 1) out.println("  ...Using the first one.");
 
-        // if more than one item matches, make sure we can
-        // open the source data line.
-
-        Mixer rs = null;
-        for (Mixer.Info srcInfo : list) {
-            try {
-                rs = AudioSystem.getMixer(srcInfo);
-                Line.Info[] lineInfo = rs.getSourceLineInfo();
-                //out.println("lineInfo is "+lineInfo.length+" items.");
-                //SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[0]);
-                SourceDataLine sdl = (SourceDataLine)rs.getLine(lineInfo[lineInfo.length - 1]);
-                sdl.open();
-                sdl.start();
-                break; // if no exception
-            }
-            catch (Exception ignore) { }
-        }
-
-        return rs;
+        return AudioSystem.getMixer(list.get(0));
     }
-
 
 
 }

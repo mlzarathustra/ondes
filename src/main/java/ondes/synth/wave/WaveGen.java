@@ -227,13 +227,18 @@ public abstract class WaveGen extends MonoComponent {
     boolean TRACE_LINEAR_MOD = false;
     double lastPercent=0;
 
+    int getMtSamples() {
+        return synth.getSampleRate(); // 1 trace/second
+    }
+
     class ModTracker {
-        final int MT_SAMPLES = 44100; // 1 trace/second
+        //final int MT_SAMPLES = synth.getSampleRate();
+
         int ltIdx = 0;
         double curMin, curMax;
 
         public void trackLinMod(double freq) {
-            if (ltIdx % MT_SAMPLES == 0 && (curMin != 0 || curMax != 0)) {
+            if (ltIdx % getMtSamples() == 0 && (curMin != 0 || curMax != 0)) {
                 double delta = curMax - midiFrequency; // should be symmetrical
                 double percent = 100.0 * delta / midiFrequency;
                 if (lastPercent != 0 && abs(percent - lastPercent) > 0.0001) {
@@ -250,7 +255,7 @@ public abstract class WaveGen extends MonoComponent {
             }
             if (freq > curMax) curMax = freq;
             if (freq < curMin) curMin = freq;
-            ltIdx = (ltIdx + 1) % MT_SAMPLES;
+            ltIdx = (ltIdx + 1) % getMtSamples();
         }
     }
     ModTracker mt = new ModTracker();
@@ -263,14 +268,14 @@ public abstract class WaveGen extends MonoComponent {
      *    as it changes. To use for introspecting FM sounds.
      *
      *    The "trace-relative" property needs to go into the
-     *    oscillator being modulated, as we look a the
+     *    oscillator being modulated, as we look at the
      *    BASE frequency of this oscillator and the
      *    CURRENT frequency of the other oscillator
      *    (i.e. the phaseClock.getFrequency())
      *
      */
     class SemitoneDiffTracker {
-        final int MT_SAMPLES = 44100; // 1 trace/second
+        //final int MT_SAMPLES = synth.getSampleRate(); // 1 trace/second
         int ltIdx = 0;
 
         WaveGen waveGen;
@@ -287,7 +292,7 @@ public abstract class WaveGen extends MonoComponent {
                 out.printf(" %s: %10.4f %s: %10.4f %n",
                     getName(), baseFrequency, waveGen.getName(), waveGen.phaseClock.getFrequency());
             }
-            ltIdx = (ltIdx + 1) % MT_SAMPLES;
+            ltIdx = (ltIdx + 1) % getMtSamples();
         }
     }
     SemitoneDiffTracker dt = null;
@@ -423,7 +428,7 @@ public abstract class WaveGen extends MonoComponent {
         }
 
         //  It may be desirable to allow a base lower than zero (which
-        //  would necessitate a limit when combining in velocityMultiplier()
+        //  would necessitate a limit when combining in velocityMultiplier())
         //  the lowest the QS puts out is about 11.
         //
         String velocityBaseErr = "'velocity-base' must be a percentage " +

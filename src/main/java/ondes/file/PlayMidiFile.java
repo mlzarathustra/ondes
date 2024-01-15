@@ -8,6 +8,7 @@ import java.util.List;
 
 import static java.lang.System.out;
 import ondes.midi.MlzMidi;
+import ondes.synth.OndeSynth;
 
 import java.util.Comparator;
 
@@ -16,7 +17,15 @@ public class PlayMidiFile {
 
     static boolean showRawEvents = false;
     static boolean showSortedEvents = true;
-    static int sampleRate = 44100;
+
+    static OndeSynth synth;
+
+        //  TODO - assign
+
+    static int getSampleRate() {
+        //return synth.getSampleRate();
+        return 44100;
+    }
 
     static void usage() {
         out.println("Syntax: java java.ondes.file.MixMidiFile <filename>.mid");
@@ -85,7 +94,7 @@ public class PlayMidiFile {
         double ticksPerSecond = ( 1000000.0D * (double)seq.getTickLength()) /
             (double)seq.getMicrosecondLength();
         out.println("Ticks per second: "+ticksPerSecond);
-        out.println("Samples per tick: "+ ( (float)sampleRate) / ticksPerSecond );
+        out.println("Samples per tick: "+ ( (float)getSampleRate()) / ticksPerSecond );
 
 
         Track[] tracks = seq.getTracks();

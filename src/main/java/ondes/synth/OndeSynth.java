@@ -195,6 +195,16 @@ public class OndeSynth extends Thread {
         String[]    progNames,
         int         bufSize
     ) {
+        this(midiInDev, new MonoMainMix(outDev, bufSize, sampleRate), progNames);
+
+        //  outDev will already have a sample rate.
+    }
+
+    public OndeSynth(
+        MidiDevice  midiInDev,
+        MainMix     mainMix,
+        String[]    progNames
+    ) {
         super("OndeSynth - main thread");
         this.midiInDev = midiInDev;
         midiListener = new MidiListenerThread(this);
@@ -202,13 +212,14 @@ public class OndeSynth extends Thread {
 
         //  TODO - allow the user to specify the sample rate,
         //            rather than only accepting the default.
-        monoMainMix = new MonoMainMix(outDev, bufSize);
+        monoMainMix = mainMix;
         monoMainMix.setContext(GLOBAL);
-        this.sampleRate = monoMainMix.getSampleRate();
-        mainLimiter  = getMainLimiter();
-        instant = new Instant(sampleRate);
-        fillChannelVoicePool(progNames);
 
+        sampleRate = monoMainMix.getSampleRate();
+        instant = new Instant(sampleRate);
+
+        mainLimiter  = getMainLimiter();
+        fillChannelVoicePool(progNames);
         //
         //
         monoMainMix.addInput(mainLimiter.getMainOutput());

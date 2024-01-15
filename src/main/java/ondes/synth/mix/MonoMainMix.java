@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.err;
@@ -31,6 +32,7 @@ public class MonoMainMix extends MainMix {
 
     SourceDataLine srcLine;
     private int sampleRate;
+    private int requestedSampleRate = -1;
 
 
     /**
@@ -62,8 +64,9 @@ public class MonoMainMix extends MainMix {
 
     //public MonoMainMix(Mixer mixer) { this(mixer,2048); }
 
-    public MonoMainMix(Mixer mixer, int bufferSize) {
+    public MonoMainMix(Mixer outDev, int bufferSize, int requestedSampleRate) {
         this.bufferSize = bufferSize;
+        this.requestedSampleRate = requestedSampleRate;
 
         // in nanoseconds. it's just for a message,
         // so it doesn't need to be precise
@@ -71,19 +74,23 @@ public class MonoMainMix extends MainMix {
         timingOverflow = avgLatency * 3 / 2;
 
         try {
-            Line.Info[] lineInfo = mixer.getSourceLineInfo();
-            out.println(Arrays.toString(lineInfo));
+            Line.Info[] lineInfo = outDev.getSourceLineInfo();
+            out.println("Available source lines: ");
+            List.of(lineInfo).forEach( info -> out.println("  "+info) );
+            //out.println(Arrays.toString(lineInfo));
 
-            SourceDataLine line = (SourceDataLine) mixer.getLine(lineInfo[0]);
-            out.println(line);
+            SourceDataLine line = (SourceDataLine) outDev.getLine(lineInfo[0]);
+
+            //out.println(line); // toString() not defined
             // format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo,
             // 4 bytes/frame, little-endian
 
             openOutputLine(line);
 
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             err.println("Can't open AUDIO output. Did you specify -out correctly?");
-            err.println("Device is "+mixer);
+            err.println("Device is "+outDev);
             App.quitOnError();
             //err.println("Exception Caught: " + ex);
             //ex.printStackTrace();
@@ -126,8 +133,13 @@ public class MonoMainMix extends MainMix {
         outputBuffer = new int[bufferSize]; // todo - this is mono
         lineBuffer = new byte[bufferSize * bytesPerSample * channels];
 
+        //  TODO - ok? DBG0115
+        if (requestedSampleRate > 0) {
+            audFmt = new AudioFormat(requestedSampleRate, 16, 2, false, false);
+        }
+
         if (DB) {
-            out.println(audFmt);
+            out.println("Audio Format requested: \n  "+audFmt);
             out.println(
                 "frameSize=" + frameSize + "; bufSize=" + bufferSize +
                     "; bytesPerSample=" + bytesPerSample +
@@ -137,6 +149,11 @@ public class MonoMainMix extends MainMix {
         }
 
         srcLine.open(audFmt,lineBuffer.length);
+        out.println("Audio Format obtained: \n  "+srcLine.getFormat());
+
+        // the one we're actually using
+        sampleRate = (int) srcLine.getFormat().getSampleRate();
+
         srcLine.start(); // without this, you won't get any sound.
     }
 

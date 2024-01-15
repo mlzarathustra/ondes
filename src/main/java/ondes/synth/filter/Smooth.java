@@ -11,7 +11,25 @@ import static ondes.synth.component.ConfigHelper.*;
 import java.util.*;
 
 /**
- *    smoothing similar to that used for the envelopes.
+ * <p>
+ *      Smoothing similar to the effect used for the envelopes,
+ *      applied to an output wave.
+ * </p>
+ * <p>
+ *      That is, given the difference between the last Y value
+ *      and the current Y value input, the current Y output will
+ *      approach the current input, more quickly the farther away
+ *      it is.
+ * </p>
+ * <p>
+ *    This has the effect of creating a concave or convex curve,
+ *    with the steeper slope at the beginning.
+ * </p>
+ * <p>
+ *    The audible effect is to fatten the bass.
+ *    It's prone to overloading.
+ * </p>
+ *
  */
 public class Smooth extends MonoComponent {
 
@@ -49,6 +67,9 @@ public class Smooth extends MonoComponent {
         // empirically, about the best match
     }
 
+    /**
+     * align K with mod input
+     */
     private void modAmt() {
         double inp = namedInputSum("range");
         inp = amtInputRange * (inp / amtInputAmp);
@@ -185,13 +206,7 @@ public class Smooth extends MonoComponent {
             out.println("kInvs="+kInvs+";");
             out.println("avgs="+avgs+";");
         }
-
-
-
-
-
     }
-
 
 
 }
