@@ -52,7 +52,7 @@ public class Balancer extends MonoComponent {
         //   -1000 <= ctrl <= 1000
         //
         float lScale = ((ctrl / ctrlInputAmp)+1f)/2f;
-        float val = lScale * L + (1-lScale) * R;
+        float val = lScale * L + (1.0f - lScale) * R;
 
         return (int)(val * scale);
     }
