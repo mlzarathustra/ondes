@@ -197,7 +197,6 @@ public class VoiceMaker {
         String progName,
         OndeSynth synth,
         ChannelVoicePool channelVoicePool) {
-
             Map m = getVoiceMap(progName);
             if (m == null) return null; // getVoiceMap will show an error
             return new Voice(m, synth, channelVoicePool);

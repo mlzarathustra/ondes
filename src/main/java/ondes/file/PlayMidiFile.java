@@ -150,6 +150,15 @@ public class PlayMidiFile {
 
         OndeSynth synth = new OndeSynth(mainMix, progNames);
 
+        synth.start();
+        try {
+            synth.join();
+        }
+        catch (Exception ignore) { }
+
+        out.println("Synth halted. Exiting.");
+        System.exit(0);
+
         //  TODO - once we get the samples,
         //   WavFileWriter.writeBuffer(samples, getSampleRate, waveFileName)
 
@@ -205,29 +214,26 @@ public class PlayMidiFile {
 
         int sampleRate = 44100;
 
-        for (int i=0; i<args.length; ++i) {
-
-            //  options with no following args
-            switch (args[i]) {
+        for (int i=0; i<argList.size(); ++i) {
+            switch (argList.get(i)) {
                 case "-sample-rate":
-                    sampleRate = Integer.parseInt(args[++i]);
+                    sampleRate = Integer.parseInt(argList.get(++i));
                     continue;
 
                     //  other args with parameters here
 
             }
 
-            if (args[i].startsWith("-ch")) {
+            if (argList.get(i).startsWith("-ch")) {
                 try {
-                    progNames[ Integer.parseInt(args[i].substring(3)) - 1 ]
-                        = args[++i];
+                    progNames[ Integer.parseInt(argList.get(i).substring(3)) - 1 ]
+                        = argList.get(++i);
                 }
                 catch (Exception ex) {
                     usage();
                 }
             }
-            else looseVoices.add(args[i]);
-
+            else looseVoices.add(argList.get(i));
         }
 
         int lvp = 0, pnp = 0;
@@ -239,6 +245,10 @@ public class PlayMidiFile {
             }
             progNames[pnp++] = looseVoices.get(lvp++);
         }
+
+        out.println("progNames : "+Arrays.toString(progNames));
+
+        VoiceMaker.loadPrograms();
 
         PlayMidiFile midiFilePlayer =
             new PlayMidiFile(midiFile, waveFile, progNames, sampleRate);

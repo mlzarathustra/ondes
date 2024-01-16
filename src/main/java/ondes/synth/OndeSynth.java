@@ -122,7 +122,7 @@ public class OndeSynth extends Thread {
     private final Instant instant;
     private int sampleRate;
 
-    private MidiDevice midiInDev;
+    private MidiDevice midiInDev = null;
     private MidiListenerThread midiListener;
     private GrimReaperThread grimReaper;
 
@@ -166,14 +166,14 @@ public class OndeSynth extends Thread {
     /**
      * For main loop concurrency
      */
-    final Object lock = new Object() {
-        public String toString() { return "Ondes Lock"; }
-    };
+//    final Object lock = new Object() {
+//        public String toString() { return "Ondes Lock"; }
+//    };
 
     /**
      * To signal the main loop to stop
      */
-    boolean stop;
+    public boolean stop;
 
     /**
      * The constructor only sets
@@ -209,7 +209,6 @@ public class OndeSynth extends Thread {
 
         this.midiInDev = midiInDev;
         midiListener = new MidiListenerThread(this);
-        grimReaper = new GrimReaperThread(this);
     }
 
     public OndeSynth(MainMix mainMix, String[] progNames) {
@@ -217,6 +216,7 @@ public class OndeSynth extends Thread {
 
         monoMainMix = mainMix;
         monoMainMix.setContext(GLOBAL);
+        monoMainMix.setSynth(this);
 
         sampleRate = monoMainMix.getSampleRate();
         instant = new Instant(sampleRate);
@@ -226,6 +226,7 @@ public class OndeSynth extends Thread {
         //
         //
         monoMainMix.addInput(mainLimiter.getMainOutput());
+        grimReaper = new GrimReaperThread(this);
     }
 
     /**
@@ -313,6 +314,8 @@ public class OndeSynth extends Thread {
     }
 
     void listen() {
+        if (midiInDev == null) return;
+
         Receiver recv = new Receiver() {
             public void close() {};
             public void send(MidiMessage msg, long ts) {
@@ -339,7 +342,6 @@ public class OndeSynth extends Thread {
         }
 
         midiListener.start();
-        grimReaper.start();
     }
 
     /**
@@ -368,9 +370,6 @@ public class OndeSynth extends Thread {
 
     }
 
-    //  The core is synchronized to avoid colliding with
-    //  a constructor triggered by Note-ON
-    //
     public void run() {
 
         // preload class data
@@ -379,7 +378,9 @@ public class OndeSynth extends Thread {
             u2 = SineLookup.sineLookup(0);
         getMainLimiter();
 
-        listen();
+        if (midiInDev != null) listen();
+        grimReaper.start();
+
 
         // TODO - does this even help fix the gaps? 
         // attempting to give the audio thread greater priority...
@@ -401,7 +402,10 @@ public class OndeSynth extends Thread {
             resetWires();
             instant.next();
             monoMainMix.update();
-            if (stop) return;
+            if (stop) {
+                //out.println("OndeSynth.stop == true - returning");
+                return;
+            }
         }
     }
 

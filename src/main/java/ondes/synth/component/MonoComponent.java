@@ -297,7 +297,7 @@ public abstract class MonoComponent {
      */
     public abstract void resume();
 
-    void setSynth(OndeSynth s) { synth = s; }
+    public void setSynth(OndeSynth s) { synth = s; }
 
     /**
      *
