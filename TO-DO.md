@@ -5,9 +5,18 @@
     - For now, only "play back" to a WAV file
     - Implement WaveMonoMainMix, AS a MainMix, to capture data
     - write to wave file
-    
 
-    - Provide an API endpoint for morbleu
+    Voicemaker.findProg("") - finds "pwm" because it every string "contains" "" and it picks the first shortest name which (alphabetically sorted) happens to be pwm. 
+
+    For some reason, it fails to do so from within PlayMidiFile.java. 
+
+
+
+
+  - Provide an API endpoint for morbleu
+    
+  - named inputs - translate them into an array
+    brass.yaml is a good example case 
 
   - Clean up documentation - make sure all the 
     - components are documented
@@ -15,19 +24,21 @@
     
 
   - 4-pole filter = 2+2, following all inputs (freq, res)
-  - named inputs - translate them into an array
+
 
 ---
 
-  - Panners - (balancer? there are test patches for them.)
+  - Balancer
+    - play with test patches
     - control with lfo(s)
     - control with envelope
-    - document
+    - write documentation
     
 
   - `WaveLookup` constructor: normalize level 
 
-  - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. Inherit the waves from the WG indicated. 
+  - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. 
+  - Inherit the waves from the WG indicated. 
 
  ---
 
@@ -35,61 +46,10 @@
 
 search for DBG0115
 
+The actual sample rate is currently only set in MonoMainMix.openOutputLine():
 Apparently 44100 and 48000 are OK, but higher than that it gets gaps.
 
-The actual sample rate is currently only set in MonoMainMix.openOutputLine():
-```
-  AudioFormat audFmt = srcLine.getFormat();
-
-  //  it can be floating point...
-  sampleRate = (int) audFmt.getSampleRate();
-```
-
-That's the actual sample rate, though the constant 44100 appears elsewhere
-in the code.    
-
-`srcLine` comes from the `MonoMainMix` constructor
-```
-    Line.Info[] lineInfo = outDev.getSourceLineInfo();
-    out.println(Arrays.toString(lineInfo));
-
-    SourceDataLine line = (SourceDataLine) outDev.getLine(lineInfo[0]);
-```
-
-in SynthSession.java sampleRate handed as a constant to OndeSynth()
-```
-    public void start() {
-        synth = new OndeSynth(
-            44100,      // sample rate
-            MidiDevice  midiInDev,
-            Mixer       outDev, //  passed to MonoMainMix c'tor     
-            ...
-
-```
-
-44100 appears literally: 
- - SynthSession.start()  //shown above
- - PlayMidiFile
- - BiQuadFilter.main()
- - SampleRateConversion.main() // unused
-
-Ondes shouldn't be passed the sampleRate directly. It gets a MainMix, 
-which should return it correctly. 
-
-MonoMainMix will.
-
-In order to SET the sample rate, 
-the line in `SynthSession.getMixer()`
-
-    sdl.open();
-
-needs to be
-
-    AudioFormat format = sdl.getFormat()
-    //  adjust format for sampleRate
-    sdl.open(format);
-
-
+44100 appears in some test methods, which don't affect the main synth running.
 
 
 
