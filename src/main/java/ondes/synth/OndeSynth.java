@@ -291,7 +291,7 @@ public class OndeSynth extends Thread {
         channelVoicePool[chan].updateState(msg);  //  TODO - is updateState necessary?
     }
 
-    void routeMidiMessage(MidiMessage msg, long ts) {
+    public void routeMidiMessage(MidiMessage msg, long ts) {
         if (SHOW_MIDI) {
             out.println(" OndeSynth.routeMidiMessage : " +
                 //"[" + ts + "] " + // it's always 0
@@ -402,10 +402,7 @@ public class OndeSynth extends Thread {
             resetWires();
             instant.next();
             monoMainMix.update();
-            if (stop) {
-                //out.println("OndeSynth.stop == true - returning");
-                return;
-            }
+            if (stop) return;
         }
     }
 

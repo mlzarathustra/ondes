@@ -1,10 +1,6 @@
 package ondes.file;
 
 import javax.sound.midi.*;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,9 +23,14 @@ public class PlayMidiFile {
     static boolean showRawEvents = false;
     static boolean showSortedEvents = true;
 
+    static boolean overwriteOutFile = false;
+
     File midiFile, waveFile;
     int sampleRate;
     String[] progNames;
+
+    // to construct WaveMonoMainMix
+    float samplesPerTick, ticksPerSample;
 
     PlayMidiFile(
         File midiFile, File waveFile, String[] progNames,
@@ -124,13 +125,14 @@ public class PlayMidiFile {
         double ticksPerSecond = ( 1000000.0D * (double)seq.getTickLength()) /
             (double)seq.getMicrosecondLength();
         out.println("Ticks per second: "+ticksPerSecond);
-        out.println("Samples per tick: "+ ( (float)getSampleRate()) / ticksPerSecond );
-
+        samplesPerTick = ((float)getSampleRate()) / (float)ticksPerSecond;
+        ticksPerSample = ((float)ticksPerSecond / (float)getSampleRate());
+        out.println("Samples per tick: "+ samplesPerTick);
+        out.println("Ticks per sample: "+ ticksPerSample);
 
         Track[] tracks = seq.getTracks();
         showTrackInfo(tracks);
-        List<MidiEvent> evtList = getEvtList(seq);
-
+        List<MidiEvent>evtList = getEvtList(seq);
 
         if (showSortedEvents) {
             evtList.forEach( evt->
@@ -146,22 +148,42 @@ public class PlayMidiFile {
 
 
         List<MidiEvent> evtList = getEventList(midiFile);
-        WaveMonoMainMix mainMix = new WaveMonoMainMix(sampleRate);
+        WaveMonoMainMix mainMix =
+            new WaveMonoMainMix(sampleRate, ticksPerSample, evtList,
+                fadeAfter, fadeLength);
 
         OndeSynth synth = new OndeSynth(mainMix, progNames);
+
+        mainMix.setSynth(synth);// It may not need this
 
         synth.start();
         try {
             synth.join();
         }
         catch (Exception ignore) { }
+        out.println(); // skip status line
 
-        out.println("Synth halted. Exiting.");
+        List<Integer> sampleList = mainMix.getSamples();
+
+        out.println(sampleList.size() + " samples");
+        out.println("Synth halted.");
+
+        int[] samples = new int[sampleList.size()];
+        for (int i=0; i<samples.length; ++i) samples[i] = sampleList.get(i);
+
+        out.println("Writing samples.");
+
+        try {
+            WavFileWriter.writeBuffer(samples, getSampleRate(), waveFile);
+        }
+        catch (IOException ex) {
+            out.println("IO Exception writing "+waveFile+"\n"+ex);
+        }
+        out.println("Done.");
+
+        // the grim reaper thread is still running.
+        // we could stop it gracefully, or we could do this:
         System.exit(0);
-
-        //  TODO - once we get the samples,
-        //   WavFileWriter.writeBuffer(samples, getSampleRate, waveFileName)
-
     }
 
     /*
@@ -189,39 +211,25 @@ public class PlayMidiFile {
         String midiFileName = argList.remove(0);
         String waveFileName = argList.remove(0);
 
-        File midiFile = new File(midiFileName);
-        if (!midiFile.isFile()) {
-            midiFile = new File(midiFileName+".mid");
-            if (!midiFile.isFile()) {
-                out.println("Can't open file "+midiFileName+"!");
-                usage();
-            }
-        }
-        out.println("MIDI file: "+midiFile);
-
-        File waveFile = new File(waveFileName);
-        if (waveFile.exists()) {
-            out.println("WAVE file "+waveFile+" already exists!");
-            usage();
-        }
-
-        if (argList.contains("-all") || argList.contains("-all-patches")) {
-            out.println("load all patches");
-            VoiceMaker.setRecurseSubdirs(true);
-        }
-
+        //
         List<String> looseVoices = new ArrayList<>();
-
         int sampleRate = 44100;
 
         for (int i=0; i<argList.size(); ++i) {
+
+            switch(argList.get(i)) {
+                case "-overwrite":
+                    out.println("overwrite set to true.");
+                    overwriteOutFile = true;
+                    continue;
+            }
+
             switch (argList.get(i)) {
                 case "-sample-rate":
                     sampleRate = Integer.parseInt(argList.get(++i));
                     continue;
 
                     //  other args with parameters here
-
             }
 
             if (argList.get(i).startsWith("-ch")) {
@@ -234,6 +242,36 @@ public class PlayMidiFile {
                 }
             }
             else looseVoices.add(argList.get(i));
+        }
+
+
+
+
+        File midiFile = new File(midiFileName);
+        if (!midiFile.isFile()) {
+            midiFile = new File(midiFileName+".mid");
+            if (!midiFile.isFile()) {
+                out.println("Can't open file "+midiFileName+"!");
+                usage();
+            }
+        }
+        out.println("MIDI file: "+midiFile);
+
+        File waveFile = new File(waveFileName);
+        if (waveFile.exists()) {
+            if (overwriteOutFile) {
+                out.println("-overwrite was specified - overwriting "+waveFile);
+            }
+            else {
+                out.println("WAVE file " + waveFile + " already exists!");
+                out.println("   specify -overwrite to overwrite.");
+                usage();
+            }
+        }
+
+        if (argList.contains("-all") || argList.contains("-all-patches")) {
+            out.println("load all patches");
+            VoiceMaker.setRecurseSubdirs(true);
         }
 
         int lvp = 0, pnp = 0;

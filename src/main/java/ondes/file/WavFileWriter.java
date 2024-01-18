@@ -31,7 +31,7 @@ public class WavFileWriter {
     public static boolean writeBuffer(
         int[] samples,
         int sampleRate,
-        String fileName
+        File outFile
     )
         throws IOException {
 
@@ -45,8 +45,6 @@ public class WavFileWriter {
             byteBuffer[i] = (byte)(x >>> 8);
         }
 
-        File outFile = new File(fileName);
-
         ByteArrayInputStream bais = new ByteArrayInputStream(byteBuffer);
         AudioInputStream audioInputStream =
             new AudioInputStream(bais, getAudioFormat(sampleRate), samples.length);
@@ -56,8 +54,8 @@ public class WavFileWriter {
             audioInputStream.close();
             return true;
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
+        catch (Exception ignore) {
+            ignore.printStackTrace();
         }
         return false;
     }
