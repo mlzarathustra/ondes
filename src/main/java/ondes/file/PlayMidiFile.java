@@ -43,6 +43,10 @@ public class PlayMidiFile {
         this.sampleRate = sampleRate;
     }
 
+    /**
+     * How many 0's means "I'm finished."
+     */
+    int endingZeros = 100;
 
     /**
      *  # of seconds after the last MIDI event at which to
@@ -150,7 +154,7 @@ public class PlayMidiFile {
         List<MidiEvent> evtList = getEventList(midiFile);
         WaveMonoMainMix mainMix =
             new WaveMonoMainMix(sampleRate, ticksPerSample, evtList,
-                fadeAfter, fadeLength);
+                fadeAfter, fadeLength, endingZeros);
 
         OndeSynth synth = new OndeSynth(mainMix, progNames);
 

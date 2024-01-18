@@ -4,7 +4,6 @@ import ondes.synth.OndeSynth;
 
 import javax.sound.midi.MidiEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.System.out;
@@ -17,6 +16,25 @@ public class WaveMonoMainMix extends MainMix {
     List<MidiEvent> evtList;
     int evtIdx = 0;
 
+
+    /**
+     * How many 0's means "I'm finished."
+     */
+    int endingZeros = 100;
+
+    /**
+     *  # of seconds after the last MIDI event at which to
+     *  fade, if it hasn't gone down to all 0's yet.
+     */
+    float fadeAfter;
+
+    /**
+     How many seconds to fade for, if needed.
+     */
+    float fadeLength;
+
+    Integer endTime = null;
+    int zeroCount = 0;
 
     @Override
     public void update() {
@@ -32,26 +50,31 @@ public class WaveMonoMainMix extends MainMix {
 
         samples.add(currentValue());
         sampleNum++;
-        if ( (sampleNum % 100) == 0) {
+        if ((sampleNum % 100) == 0) {
             out.print("\rsample[" + sampleNum + "]    ");
         }
 
         //  TODO - implement fadeAfter and fadeLength
         //
-        if (evtIdx >= evtList.size()) synth.stop = true;
+        if (evtIdx >= evtList.size()) {
+            // crude but effective
+            if (endTime == null) endTime = (int)
+                ( ((float)sampleNum/(float)sampleRate) + fadeAfter );
+
+            if (((float)sampleNum / (float)sampleRate) >= endTime) {
+                synth.stop = true;
+            }
+
+            if (currentValue() == 0) zeroCount++;
+            else zeroCount = 0;
+
+            if (zeroCount > endingZeros) synth.stop = true;
+
+
+        }
     }
 
 
-    /**
-     *  # of seconds after the last MIDI event at which to
-     *  fade, if it hasn't gone down to all 0's yet.
-     */
-    float fadeAfter = 10;
-
-    /**
-     How many seconds to fade for, if needed.
-     */
-    float fadeLength = 4;
 
     OndeSynth synth;
 
@@ -61,12 +84,13 @@ public class WaveMonoMainMix extends MainMix {
 
     public WaveMonoMainMix(
         int sampleRate, float ticksPerSample, List<MidiEvent> evtList,
-        float fadeAfter, float fadeLength) {
+        float fadeAfter, float fadeLength, int endingZeros) {
 
             this.sampleRate = sampleRate;
             this.ticksPerSample = ticksPerSample;
             this.fadeAfter = fadeAfter;
             this.fadeLength = fadeLength;
+            this.endingZeros = endingZeros;
 
             this.evtList = evtList;
     }
