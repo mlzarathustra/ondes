@@ -1,48 +1,50 @@
 # OndeSynth - to do
- 
-  - Play back from MIDI file
-    - Do I want to use SynthSession for this? 
-    - For now, only "play back" to a WAV file
-    - Implement WaveMonoMainMix, AS a MainMix, to capture data
-    - write to wave file
 
-    Voicemaker.findProg("") - finds "pwm" because it every string "contains" "" and it picks the first shortest name which (alphabetically sorted) happens to be pwm. 
+  - Voicemaker.findProg("") - finds "pwm" because it every string "contains" "" and it picks the first shortest name which (alphabetically sorted) happens to be pwm. 
 
-    For some reason, it fails to do so from within PlayMidiFile.java. 
-
-
-
+  - Controller 7 - volume
+    - ChannelVoicePool: add Junction channelMix
+    - All voice components (channel and voice context) plug into this instead of main, then it plugs in to main
+    - it combines the controller 7 output (which should always be enabled) with the initial level scale setting, specified in the command line.
 
   - Provide an API endpoint for morbleu
     
   - named inputs - translate them into an array
     brass.yaml is a good example case 
 
-  - Clean up documentation - make sure all the 
-    - components are documented
-    - all defined programs are documented
-    
+  - catalog defined programs 
 
-  - 4-pole filter = 2+2, following all inputs (freq, res)
+  - Balancer
+      - write documentation
+      - What is the meaning of     
+        ```amp: 1000000  # here implies: -1000..1000```
+        in test-balancer.yaml?
+      - play with test patches
+      - control with envelope
+
+- 4-pole filter = 2+2, following all inputs (freq, res)
+
+
+- Finish ChannelVoicePool.updateState - it needs to propagate the channel state to the channel-context components
 
 
 ---
 
-  - Balancer
-    - play with test patches
-    - control with lfo(s)
-    - control with envelope
-    - write documentation
-    
+  - Sample Rate change
+    - Is there an easy way to make the fixed IIR filters compensate
+      for sample rate change?
 
+    - BiQuad should be getting sampleRate from synth, so it should work.
+    
   - `WaveLookup` constructor: normalize level 
 
-  - for the **waves** parameter, allow a pointer to a harmonic or anharmonic wave generator. 
-  - Inherit the waves from the WG indicated. 
+  - for the **waves** parameter, 
+    - allow a pointer to a harmonic or anharmonic wave generator. 
+    - Inherit the waves from the WG indicated. 
 
  ---
 
-# Sample Rate Adjust 
+### Sample Rate Adjust 
 
 search for DBG0115
 
