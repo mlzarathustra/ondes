@@ -129,7 +129,8 @@ OndeSynth will not layer two notes at the same pitch on the same channel. If you
   - **out-level** - the output of the envelope level, in a range given by the next parameter:
   - **out-level-amp** - the range of the output level. Can be either one or two numbers. If it's only one, the other limit defaults zero. The limits can be specified in either order. The 0-100 standard level of the envelope will be scaled to match the min and max levels given here. 
 ---
-##Preset and Points
+
+## Preset and Points
   - **preset** - either "preset" or "points" should be present, but not both. (so above, preset: is commented out.)  Current presets are: 
     - **clavier**
     - **organ**

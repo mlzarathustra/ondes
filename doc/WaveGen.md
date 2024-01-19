@@ -5,8 +5,8 @@ Here's an example of a "wave" component represented in YAML:
 ```
 osc1:
     midi: note-on   # send this component note ON messages
-    detune: -12
-    offset: 7
+    detune: 7
+    offset: -12
     type: wave
     shape: square
     out: main

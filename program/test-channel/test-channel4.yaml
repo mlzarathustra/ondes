@@ -1,6 +1,6 @@
 
 
-lfo-freq:
+lfo-pwm:
   type: wave
   context: channel
   freq: 0.1

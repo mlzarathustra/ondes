@@ -20,7 +20,7 @@ osc1:
     amp: 1000
   out: main
 
-lfo1:
+lfo-pwm1:
   freq: 0.2
   context: channel
   type: wave
@@ -38,7 +38,7 @@ osc2:
   velocity-amount: 150
   out: echo
 
-lfo2:
+lfo-pwm2:
   freq: 0.11
   context: channel
   type: wave
