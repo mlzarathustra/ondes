@@ -46,18 +46,18 @@ public class PlayMidiFile {
     /**
      * How many 0's means "I'm finished."
      */
-    int endingZeros = 100;
+    static int endingZeros = 100;
 
     /**
      *  # of seconds after the last MIDI event at which to
      *  fade, if it hasn't gone down to all 0's yet.
      */
-    float fadeAfter = 10;
+    static float fadeAfter = 10;
 
     /**
         How long to fade for, if needed.
      */
-    float fadeLength = 4;
+    static float fadeLength = 4;
 
     OndeSynth synth;
 
@@ -233,6 +233,18 @@ public class PlayMidiFile {
                     sampleRate = Integer.parseInt(argList.get(++i));
                     continue;
 
+                case "-ending-zeros":
+                    endingZeros = Integer.parseInt(argList.get(++i));
+                    continue;
+
+                case "-fade-after":
+                    fadeAfter = Integer.parseInt(argList.get(++i));
+                    continue;
+
+                case "-fade-length":
+                    fadeLength = Integer.parseInt(argList.get(++i));
+                    continue;
+
                     //  other args with parameters here
             }
 
@@ -247,9 +259,6 @@ public class PlayMidiFile {
             }
             else looseVoices.add(argList.get(i));
         }
-
-
-
 
         File midiFile = new File(midiFileName);
         if (!midiFile.isFile()) {
@@ -272,6 +281,9 @@ public class PlayMidiFile {
                 usage();
             }
         }
+
+        out.println("endingZeros="+endingZeros+"(samples); fadeAfter="+fadeAfter+"(seconds)");
+        out.println("  fadeLength="+fadeLength+"(seconds)");
 
         if (argList.contains("-all") || argList.contains("-all-patches")) {
             out.println("load all patches");

@@ -78,9 +78,6 @@ public class Voice extends ComponentOwner {
         if (voiceMix.inputSize() > 0) {
             synth.getMainOutput().addInput(voiceMix.getMainOutput());
         }
-
-        //out.println("Voice.resume(): "+synth.getMainOutput().inputSize()+" inputs (anonymous) "+
-        //    synth.getMainOutput().namedInputSize()+" named inputs"); // DBG1222
     }
     public void pause() {
         if (voiceMix.inputSize() > 0) {
@@ -94,10 +91,6 @@ public class Voice extends ComponentOwner {
         for (ChannelInput channelInput : channelInputs) {
             channelInput.disconnect();
         }
-
-//        out.println("Voice.pause(): "+synth.getMainOutput().inputSize()+" inputs (anonymous) "+
-//            synth.getMainOutput().namedInputSize()+" named inputs"); // DBG1222
-
     }
 
     public void resetWires() {
@@ -194,7 +187,7 @@ public class Voice extends ComponentOwner {
                     mainMix = getDefaultEnv();
             }
             else {
-                    mainMix = voiceMix;
+                mainMix = voiceMix;
             }
         }
         return mainMix;
@@ -267,6 +260,11 @@ public class Voice extends ComponentOwner {
                 //"Did you call super.configure()?");
                 //err.println("  class="+comp.getClass());
             }
+
+            //  Add the listeners listed in the midi: property of the component.
+            //  The below method is found in ComponentOwner, and the list of
+            //  valid text values is given in ComponentOwner.midiMessageTypes,
+            //
             addMidiListeners(comp, compSpec);
         }
     }

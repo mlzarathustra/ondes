@@ -2,6 +2,35 @@
     Plays back a MIDI file into a .WAV file
 
     Syntax:
-        java ondes.file.MixMidiFile <input-filename>.mid <output-filename>.wav
+        java ondes.file.MixMidiFile \
+            <input-filename>.mid <output-filename>.wav \
+            <patch1> <patch2> ...
 
-    For now, we assume 44100 sample rate, 16 bit stereo.
+    The patches are specified exactly the same way as with the
+    OndesSynth command - they can be numeric. If they're in sub-
+    directories, you need to say "-all" to load them.
+
+    Options:
+
+        -overwrite - overwrite the wav file if it exists,
+            rather than giving an error
+
+        -sample-rate <nnn> - sets the sample rate for the
+            wave output. Note that some filters (iir) currently
+            are based on the 44100 sample rate, so the cutoff
+            frequency will be higher with a higher sample rate.
+
+        -ending-zeros <nnn> - after the last midi event, it
+            waits for this many zeros before stopping.
+
+        -fade-after <nnn> - number of seconds after the last
+            midi event, after which it will fade out whether
+            the output has gone to zero or not
+
+        -fade-length <nnn> - number of seconds that it will
+            fade for, if "fade-after" is activated.
+
+    Options may appear in any order on the command line.
+
+    For now, we assume 16 bit mono. The default sample rate
+    is 44100.

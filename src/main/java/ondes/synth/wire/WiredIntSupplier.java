@@ -34,9 +34,9 @@ public abstract class WiredIntSupplier implements IntSupplier {
      */
     abstract public int updateInputs();
 
-    public boolean isVisited() {
-        return visited;
-    }
+//    public boolean isVisited() {
+//        return visited;
+//    }
 
     public void setVisited(boolean visited) {
         this.visited = visited;

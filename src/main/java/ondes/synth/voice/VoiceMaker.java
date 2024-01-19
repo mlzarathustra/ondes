@@ -177,6 +177,7 @@ public class VoiceMaker {
         catch (NumberFormatException ignore) { }
 
         // if not, then load by name.
+        progName = progName.replaceFirst("\\.yaml$","");
         Map m = findProg(progName);
         if (m == null) {
             err.println("Warning: Could not find program matching '"+

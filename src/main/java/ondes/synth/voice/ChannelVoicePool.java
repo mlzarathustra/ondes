@@ -31,9 +31,10 @@ public class ChannelVoicePool extends ComponentOwner {
     int chan;
 
     /**
+     * In this class, components inherited from ComponentOwner are all
      * Channel-level components, shared by all Voices on this channel
      */
-    private final Map<String, MonoComponent> components=new HashMap<>();
+//    private final Map<String, MonoComponent> components=new HashMap<>();
 
     public void addComponent(String key, MonoComponent comp) {
         components.put(key, comp);
@@ -93,14 +94,14 @@ public class ChannelVoicePool extends ComponentOwner {
     public void updateState(MidiMessage msg) {
         channelState.update(msg);
 
-        //  todo - loop through listeners (components) and send msg
+        //  todo - loop through "components" and send msg
         //         to each that should get it.
         //             Look at how Voice handles midiListeners.
 
     }
     
-    private final ConcurrentLinkedDeque<Voice> available=new ConcurrentLinkedDeque<>();
-//    private final ArrayDeque<Voice> inUse = new ArrayDeque<>();
+    private final ConcurrentLinkedDeque<Voice> available =
+        new ConcurrentLinkedDeque<>();
 
     /**
      * Ten voices seems like a good default.
