@@ -5,9 +5,8 @@ public class ChannelJunction extends Junction {
 
     @Override
     public void midiVolume(int val) {
-
-        //  TODO - setLevelScale( ((float)val) / 128.0f )
-
+        setLevelScale( ((float)val) / 128.0f );
+        System.out.println("ChannelJunction.midiVolume("+val+")");
     }
 
     //  TODO - ChannelVoicePool should have one of these

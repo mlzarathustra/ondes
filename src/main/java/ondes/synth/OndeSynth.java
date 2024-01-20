@@ -69,8 +69,6 @@ public class OndeSynth extends Thread {
             voices[chan][note].midiNote = -1;
             channelPlaying[chan].remove(voices[chan][note]);
             voices[chan][note] = null;
-            //out.println("delVoice - removed "+(chan+1)+": "+note);   // DBG1222
-            //out.println("   playing: "+channelPlaying[chan].size());
         }
 
         /**

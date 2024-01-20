@@ -2,17 +2,19 @@ package ondes.synth.voice;
 
 import ondes.synth.ComponentOwner;
 import ondes.synth.OndeSynth;
+import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.ChannelInput;
-import ondes.synth.wire.WiredIntSupplier;
+import ondes.synth.wire.ChannelJunction;
+import ondes.synth.wire.Junction;
 import ondes.synth.wire.WiredIntSupplierPool;
 
 import javax.sound.midi.MidiMessage;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import static java.lang.System.err;
 import static java.lang.System.out;
 
 /**
@@ -29,6 +31,22 @@ public class ChannelVoicePool extends ComponentOwner {
     String progName;
     OndeSynth synth;
     int chan;
+
+    Junction channelMix;
+    {
+        Map<String,String> compSpec=new HashMap<>();
+        compSpec.put("type","channel-mix");
+        compSpec.put("midi","volume");
+        channelMix = (ChannelJunction) ComponentMaker.getMonoComponent(compSpec, synth);
+        if (channelMix == null) {
+            err.println("Could not get a Junction for voice!");
+        }
+        else {
+            channelMix.setOwner(this);
+            addMidiListeners(channelMix, compSpec);
+
+        }
+    }
 
     /**
      * In this class, components inherited from ComponentOwner are all
