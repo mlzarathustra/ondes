@@ -98,15 +98,15 @@ public class OndeSynth extends Thread {
      * that has already been created.
      *
      */
-    private ChannelVoicePool[] channelVoicePool = new ChannelVoicePool[16];
+    private ChannelVoicePool[] channelVoicePoolAry = new ChannelVoicePool[16];
     private void fillChannelVoicePool(String[] progNames) {
         for (int chan=0; chan<16; ++chan) {
             if (progNames[chan] != null) {
-                channelVoicePool[chan]=
+                channelVoicePoolAry[chan]=
                     new ChannelVoicePool(progNames[chan],this, chan, voicePreloadCount);
 
                 out.println(String.format("Channel %4s: ", "["+(1+chan)+"]")+
-                    channelVoicePool[chan].peekVoice()
+                    channelVoicePoolAry[chan].peekVoice()
                         .getVoiceSpec().get("name"));
             }
         }
@@ -209,6 +209,15 @@ public class OndeSynth extends Thread {
         midiListener = new MidiListenerThread(this);
     }
 
+    /**
+     * Construct OndeSynth object, given the mainMix and
+     * program names, but no MIDI in device
+     *
+     * @param mainMix - the final destination of the sample
+     *                bytestream.
+     * @param progNames - program names for each channel.
+     *
+     */
     public OndeSynth(MainMix mainMix, String[] progNames) {
         super("OndeSynth - main thread");
 
@@ -221,9 +230,17 @@ public class OndeSynth extends Thread {
 
         mainLimiter  = getMainLimiter();
         fillChannelVoicePool(progNames);
-        //
+
+
+        //      Outputs from the components will be added to the
+        //  mainLimiter inputs.
+        //      Output from the mainLimiter is added to the inputs
+        //  of the Main Mix (actually, that's the only input)
+        //      The output of the main mix depends on what sort of
+        //  mix it is (e.g. to File or to Audio)
         //
         monoMainMix.addInput(mainLimiter.getMainOutput());
+
         grimReaper = new GrimReaperThread(this);
     }
 
@@ -243,7 +260,7 @@ public class OndeSynth extends Thread {
             return;
         }
 
-        Voice v = channelVoicePool[chan].getVoice();
+        Voice v = channelVoicePoolAry[chan].getVoice();
         if (v == null) return; // getVoiceMap() displays the warning
 
         voiceTracker.addVoice(v,chan,note);
@@ -269,7 +286,7 @@ public class OndeSynth extends Thread {
     public void noteEnded(int chan, int note) {
         Voice voice = voiceTracker.getVoice(chan, note);
         if (voice != null) {
-            channelVoicePool[chan].releaseVoice(voice);
+            channelVoicePoolAry[chan].releaseVoice(voice);
         }
         voiceTracker.delVoice(chan, note);
     }
@@ -285,8 +302,11 @@ public class OndeSynth extends Thread {
     void sendChannelMessage(MidiMessage msg) {
         int chan = msg.getStatus() & 0xf;
         voiceTracker.processMidiChannelMessage(chan, msg);
-        channelVoicePool[chan].processMidiMessage(msg);
-        channelVoicePool[chan].updateState(msg);  //  TODO - is updateState necessary?
+        channelVoicePoolAry[chan].processMidiMessage(msg);
+
+        // updateState() tracks the current channel controller state
+        // to pass on to voices starting up.
+        channelVoicePoolAry[chan].updateState(msg);
     }
 
     public void routeMidiMessage(MidiMessage msg, long ts) {
@@ -359,7 +379,7 @@ public class OndeSynth extends Thread {
         //  resetWires sets the "visited" flag "false" for each output
         //  in each Voice.
         voiceTracker.forEach(Voice::resetWires);
-        for (ChannelVoicePool channel : channelVoicePool) channel.resetWires();
+        for (ChannelVoicePool channel : channelVoicePoolAry) channel.resetWires();
 
         //  only one output "wire" is not in the voices: the Main Limiter.
         //  (the Main Mix output is not a WiredIntSupplier, but instead
@@ -409,7 +429,22 @@ public class OndeSynth extends Thread {
     }
 
 
-    public MonoComponent getMainOutput() {
+    /**
+     *
+     * <p>
+     *   Channels should send their outputs to here.
+     *   Only the inputs to it are variable, as the output
+     *   is determined elsewhere (e.g. a filename or audio
+     *   output set on the command line)
+     * </p>
+     * <p>
+     *   Components should send their outputs to either the
+     *   voiceMix or the channelMix.
+     * </p>
+     *
+     * @return the Main Mix, with a limiter in front of it.
+     */
+    public MonoComponent getMainMix() {
         return getMainLimiter();
     }
 
