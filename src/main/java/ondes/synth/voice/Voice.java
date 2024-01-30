@@ -13,7 +13,6 @@ import ondes.synth.envelope.Envelope;
 import ondes.synth.wire.*;
 
 import static java.lang.System.err;
-import static java.lang.System.out;
 import static ondes.synth.component.ComponentContext.*;
 
 /**
@@ -76,12 +75,14 @@ public class Voice extends ComponentOwner {
             channelInput.connect();
         }
         if (voiceMix.inputSize() > 0) {
-            synth.getMainOutput().addInput(voiceMix.getMainOutput());
+            synth.getMainMix().addInput(voiceMix.getMainOutput());
+
+            // voiceMix.setOutput(synth.getMainOutput()); equivalent?
         }
     }
     public void pause() {
         if (voiceMix.inputSize() > 0) {
-            synth.getMainOutput().delInput(voiceMix.getMainOutput());
+            synth.getMainMix().delInput(voiceMix.getMainOutput());
         }
 
         List<MonoComponent> list = new ArrayList(components.values());
@@ -213,7 +214,7 @@ public class Voice extends ComponentOwner {
                 break;
 
             case CHANNEL:
-                components.put("main", synth.getMainOutput());
+                components.put("main", synth.getMainMix());
                 break;
         }
     }
