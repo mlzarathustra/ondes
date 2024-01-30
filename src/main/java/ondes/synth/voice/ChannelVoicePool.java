@@ -35,16 +35,14 @@ public class ChannelVoicePool extends ComponentOwner {
     Junction channelMix;
     {
         Map<String,String> compSpec=new HashMap<>();
-        compSpec.put("type","channel-mix");
-        compSpec.put("midi","volume");
-        channelMix = (ChannelJunction) ComponentMaker.getMonoComponent(compSpec, synth);
+        compSpec.put("type","mix");
+        channelMix = (Junction) ComponentMaker.getMonoComponent(compSpec, synth);
         if (channelMix == null) {
-            err.println("Could not get a Junction for voice!");
+            err.println("Could not get a Junction for channel!");
         }
         else {
             channelMix.setOwner(this);
             addMidiListeners(channelMix, compSpec);
-
         }
     }
 
@@ -111,11 +109,6 @@ public class ChannelVoicePool extends ComponentOwner {
 
     public void updateState(MidiMessage msg) {
         channelState.update(msg);
-
-        //  todo - loop through "components" and send msg
-        //         to each that should get it.
-        //             Look at how Voice handles midiListeners.
-
     }
     
     private final ConcurrentLinkedDeque<Voice> available =
@@ -136,6 +129,10 @@ public class ChannelVoicePool extends ComponentOwner {
         this.synth = synth;
         this.chan = chan;
         channelState = new ChannelState(chan);
+        channelMix.setOutput(synth.getMainMix());
+
+        //synth.getMainOutput().addInput(channelMix.getMainOutput());
+
         
         while (count-- > 0) {
             Voice voice = VoiceMaker.getVoice(progName,synth, this);
