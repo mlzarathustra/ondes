@@ -5,8 +5,7 @@ import ondes.synth.OndeSynth;
 import ondes.synth.component.ComponentMaker;
 import ondes.synth.component.MonoComponent;
 import ondes.synth.wire.ChannelInput;
-import ondes.synth.wire.ChannelJunction;
-import ondes.synth.wire.Junction;
+import ondes.synth.wire.DynamicJunction;
 import ondes.synth.wire.WiredIntSupplierPool;
 
 import javax.sound.midi.MidiMessage;
@@ -32,17 +31,21 @@ public class ChannelVoicePool extends ComponentOwner {
     OndeSynth synth;
     int chan;
 
-    Junction channelMix;
+    //  Voice-level outputs (to 'main') plug in to here, to be regulated
+    //  by the volume pedal (controller 7)
+    DynamicJunction channelMix;
     {
         Map<String,String> compSpec=new HashMap<>();
-        compSpec.put("type","mix");
-        channelMix = (Junction) ComponentMaker.getMonoComponent(compSpec, synth);
+        compSpec.put("type","dynamic-mix");
+        compSpec.put("midi", "volume");
+        channelMix = (DynamicJunction) ComponentMaker.getMonoComponent(compSpec, synth);
         if (channelMix == null) {
             err.println("Could not get a Junction for channel!");
         }
         else {
             channelMix.setOwner(this);
             addMidiListeners(channelMix, compSpec);
+            addComponent("main", channelMix);
         }
     }
 
@@ -131,9 +134,7 @@ public class ChannelVoicePool extends ComponentOwner {
         channelState = new ChannelState(chan);
         channelMix.setOutput(synth.getMainMix());
 
-        //synth.getMainOutput().addInput(channelMix.getMainOutput());
 
-        
         while (count-- > 0) {
             Voice voice = VoiceMaker.getVoice(progName,synth, this);
             if (voice == null) return; // getVoice should give an error.

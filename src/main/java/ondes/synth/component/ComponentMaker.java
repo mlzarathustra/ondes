@@ -50,7 +50,7 @@ public class ComponentMaker {
 
             case "env": rs = new Envelope(); break;
             case "mix": rs = new Junction(); break;
-            case "channel-mix": rs = new ChannelJunction(); break;
+            case "dynamic-mix": rs = new DynamicJunction(); break;
             case "balancer": rs = new Balancer(); break;
             case "limiter": rs = new Limiter(); break;
             case "op-amp": rs = new OpAmp(); break;

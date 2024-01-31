@@ -56,16 +56,17 @@ public class Voice extends ComponentOwner {
      * so that we can disconnect them from main when deactivating
      * the voice, and then reattach when reactivating.
      */
-    Junction voiceMix;
+    DynamicJunction voiceMix;
     {
         Map<String,String> map=new HashMap<>();
-        map.put("type","mix");
-        voiceMix = (Junction) ComponentMaker.getMonoComponent(map, synth);
+        map.put("type","dynamic-mix");
+        voiceMix = (DynamicJunction) ComponentMaker.getMonoComponent(map, synth);
         if (voiceMix == null) {
             err.println("Could not get a Junction for voice!");
         }
         else {
             voiceMix.setOwner(this);
+            addMidiListeners(voiceMix, map);
         }
     }
 
@@ -75,14 +76,12 @@ public class Voice extends ComponentOwner {
             channelInput.connect();
         }
         if (voiceMix.inputSize() > 0) {
-            synth.getMainMix().addInput(voiceMix.getMainOutput());
-
-            // voiceMix.setOutput(synth.getMainOutput()); equivalent?
+             voiceMix.setOutput(channelVoicePool.channelMix);
         }
     }
     public void pause() {
         if (voiceMix.inputSize() > 0) {
-            synth.getMainMix().delInput(voiceMix.getMainOutput());
+            channelVoicePool.channelMix.delInput(voiceMix.getMainOutput());
         }
 
         List<MonoComponent> list = new ArrayList(components.values());
