@@ -2,11 +2,6 @@
 
   - Voicemaker.findProg("") - finds "pwm" because it every string "contains" "" and it picks the first shortest name which (alphabetically sorted) happens to be pwm. 
 
-  - Controller 7 - volume
-    - ChannelVoicePool: add Junction channelMix
-    - All voice components (channel and voice context) plug into this instead of main, then it plugs in to main
-    - it combines the controller 7 output (which should always be enabled) with the initial level scale setting, specified in the command line.
-
   - Provide an API endpoint for morbleu
     
   - named inputs - translate them into an array

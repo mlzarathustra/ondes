@@ -77,6 +77,8 @@ For the lists of parameters available, see the following files:
  - [Mix](Mix.md)
  - [Balancer](Balancer.md)
 
+For a note on the Volume controller (MIDI controller 7) see the [Controller 7](Controller7.md) page.
+
 
 ## Editing Waves 
 
