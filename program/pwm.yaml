@@ -53,9 +53,13 @@ env:
     - 25 92 hold
     - 300 0 release
     - 20000 0 alt-release
+  out: ctrl7
 
+ctrl7:
+  type: dynamic-mix
+  context: channel
+  midi: volume
   out: echo
-
 
 echo:
   type: echo

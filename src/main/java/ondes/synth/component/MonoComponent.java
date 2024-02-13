@@ -3,6 +3,7 @@ package ondes.synth.component;
 import ondes.synth.ComponentOwner;
 import ondes.synth.OndeSynth;
 import ondes.synth.wire.ChannelInput;
+import ondes.synth.wire.DynamicJunction;
 import ondes.synth.wire.WiredIntSupplier;
 
 import javax.sound.midi.MidiMessage;
@@ -274,14 +275,14 @@ public abstract class MonoComponent {
                 setOutput(outComp, outSelect, output);
             }
             else {
-                MonoComponent comp = (MonoComponent) components.get(oneOut);
-                if (comp == null) {
+                MonoComponent outComp = (MonoComponent) components.get(oneOut);
+                if (outComp == null) {
                     err.println("ERROR! Attempting to connect to non-existent " +
                         "component '"+oneOut+"'");
                     continue;
                 }
 
-                setOutput(comp, output);
+                setOutput(outComp, output);
             }
         }
 
@@ -344,7 +345,6 @@ public abstract class MonoComponent {
      */
     public void addInput(WiredIntSupplier input) {
         if (!inputs.contains(input)) inputs.add(input);
-        //out.println("adding input to "+getName());  // DBG1222
     }
 
     /**
